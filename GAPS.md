@@ -11,6 +11,51 @@ phase-level, and content-level** — not structural.
 
 ---
 
+## At a glance — updated 19 Aug 2026
+
+Every item has a stable ID. Quote the ID when something is done and I will close it.
+
+**Resolved — 8**
+
+`1.1` draft persistence · `1.2` confirmation handoff · `1.3` `serve:out` ·
+`2.1` image pipeline · `2.1b` verifier blind spot · `2.1c` listing prerendering ·
+`4.3` README file count · `4.4` `"type": "module"`
+
+**Open — mine, ~2–3 days**
+
+| ID | What | Size |
+|---|---|---|
+| `2.1d` | Photography slot on detail pages | medium |
+| `2.2` | Seasonal landing pages | small |
+| `2.3` | Lighthouse, axe, full AA pass, keyboard run | ~1 day |
+| `2.4` | Three of four launch numbers unmeasured (LCP, CLS, AA) | folded into 2.3 |
+| `4.1` | Site-level `Organization` JSON-LD | small |
+| `4.2` | `lastModified` in the sitemap | small |
+| — | Specimen page — Phase 1's own acceptance test | small |
+
+`2.3` and `2.4` are best run **after** the content lands. Real photography and copy move
+every performance number and can introduce new AA failures, so running them now means
+running them twice.
+
+**Open — yours, and this is the critical path**
+
+| ID | What | Damage if it ships as-is |
+|---|---|---|
+| `3.2` | **WhatsApp number** | Primary conversion path is a dead link |
+| `3.1` | Real domain | Canonicals, sitemap, robots, JSON-LD all describe the wrong origin |
+| `3.6` | Photography — 0 of 6 | The site's whole visual argument is missing |
+| `3.5` | Accreditations | `TrustRow` renders nothing; the trust surface is blank |
+| `3.3` `3.4` | Phone / email / address, socials | Visitors cannot reach you by any route but WhatsApp |
+| `3.7` `3.8` `3.9` | FAQ policy review, About copy, logo | Placeholder copy ships as fact |
+| `3.10` `3.11` | Real prices; hotel data vs contracts | The numbers you compete on are unconfirmed |
+| `3.12` | **Arabic/Urdu scope decision** | Architectural — cost rises with every component added |
+
+**Roughly 82% done.** Engineering ~92%, verification ~35%, launch readiness ~25%.
+That last figure is the honest one: the remaining work is small in engineering terms and
+decisive in commercial ones.
+
+---
+
 ## 1. Plan requirements that are not implemented
 
 > **All three resolved 19 Aug 2026.** Kept in full below, because the reasoning is
@@ -247,43 +292,46 @@ by reading `out/`:
 
 | # | What | Where | Leaks into `out/` |
 |---|---|---|---|
-| 1 | Real site URL | `data/site.ts:16` — `https://example.invalid` | **yes** — every `<loc>` in `sitemap.xml`, the `Sitemap:` line in `robots.txt`, and every canonical tag |
-| 2 | WhatsApp business number | `data/site.ts:20` — `000000000000` | **yes** — every `wa.me/000000000000` link, i.e. the primary conversion path is a dead link |
-| 3 | Phone / email / address | `data/site.ts:22–25` | **yes** — footer, contact page, `/quote/sent/` |
-| 4 | Social handles | `data/site.ts:38` — empty | no (empty handles are omitted, by design) |
-| 5 | Accreditation credentials + artwork | `data/trust.ts:27` — array intentionally empty | no — `TrustRow` renders nothing while empty |
-| 6 | Package photography | `data/packages.ts` — all 6 `images: []` | no — khatam placeholder renders instead |
-| 7 | FAQ answers vs current Saudi policy | `data/faqs.ts:1` | text ships as written |
-| 8 | Company story / founding year | `app/about/page.tsx:16` | text ships as written |
-| 9 | Logo SVG | `components/layout/Navbar.tsx:55` | inline mark renders meanwhile |
+| **3.1** | Real site URL | `NEXT_PUBLIC_SITE_URL`, else `data/site.ts` | **partly fixed** — the origin is now resolved from the environment (Vercel supplies its own), so a deployed build is self-consistent. Still needs the real domain before launch |
+| **3.2** | WhatsApp business number | `data/site.ts` — `000000000000` | **yes** — every `wa.me/000000000000` link, i.e. the primary conversion path is a dead link. **The highest-damage item on this page** |
+| **3.3** | Phone / email / address | `data/site.ts` | **yes** — footer, contact page, `/quote/sent/` |
+| **3.4** | Social handles | `data/site.ts` — empty | no (empty handles are omitted, by design) |
+| **3.5** | Accreditation credentials + artwork | `data/trust.ts` — array intentionally empty | no — `TrustRow` renders nothing while empty |
+| **3.6** | Package photography | `data/packages.ts` — 0 of 6 have images | no — khatam placeholder renders instead. Pipeline is built and waiting |
+| **3.7** | FAQ answers vs current Saudi policy | `data/faqs.ts` | text ships as written |
+| **3.8** | Company story / founding year | `app/about/page.tsx` | text ships as written |
+| **3.9** | Logo SVG | `components/layout/Navbar.tsx` | inline mark renders meanwhile |
 
-**Also unresolved from §06 but not marked in code:**
+**Also unresolved from §06, but not marked by a `TODO(client)` in code:**
 
-- Real per-person prices, and which seasons have actual allocation.
-- Hotel allocation confirmed against current contracts — names and distances are real but
-  unverified.
-- Arabic/Urdu scope. The build implements element-level `lang="ar"` accents only, which is
-  the cheap option the plan assumed. A mirrored RTL locale or an Urdu translation would be a
-  re-architecture of the layout primitives, not an addition — so it has to be decided before
-  more components are written, not after.
+- **3.10 — Real per-person prices**, and which seasons have actual allocation.
+- **3.11 — Hotel allocation confirmed against current contracts.** Names and distances are
+  real but unverified, and distance-to-Haram is the number this whole site competes on.
+- **3.12 — Arabic/Urdu scope.** The build implements element-level `lang="ar"` accents only,
+  which is the cheap option the plan assumed. A mirrored RTL locale or an Urdu translation
+  would be a re-architecture of the layout primitives, not an addition — so it has to be
+  decided before more components are written, not after. **Gets more expensive with every
+  component added.**
 
 ---
 
 ## 4. Minor
 
-- **No site-level `Organization` / `TravelAgency` JSON-LD.** `TravelAgency` appears only
-  nested as `provider` inside the package schema (`app/packages/[slug]/page.tsx:68`). About
-  and Contact carry no structured data at all.
-- **`app/sitemap.ts` emits no `lastModified`.** Harmless, but it is free signal.
-- **README overstates precision.** It says *"Matches the build plan's file tree 1:1 — 36/36
-  files"* while there are 54 source files. The extras (`data/site.ts`, `lib/cn.ts`,
-  `ComparisonTable`, `SeasonalBanner`, `PackageListing`, `not-found.tsx`, `tokens.css`,
-  `layout/Navbar`, `layout/Footer`, `quote/schema.ts`) are each justified by the plan's own
-  prose — the file tree in §04 is simply abbreviated. The count is what is wrong, not the work.
-- ~~**`package.json` has no `"type": "module"`,** so every `npm run test` prints a
-  `MODULE_TYPELESS_PACKAGE_JSON` warning before the results.~~ **Resolved 19 Aug 2026** —
-  `"type": "module"` set; the gate now reads clean. The test glob also widened to
-  `components/**/*.test.ts` so colocated component tests are picked up.
+**4.1 — No site-level `Organization` / `TravelAgency` JSON-LD.** *Open.* `TravelAgency`
+appears only nested as `provider` inside the package schema
+(`app/packages/[slug]/page.tsx`). About and Contact carry no structured data at all.
+
+**4.2 — `app/sitemap.ts` emits no `lastModified`.** *Open.* Harmless, but it is free signal.
+
+**4.3 — README overstated its file-tree precision.** **Resolved 19 Aug 2026.** It claimed
+*"Matches the build plan's file tree 1:1 — 36/36 files"* against 54 source files. The extras
+are each justified by the plan's own prose — §04's tree is simply abbreviated — so the count
+was wrong, not the work. Replaced with an accurate description.
+
+**4.4 — `package.json` had no `"type": "module"`.** **Resolved 19 Aug 2026.** Every
+`npm run test` printed a `MODULE_TYPELESS_PACKAGE_JSON` warning ahead of the results; the
+gate now reads clean. The test glob also widened to `components/**/*.test.ts` so colocated
+component tests are picked up.
 
 ---
 
