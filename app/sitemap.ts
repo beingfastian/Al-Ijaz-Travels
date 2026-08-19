@@ -1,6 +1,8 @@
 import type { MetadataRoute } from 'next';
 import { packages } from '@/data/packages';
 import { site } from '@/data/site';
+import { tiers } from '@/data/tiers';
+import { packageHref, tierHref } from '@/lib/routes';
 
 /**
  * `dynamic = 'force-static'` is required for metadata routes under output:'export'.
@@ -18,10 +20,20 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'monthly' as const,
       priority: route === '' ? 1 : 0.7,
     })),
-    ...packages.map((pkg) => ({
-      url: `${site.url}/packages/${pkg.slug}/`,
+    // Tier hubs sit above the detail pages in priority: they are the pages that
+    // rank for "5 star umrah packages", which is the query with volume behind it.
+    ...tiers.map((t) => ({
+      url: `${site.url}${tierHref(t.tier)}`,
       changeFrequency: 'weekly' as const,
-      priority: 0.8,
+      priority: 0.9,
+    })),
+    ...packages.map((pkg) => ({
+      url: `${site.url}${packageHref(pkg)}`,
+      changeFrequency: 'weekly' as const,
+      // Month variants are numerous and individually less important than the
+      // evergreen packages they derive from; saying so is more useful to a
+      // crawler than claiming all 195 matter equally.
+      priority: pkg.month ? 0.6 : 0.8,
     })),
   ];
 }

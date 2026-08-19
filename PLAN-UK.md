@@ -277,7 +277,7 @@ FAQ · seasonal Ramadan banner.
 
 ---
 
-### Chunk 5 — Packages: hub, tiers, detail · ~2.5 days
+### Chunk 5 — Packages: hub, tiers, detail · ~2.5 days · **DONE 20 Aug 2026**
 
 - `/packages` with URL-driven filters (tier, nights, month, airport, price)
 - 3 tier hubs with genuine positioning copy per tier

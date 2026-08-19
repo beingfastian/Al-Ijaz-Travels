@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { faqs } from '@/data/faqs';
 
 export const metadata: Metadata = {
+  alternates: { canonical: '/faq/' },
   title: 'Umrah FAQ',
   description:
     'Common questions about Umrah visas, hotel distance to the Haram, what packages include, and how booking works.',

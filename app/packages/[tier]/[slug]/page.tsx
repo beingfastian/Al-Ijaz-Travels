@@ -1,12 +1,16 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { Check, Minus } from 'lucide-react';
+import { Check, Minus, AlertTriangle } from 'lucide-react';
 import { packages, getPackage } from '@/data/packages';
 import { formatNights } from '@/lib/format';
 import { HotelCard } from '@/components/package/HotelCard';
 import { Itinerary } from '@/components/package/Itinerary';
 import { PriceRail } from '@/components/package/PriceRail';
 import { site } from '@/data/site';
+import { getMonth } from '@/data/months';
+import { getAirport } from '@/data/airports';
+import { packageHref } from '@/lib/routes';
+import { Photo } from '@/components/ui/Photo';
 
 /**
  * Real routes, not `?id=`.
@@ -17,10 +21,10 @@ import { site } from '@/data/site';
  * catalogue that needs to rank.
  */
 export function generateStaticParams() {
-  return packages.map((pkg) => ({ slug: pkg.slug }));
+  return packages.map((pkg) => ({ tier: `${pkg.tier}-star`, slug: pkg.slug }));
 }
 
-type Props = { params: Promise<{ slug: string }> };
+type Props = { params: Promise<{ tier: string; slug: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
@@ -30,7 +34,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: pkg.name,
     description: pkg.summary,
-    alternates: { canonical: `/packages/${pkg.slug}/` },
+    alternates: { canonical: packageHref(pkg) },
     openGraph: { title: pkg.name, description: pkg.summary, type: 'article' },
   };
 }
@@ -39,6 +43,9 @@ export default async function PackageDetailPage({ params }: Props) {
   const { slug } = await params;
   const pkg = getPackage(slug);
   if (!pkg) notFound();
+
+  const month = pkg.month ? getMonth(pkg.month) : undefined;
+  const hero = pkg.images[0];
 
   /**
    * JSON-LD so package pages can earn rich results. Competitors in this space
@@ -76,15 +83,63 @@ export default async function PackageDetailPage({ params }: Props) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <section className="border-b border-border khatam-field">
-        <div className="max-container padding-container flex flex-col gap-4 py-14">
-          <p className="eyebrow">
+      <section className="premium-surface relative isolate overflow-hidden border-b border-border">
+        {hero && (
+          <Photo
+            image={hero.key}
+            alt={hero.alt}
+            sizes="100vw"
+            priority
+            className="absolute inset-0 h-full w-full object-cover opacity-45"
+          />
+        )}
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 bg-gradient-to-r from-noir-950 via-noir-950/85 to-noir-950/40"
+        />
+
+        <div className="max-container padding-container relative flex flex-col gap-4 py-16 lg:py-20">
+          <p className="eyebrow-premium">
             {pkg.tier}-star · {formatNights(pkg)}
           </p>
-          <h1 className="text-display">{pkg.name}</h1>
-          <p className="prose-column text-body-lg text-text-muted">{pkg.summary}</p>
+          <h1 className="text-display text-on-premium">{pkg.name}</h1>
+          <p className="prose-column text-body-lg text-on-premium-muted">{pkg.summary}</p>
+
+          <ul className="mt-2 flex flex-wrap gap-x-6 gap-y-2 text-body-sm text-on-premium-muted">
+            <li>
+              Departs from{' '}
+              <strong className="font-medium text-on-premium">
+                {pkg.departures.map((c) => getAirport(c)?.city ?? c).join(', ')}
+              </strong>
+            </li>
+            {month && (
+              <li>
+                Makkah in {month.name}:{' '}
+                <strong className="font-medium text-on-premium">{month.makkahHighC}°C</strong>
+              </li>
+            )}
+          </ul>
         </div>
       </section>
+
+      {/*
+        Availability is stated before the price, not after it. Umrah visas are
+        typically suspended around Hajj, so a May or June departure may simply not
+        be operable — and a visitor who finds that out after choosing a package
+        has been wasted, not served. The reference site sells these months with no
+        mention of it.
+      */}
+      {month && month.availability === 'restricted' && (
+        <div className="border-b border-gold-300 bg-gold-50">
+          <div className="max-container padding-container flex items-start gap-3 py-4">
+            <AlertTriangle size={18} className="mt-0.5 shrink-0 text-gold-text" aria-hidden />
+            <p className="text-body-sm text-text">
+              <strong className="font-semibold">{month.name} departures may be restricted.</strong>{' '}
+              {month.note} Speak to us before planning around this month.
+            </p>
+          </div>
+        </div>
+      )}
 
       <div className="max-container padding-container grid gap-12 py-12 lg:grid-cols-[1fr_340px] lg:py-16">
         <div className="flex flex-col gap-14">

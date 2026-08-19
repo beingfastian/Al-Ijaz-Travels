@@ -3,6 +3,7 @@ import { Suspense } from 'react';
 import { QuoteFlow } from '@/components/quote/QuoteFlow';
 
 export const metadata: Metadata = {
+  alternates: { canonical: '/quote/' },
   title: 'Request a Quote',
   description:
     'Tell us who is travelling and when. Takes about two minutes and does not commit you to booking.',

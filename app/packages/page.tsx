@@ -1,12 +1,27 @@
 import { Suspense } from 'react';
+import Link from 'next/link';
+import { Star } from 'lucide-react';
 import type { Metadata } from 'next';
 import { PackageListing } from '@/components/package/PackageListing';
 import { PackageCard } from '@/components/package/PackageCard';
 import { packages } from '@/data/packages';
 import { applyFilters } from '@/lib/filter';
 import { DEFAULT_FILTERS } from '@/lib/types';
+import { tiers } from '@/data/tiers';
+import { tierHref } from '@/lib/routes';
 
 export const metadata: Metadata = {
+  /**
+   * Self-canonical, and this one is load-bearing rather than housekeeping.
+   *
+   * Filters live in the query string — tier, nights, price, distance, month,
+   * airport — which is what makes a filtered listing a shareable link. It also
+   * means the number of distinct URLs serving this page is the product of every
+   * filter combination, all with near-identical content. Without a canonical,
+   * a crawler treats each one as its own document and the listing competes with
+   * itself. This collapses the lot back to /packages/.
+   */
+  alternates: { canonical: '/packages/' },
   title: 'Umrah Packages',
   description:
     'Compare Umrah packages by hotel rating, price per person, and real walking distance to the Haram. Filter by nights and departure month.',
@@ -23,6 +38,25 @@ export default function PackagesPage() {
             Prices are per person with the sharing basis stated. Distances are real
             walking distances to the Haram, not marketing estimates.
           </p>
+
+          {/*
+            Tier hubs, linked from the page a crawler reaches first from the nav.
+            They were built before anything pointed at them, which the dead-link
+            check would not have caught — an orphan page is not a broken link, it
+            is simply unreachable, and the two failures look nothing alike.
+          */}
+          <nav aria-label="Browse by star rating" className="flex flex-wrap gap-3 pt-2">
+            {tiers.map((t) => (
+              <Link
+                key={t.slug}
+                href={tierHref(t.tier)}
+                className="rule-gold inline-flex items-center gap-2 rounded-full border bg-surface px-5 py-2 text-body-sm font-medium text-green-900 transition-colors hover:border-green-700 hover:bg-green-50"
+              >
+                <Star size={14} className="fill-gold-500 text-gold-500" aria-hidden />
+                {t.tier}-star packages
+              </Link>
+            ))}
+          </nav>
         </div>
       </section>
 

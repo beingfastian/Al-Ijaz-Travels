@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { SeasonalBanner } from '@/components/home/SeasonalBanner';
 import { Hero } from '@/components/home/Hero';
 import { PhotoBand } from '@/components/home/PhotoBand';
@@ -15,6 +16,16 @@ import { Faq } from '@/components/home/Faq';
  * accreditation) → how does this work (process) → what am I still unsure about
  * (FAQ).
  */
+/**
+ * Home inherits its title and description from the root layout — the site
+ * default is exactly right here — but it still needs its own canonical. Without
+ * one, `/`, `/?utm_source=…` and any other decorated variant are separate
+ * indexable documents as far as a crawler is concerned.
+ */
+export const metadata: Metadata = {
+  alternates: { canonical: '/' },
+};
+
 export default function HomePage() {
   return (
     <>

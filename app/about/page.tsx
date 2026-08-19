@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { site } from '@/data/site';
 
 export const metadata: Metadata = {
+  alternates: { canonical: '/about/' },
   title: 'About',
   description: `${site.name} arranges Umrah from the UK, with hotels rated by real walking distance to the Haram.`,
 };

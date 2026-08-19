@@ -130,6 +130,48 @@ for (const page of pages) {
   }
 }
 
+/**
+ * Metadata uniqueness.
+ *
+ * With 195 generated detail pages, duplicate titles and descriptions are the
+ * likeliest way this site quietly fails: a template bug gives every month
+ * variant the same `<title>`, everything still builds, every URL still resolves,
+ * and the pages compete with each other instead of ranking. Nothing else in the
+ * gate would notice.
+ *
+ * `/404/` and `/_not-found/` are Next's own error documents and legitimately
+ * share the site default, so they are excluded rather than special-cased later.
+ */
+const EXEMPT_FROM_METADATA = [/^\/404\/?$/, /^\/_not-found\//];
+
+const meta = { titles: new Map(), descriptions: new Map(), missingCanonical: [] };
+
+for (const page of pages) {
+  const rel = relative(OUT, page).split('\\').join('/');
+  const pageUrl = '/' + rel.replace(/index\.html$/, '');
+  if (EXEMPT_FROM_METADATA.some((re) => re.test(pageUrl))) continue;
+  if (!rel.endsWith('index.html')) continue;
+
+  const html = await readFile(page, 'utf8');
+
+  // A noindex page is not competing in search, so it needs neither a canonical
+  // nor a distinct title. Checking it anyway would push us toward adding
+  // metadata to satisfy a script rather than to serve a reader.
+  if (/<meta name="robots"[^>]*content="[^"]*noindex/.test(html)) continue;
+
+  const title = (html.match(/<title>([^<]*)<\/title>/) ?? [])[1] ?? '';
+  const description = (html.match(/<meta name="description" content="([^"]*)"/) ?? [])[1] ?? '';
+
+  if (!/<link rel="canonical"/.test(html)) meta.missingCanonical.push(pageUrl);
+  if (!meta.titles.has(title)) meta.titles.set(title, []);
+  meta.titles.get(title).push(pageUrl);
+  if (!meta.descriptions.has(description)) meta.descriptions.set(description, []);
+  meta.descriptions.get(description).push(pageUrl);
+}
+
+const dupTitles = [...meta.titles].filter(([, urls]) => urls.length > 1);
+const dupDescriptions = [...meta.descriptions].filter(([, urls]) => urls.length > 1);
+
 // Each distinct destination is requested once, however many pages link to it.
 for (const [href, sources] of linkTargets) {
   const res = await fetch(`http://localhost:${PORT}${href}`);
@@ -149,6 +191,24 @@ if (optimizerRefs.length > 0) {
     `\n  ${optimizerRefs.length} reference(s) point at the image optimizer (/_next/image).`
   );
   console.error(`  There is no optimizer on a static host. Set images.unoptimized in next.config.`);
+}
+
+const metaProblems = dupTitles.length + dupDescriptions.length + meta.missingCanonical.length;
+if (metaProblems > 0) {
+  console.error(`\n  METADATA problems — these pages compete with each other in search:\n`);
+  for (const [title, urls] of dupTitles.slice(0, 6)) {
+    console.error(`    ${urls.length} pages share the title "${title.slice(0, 60)}"`);
+    console.error(`      e.g. ${urls.slice(0, 3).join(', ')}`);
+  }
+  for (const [, urls] of dupDescriptions.slice(0, 6)) {
+    console.error(`    ${urls.length} pages share a description — e.g. ${urls.slice(0, 3).join(', ')}`);
+  }
+  if (meta.missingCanonical.length > 0) {
+    console.error(`    ${meta.missingCanonical.length} page(s) with no canonical:`);
+    console.error(`      ${meta.missingCanonical.slice(0, 6).join(', ')}`);
+  }
+  console.error('');
+  process.exit(1);
 }
 
 if (deadLinks.length > 0) {

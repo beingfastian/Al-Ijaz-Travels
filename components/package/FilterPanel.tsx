@@ -4,6 +4,8 @@ import { SlidersHorizontal, X } from 'lucide-react';
 import type { PackageFilters, Tier } from '@/lib/types';
 import type { filterBounds } from '@/lib/filter';
 import { formatMonthKey, formatGbp } from '@/lib/format';
+import { airports } from '@/data/airports';
+import type { AirportCode } from '@/lib/types';
 
 /**
  * Filter controls for the package listing.
@@ -128,6 +130,32 @@ export function FilterPanel({
         />
         <p className="text-body-sm text-text-muted">
           Within {filters.maxDistanceM ?? bounds.maxDistanceM} m
+        </p>
+      </div>
+
+      <div className="flex flex-col gap-3">
+        <label htmlFor="airport" className="text-label uppercase tracking-[0.14em] text-text-muted">
+          Departing from
+        </label>
+        <select
+          id="airport"
+          value={filters.airport ?? ''}
+          onChange={(e) =>
+            onChange({ airport: e.target.value === '' ? null : (e.target.value as AirportCode) })
+          }
+          className="rounded-card border border-border bg-surface px-3 py-2 text-body-sm"
+        >
+          <option value="">Any UK airport</option>
+          {airports.map((a) => (
+            <option key={a.code} value={a.code}>
+              {a.city} ({a.code})
+            </option>
+          ))}
+        </select>
+        {/* Stated rather than discovered: the longest stays do not run from the
+            regional airports, so narrowing here genuinely removes packages. */}
+        <p className="text-body-sm text-text-muted">
+          Long stays run from London, Manchester and Birmingham only.
         </p>
       </div>
 

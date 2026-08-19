@@ -4,6 +4,7 @@ import { Star, Footprints } from 'lucide-react';
 import type { Package } from '@/lib/types';
 import { makkahHaramDistanceM, totalNights } from '@/lib/types';
 import { formatDistance, formatNights, formatPriceFrom, formatSharing } from '@/lib/format';
+import { packageHref } from '@/lib/routes';
 
 /**
  * Card leads on the two things that actually decide an Umrah booking: price and
@@ -54,7 +55,7 @@ export function PackageCard({ pkg }: { pkg: Package }) {
               from a fully prerendered static page; it does not need the help.
             */}
             <Link
-              href={`/packages/${pkg.slug}/`}
+              href={packageHref(pkg)}
               prefetch={false}
               className="after:absolute after:inset-0"
             >

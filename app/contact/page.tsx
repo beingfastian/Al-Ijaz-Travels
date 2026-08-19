@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/Button';
 import { whatsappUrl } from '@/lib/whatsapp';
 
 export const metadata: Metadata = {
+  alternates: { canonical: '/contact/' },
   title: 'Contact',
   description: `Speak to ${site.name} about Umrah packages, dates and availability.`,
 };

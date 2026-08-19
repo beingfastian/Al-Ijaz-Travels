@@ -4,6 +4,7 @@ import { formatDistance, formatMonthKey, formatGbp, formatSharing } from '@/lib/
 import { Button } from '@/components/ui/Button';
 import { whatsappUrl } from '@/lib/whatsapp';
 import { site } from '@/data/site';
+import { packageHref } from '@/lib/routes';
 
 /**
  * Sticky price and CTA rail on the package detail page.
@@ -58,7 +59,7 @@ export function PriceRail({ pkg }: { pkg: Package }) {
         <Button
           href={whatsappUrl({
             packageName: pkg.name,
-            packageUrl: `${site.url}/packages/${pkg.slug}/`,
+            packageUrl: `${site.url}${packageHref(pkg)}`,
           })}
           variant="secondary"
           full
