@@ -1,3 +1,5 @@
+import { site } from './site';
+
 /* ============================================================================
  * TRUST SIGNALS
  *
@@ -23,7 +25,48 @@ export interface Accreditation {
  * Religious Affairs Hajj/Umrah registration, IATA agent number, DTS licence —
  * with matching artwork. <TrustRow> renders nothing while this is empty.
  */
-export const accreditations: Accreditation[] = [];
+/**
+ * Derived from `site.accreditation`, so the moment real numbers land in one place
+ * the badges appear everywhere — footer, home page, package pages — with no
+ * component edits and no chance of one surface claiming cover another does not.
+ *
+ * An entry only exists if its number is non-empty. That is the whole safety
+ * mechanism: there is no code path that renders an ATOL badge without an ATOL
+ * number, because the badge *is* the number.
+ *
+ * ⚠ Why this is stricter than it looks. Selling flight-inclusive packages without
+ * an ATOL is a criminal offence under the Civil Aviation (ATOL) Regulations, and
+ * displaying a number you do not hold is separately actionable by the CAA. The
+ * client has confirmed both are held; until the numbers arrive, nothing renders.
+ */
+function buildAccreditations(): Accreditation[] {
+  const out: Accreditation[] = [];
+
+  // String() widens past the literal types `as const` gives the empty defaults,
+  // so this compiles now and keeps compiling once real numbers replace them.
+  const atol = String(site.accreditation.atolNumber).trim();
+  const iata = String(site.accreditation.iataNumber).trim();
+
+  if (atol !== '') {
+    out.push({
+      name: 'ATOL Protected',
+      reference: `ATOL ${atol}`,
+      logo: '/brand/atol.svg',
+    });
+  }
+
+  if (iata !== '') {
+    out.push({
+      name: 'IATA Accredited Agent',
+      reference: `IATA ${iata}`,
+      logo: '/brand/iata.svg',
+    });
+  }
+
+  return out;
+}
+
+export const accreditations: Accreditation[] = buildAccreditations();
 
 /**
  * The "why choose us" comparison.

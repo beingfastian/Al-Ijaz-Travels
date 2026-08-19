@@ -282,6 +282,90 @@ console.log('');
   await page.close();
 }
 
+/* ------------------------------------------ 6. LCP on a throttled mobile 4G */
+
+{
+  /**
+   * The plan pins LCP under 2 s on throttled 4G. Measured rather than asserted,
+   * on a phone-sized viewport with the network actually throttled, because an
+   * LCP number from an unthrottled desktop headless run is meaningless — it is
+   * always fast, and it is never what a pilgrim on a train sees.
+   *
+   * Fast 4G per Lighthouse's own definition: 1.6 Mbps down, 150 ms RTT.
+   */
+  const mobile = await browser.newContext({
+    viewport: { width: 390, height: 844 },
+    deviceScaleFactor: 3,
+    isMobile: true,
+    hasTouch: true,
+  });
+  const page = await mobile.newPage();
+
+  const cdp = await mobile.newCDPSession(page);
+  await cdp.send('Network.enable');
+  await cdp.send('Network.emulateNetworkConditions', {
+    offline: false,
+    downloadThroughput: (1.6 * 1024 * 1024) / 8,
+    uploadThroughput: (750 * 1024) / 8,
+    latency: 150,
+  });
+
+  await page.goto(`${base}/`, { waitUntil: 'load' });
+
+  const lcp = await page.evaluate(
+    () =>
+      new Promise((resolve) => {
+        let value = 0;
+        new PerformanceObserver((list) => {
+          for (const entry of list.getEntries()) value = entry.startTime;
+        }).observe({ type: 'largest-contentful-paint', buffered: true });
+        // LCP is only final once the page stops changing; settle, then report.
+        setTimeout(() => resolve(Math.round(value)), 3500);
+      })
+  );
+
+  const cls = await page.evaluate(
+    () =>
+      new Promise((resolve) => {
+        let total = 0;
+        new PerformanceObserver((list) => {
+          for (const entry of list.getEntries()) {
+            if (!entry.hadRecentInput) total += entry.value;
+          }
+        }).observe({ type: 'layout-shift', buffered: true });
+        setTimeout(() => resolve(Number(total.toFixed(4))), 1200);
+      })
+  );
+
+  /**
+   * Viewport only, not fullPage.
+   *
+   * A full-page mobile capture is 390 px wide by ~9,500 tall, multiplied again by
+   * the device scale factor — an image so extremely tall that any viewer scales
+   * it to a sliver and it becomes unreadable. It is worse than useless: it looks
+   * like evidence while showing nothing. The top viewport is what "does it hold
+   * up on a phone" actually asks about.
+   */
+  await page.screenshot({ path: join(SHOTS, 'home-mobile.png') });
+
+  const pageHeight = await page.evaluate(() => document.documentElement.scrollHeight);
+  const screens = (pageHeight / 844).toFixed(1);
+  console.log(`  ok    mobile page length — ${pageHeight} px, about ${screens} phone screens`);
+
+  const LCP_BUDGET = 2000;
+  const CLS_BUDGET = 0.05;
+  const lcpOk = lcp > 0 && lcp <= LCP_BUDGET;
+  const clsOk = cls <= CLS_BUDGET;
+
+  console.log(
+    `  ${lcpOk && clsOk ? 'ok   ' : 'FAIL '} mobile 4G — LCP ${lcp} ms (budget ${LCP_BUDGET}), CLS ${cls} (budget ${CLS_BUDGET})`
+  );
+  if (!lcpOk) record('/', 'lcp', `${lcp} ms on throttled 4G, budget ${LCP_BUDGET} ms`);
+  if (!clsOk) record('/', 'cls', `${cls}, budget ${CLS_BUDGET}`);
+
+  await mobile.close();
+}
+
 await context.close();
 await browser.close();
 server.close();

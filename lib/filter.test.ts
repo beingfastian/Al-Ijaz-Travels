@@ -124,6 +124,28 @@ test('a package with only a Madinah hotel cannot satisfy a Haram distance filter
   assert.ok(!matchesFilters(madinahOnly, filters({ maxDistanceM: 500 })));
 });
 
+test('airport filter matches only packages that actually depart from it', () => {
+  const regional = pkg({ slug: 'regional', departures: ['LHR', 'MAN', 'BHX', 'NCL', 'GLA', 'EDI'] });
+  const longStay = pkg({ slug: 'long', departures: ['LHR', 'MAN', 'BHX'] });
+
+  assert.ok(matchesFilters(regional, filters({ airport: 'NCL' })));
+  assert.ok(
+    !matchesFilters(longStay, filters({ airport: 'NCL' })),
+    'a 20-night package does not run from Newcastle, and the filter must not pretend otherwise'
+  );
+  assert.ok(matchesFilters(longStay, filters({ airport: 'LHR' })));
+});
+
+test('an unknown airport code clears the filter rather than matching nothing', () => {
+  // Showing the whole catalogue is recoverable; showing an empty listing reads as
+  // "this agency has no packages", which is the worse failure by a distance.
+  const p = new URLSearchParams('airport=XYZ');
+  assert.equal(filtersFromSearchParams(p).airport, null);
+
+  const lower = new URLSearchParams('airport=man');
+  assert.equal(filtersFromSearchParams(lower).airport, 'MAN', 'case is normalised');
+});
+
 test('a package with no hotel data is excluded by a distance filter', () => {
   const noHotels = pkg({ slug: 'none', hotels: [] });
   assert.ok(!matchesFilters(noHotels, filters({ maxDistanceM: 5000 })));

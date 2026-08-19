@@ -2,6 +2,7 @@ import {
   DEFAULT_FILTERS,
   makkahHaramDistanceM,
   totalNights,
+  type AirportCode,
   type Package,
   type PackageFilters,
   type SortKey,
@@ -47,6 +48,21 @@ export function filterBounds(packages: Package[]) {
   };
 }
 
+const AIRPORT_CODES: AirportCode[] = ['LHR', 'MAN', 'BHX', 'NCL', 'GLA', 'EDI'];
+
+/**
+ * Parse an airport from the query string, rejecting anything not in the list.
+ *
+ * Deliberately strict: a bad code degrades to "no airport filter" and shows the
+ * whole catalogue, rather than silently matching nothing and presenting an empty
+ * listing as though we had no packages.
+ */
+function parseAirport(raw: string | null): AirportCode | null {
+  if (raw === null) return null;
+  const code = raw.trim().toUpperCase();
+  return (AIRPORT_CODES as string[]).includes(code) ? (code as AirportCode) : null;
+}
+
 export function matchesFilters(pkg: Package, f: PackageFilters): boolean {
   if (f.tiers.length > 0 && !f.tiers.includes(pkg.tier)) return false;
 
@@ -62,6 +78,8 @@ export function matchesFilters(pkg: Package, f: PackageFilters): boolean {
   }
 
   if (f.month !== null && !pkg.departureMonths.includes(f.month)) return false;
+
+  if (f.airport !== null && !pkg.departures.includes(f.airport)) return false;
 
   return true;
 }
@@ -125,6 +143,7 @@ export function filtersFromSearchParams(params: URLSearchParams): PackageFilters
     maxPriceGbp: parsePositiveInt(params.get('maxPrice')),
     maxDistanceM: parsePositiveInt(params.get('maxDistance')),
     month: month !== null && month.trim() !== '' ? month : null,
+    airport: parseAirport(params.get('airport')),
     sort,
   };
 }
@@ -141,6 +160,7 @@ export function searchParamsFromFilters(f: PackageFilters): string {
   if (f.maxPriceGbp !== null) params.set('maxPrice', String(f.maxPriceGbp));
   if (f.maxDistanceM !== null) params.set('maxDistance', String(f.maxDistanceM));
   if (f.month !== null) params.set('month', f.month);
+  if (f.airport !== null) params.set('airport', f.airport);
   if (f.sort !== DEFAULT_FILTERS.sort) params.set('sort', f.sort);
   return params.toString();
 }
@@ -153,6 +173,7 @@ export function isDefaultFilters(f: PackageFilters): boolean {
     f.maxNights === null &&
     f.maxPriceGbp === null &&
     f.maxDistanceM === null &&
-    f.month === null
+    f.month === null &&
+    f.airport === null
   );
 }

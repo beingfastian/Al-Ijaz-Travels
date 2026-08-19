@@ -264,7 +264,7 @@ and the licence for each file is recorded in `assets/photos/CREDITS.md`.
 
 ---
 
-### Chunk 4 — Home · ~2 days
+### Chunk 4 — Home · ~2 days · **DONE 20 Aug 2026**
 
 The page that carries the whole "better than Al Habib" claim.
 

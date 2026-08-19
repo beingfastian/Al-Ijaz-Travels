@@ -164,6 +164,13 @@ export interface PackageFilters {
   /** Inclusive upper bound on walking distance to the nearest Haram, in metres. */
   maxDistanceM: number | null;
   month: string | null;
+  /**
+   * Departure airport. A UK-market filter the reference site has no equivalent
+   * of: it sells city landing pages, but you cannot narrow the catalogue to
+   * "what can I actually fly on from Newcastle". Long stays do not run from
+   * every airport, so this is a real constraint and not a preference.
+   */
+  airport: AirportCode | null;
   sort: SortKey;
 }
 
@@ -174,5 +181,6 @@ export const DEFAULT_FILTERS: PackageFilters = {
   maxPriceGbp: null,
   maxDistanceM: null,
   month: null,
+  airport: null,
   sort: 'price-asc',
 };
