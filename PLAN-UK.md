@@ -303,7 +303,7 @@ correctly pre-filtered listing.
 
 ---
 
-### Chunk 7 — Visa page (new) · ~0.5 day
+### Chunk 7 — Visa page (new) · ~0.5 day · **DONE 20 Aug 2026**
 
 Not in Al Habib's map — your addition, and a genuine differentiator.
 

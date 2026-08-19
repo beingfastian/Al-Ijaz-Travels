@@ -120,7 +120,7 @@ export const allNavLinks = [
   { href: '/monthly-packages/', label: 'Monthly Packages', ready: true },
   { href: '/city-packages/', label: 'City Packages', ready: true },
   { href: '/ramadan-umrah-packages/', label: 'Ramadan Packages', ready: true },
-  { href: '/visa/', label: 'Visas', ready: false },
+  { href: '/visa/', label: 'Visas', ready: true },
 ] as const;
 
 export const navLinks = allNavLinks.filter((l) => l.ready);

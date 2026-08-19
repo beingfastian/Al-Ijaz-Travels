@@ -20,6 +20,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/monthly-packages',
     '/city-packages',
     '/ramadan-umrah-packages',
+    '/visa',
     '/about',
     '/faq',
     '/contact',

@@ -48,6 +48,7 @@ const PAGES = [
   { path: '/city-packages/', name: 'city-hub' },
   { path: '/city-packages/newcastle-umrah-packages/', name: 'city-connecting' },
   { path: '/ramadan-umrah-packages/', name: 'ramadan' },
+  { path: '/visa/', name: 'visa' },
   { path: '/quote/', name: 'quote' },
   { path: '/about/', name: 'about' },
   { path: '/contact/', name: 'contact' },
