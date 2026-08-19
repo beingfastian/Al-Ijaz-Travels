@@ -1,0 +1,20 @@
+<!-- Khatam / Rub el Hizb: two overlapping squares, the classic 8-point Islamic
+     star. Tiles seamlessly at 88x88 — stars sit at the tile centre and at all
+     four corners, so adjacent tiles complete each other.
+     Replaces the base repo's 325 KB topographic PNG at ~1 KB. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="88" height="88" viewBox="0 0 88 88">
+  <g fill="none" stroke="#162D23" stroke-opacity="0.09" stroke-width="1.15">
+    <!-- centre -->
+    <rect x="29" y="29" width="30" height="30"/>
+    <path d="M44 22.5 65.5 44 44 65.5 22.5 44Z"/>
+    <!-- corners: quarter stars that meet across the tile seam -->
+    <rect x="-15" y="-15" width="30" height="30"/>
+    <path d="M0 -21.5 21.5 0 0 21.5 -21.5 0Z"/>
+    <rect x="73" y="-15" width="30" height="30"/>
+    <path d="M88 -21.5 109.5 0 88 21.5 66.5 0Z"/>
+    <rect x="-15" y="73" width="30" height="30"/>
+    <path d="M0 66.5 21.5 88 0 109.5 -21.5 88Z"/>
+    <rect x="73" y="73" width="30" height="30"/>
+    <path d="M88 66.5 109.5 88 88 109.5 66.5 88Z"/>
+  </g>
+</svg>
