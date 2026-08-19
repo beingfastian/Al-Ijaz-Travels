@@ -251,3 +251,174 @@
     offset-rotate: auto;
   }
 }
+
+/* ==========================================================================
+ * MOTION SYSTEM
+ *
+ * Named once, used everywhere. Across 200 pages, per-component animation drifts
+ * into 200 slightly different easings, which is what makes a site feel homemade.
+ * See lib/motion.ts for the names components actually reference.
+ *
+ * Two rules hold throughout:
+ *
+ * 1. Content is visible unless JavaScript says otherwise. The hidden starting
+ *    state is scoped to .js, a class set by a blocking inline script in the
+ *    document head. Without JavaScript the class never lands, every reveal
+ *    element renders in its final state, and nothing is lost to a crawler or to
+ *    a reader whose script failed. Scoping to .js rather than toggling in an
+ *    effect also avoids a visible flash, because effects run after first paint.
+ *
+ * 2. Everything is gated behind prefers-reduced-motion. With motion reduced the
+ *    page is not a degraded version of itself — it is the finished page,
+ *    presented immediately.
+ * ========================================================================== */
+
+@keyframes reveal-rise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 1.5rem, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes reveal-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes reveal-scale {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* For hero imagery: a slow settle that reads as depth rather than movement. */
+@keyframes reveal-settle {
+  from {
+    opacity: 0;
+    transform: scale(1.06);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes shimmer-sweep {
+  from {
+    background-position: -160% 0;
+  }
+  to {
+    background-position: 260% 0;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Pending state. Scoped to .js so no-JS readers never meet it. */
+  .js [data-reveal='out'] {
+    opacity: 0;
+    will-change: opacity, transform;
+  }
+
+  .js [data-reveal='in'] {
+    animation-duration: var(--duration-reveal);
+    animation-timing-function: var(--ease-out-expo);
+    animation-fill-mode: both;
+    /* Set per element by the Reveal component for staggered groups. */
+    animation-delay: var(--reveal-delay, 0ms);
+  }
+
+  .js [data-reveal='in'][data-reveal-variant='rise'] {
+    animation-name: reveal-rise;
+  }
+  .js [data-reveal='in'][data-reveal-variant='fade'] {
+    animation-name: reveal-fade;
+  }
+  .js [data-reveal='in'][data-reveal-variant='scale'] {
+    animation-name: reveal-scale;
+  }
+  .js [data-reveal='in'][data-reveal-variant='settle'] {
+    animation-name: reveal-settle;
+  }
+
+  .hover-lift {
+    transition:
+      transform var(--duration-base) var(--ease-out-soft),
+      box-shadow var(--duration-base) var(--ease-out-soft);
+  }
+
+  .hover-lift:hover {
+    transform: translate3d(0, -4px, 0);
+    box-shadow: var(--shadow-lift);
+  }
+
+  .shimmer {
+    background-image: linear-gradient(
+      100deg,
+      transparent 20%,
+      color-mix(in oklab, var(--color-gold-200) 45%, transparent) 45%,
+      transparent 70%
+    );
+    background-size: 220% 100%;
+    animation: shimmer-sweep 2.6s var(--ease-in-out-soft) infinite;
+  }
+}
+
+/* ---------------------------------------------------------------- utilities */
+
+/**
+ * A hairline gold rule. At ~30% opacity it reads as a deliberate edge; a solid
+ * gold border reads as a warning label. This one utility does most of the work
+ * of making a layout look considered.
+ */
+@utility rule-gold {
+  border-color: var(--color-rule-gold);
+}
+
+/** Deep ground for premium sections. Measured at 19.17:1 against cream text. */
+@utility premium-surface {
+  background: var(--color-premium);
+  color: var(--color-on-premium);
+}
+
+@utility premium-raised {
+  background: var(--color-premium-raised);
+  color: var(--color-on-premium);
+  box-shadow: var(--shadow-premium);
+}
+
+/**
+ * A thin gold gradient divider. Brightest in the middle, fading at both ends,
+ * so it never terminates in a hard stop against the ground.
+ */
+@utility gold-divider {
+  height: 1px;
+  border: 0;
+  background: linear-gradient(
+    to right,
+    transparent,
+    color-mix(in oklab, var(--color-gold-500) 55%, transparent) 50%,
+    transparent
+  );
+}
+
+/** Letterspaced small caps for eyebrow labels on premium grounds. */
+@utility eyebrow-premium {
+  font-size: var(--text-label);
+  letter-spacing: var(--text-label--letter-spacing);
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--color-on-premium-accent);
+}

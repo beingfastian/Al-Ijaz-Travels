@@ -152,6 +152,34 @@ const RAMPS = {
       900: [0.3, 0.044],
     },
   },
+  /**
+   * Noir — the premium dark ground.
+   *
+   * green-950 is a very dark green and reads as brand. Noir is something else: a
+   * near-black carrying just enough of the brand hue (chroma 0.008–0.018) that it
+   * sits beside the greens without looking like a different site, but dark enough
+   * to make gold look like metal rather than mustard.
+   *
+   * This is the single biggest lever on "does it feel expensive". Luxury in
+   * interfaces is mostly deep grounds, restrained accent, and a lot of space —
+   * not more ornament.
+   */
+  noir: {
+    hue: gA.H,
+    stops: {
+      50: [0.965, 0.004],
+      100: [0.92, 0.005],
+      200: [0.84, 0.006],
+      300: [0.72, 0.007],
+      400: [0.58, 0.008],
+      500: [0.46, 0.009],
+      600: [0.37, 0.011],
+      700: [0.29, 0.013],
+      800: [0.22, 0.015],
+      900: [0.16, 0.017],
+      950: [0.115, 0.018],
+    },
+  },
   // Warm neutral, biased toward the cream's own hue so greys read as chosen.
   sand: {
     hue: hexToOklch(BRAND.cream).H,
@@ -251,6 +279,17 @@ const checks = [
   ['error text on cream', danger, scale.sand[50], AA_BODY],
   ['error text on sunk card surface', danger, scale.sand[100], AA_BODY],
   ['error text on its own tinted surface', danger, dangerSurface, AA_BODY],
+
+  // Premium noir surfaces. Every one of these is a pairing the luxury treatment
+  // actually uses, so a decorative choice cannot quietly drop below AA.
+  ['cream on noir-950 (premium ground)', scale.sand[50], scale.noir[950], AA_BODY],
+  ['cream on noir-900', scale.sand[50], scale.noir[900], AA_BODY],
+  ['gold-300 on noir-950 (accent text)', scale.gold[300], scale.noir[950], AA_BODY],
+  ['gold-200 on noir-900', scale.gold[200], scale.noir[900], AA_BODY],
+  ['muted text on noir-950', scale.noir[300], scale.noir[950], AA_BODY],
+  ['gold-500 hairline on noir-950 (non-text)', scale.gold[500], scale.noir[950], AA_LARGE],
+  ['gold-500 hairline on cream (non-text)', scale.gold[500], scale.sand[50], AA_LARGE],
+  ['focus ring gold-400 on noir-950 (non-text)', scale.gold[400], scale.noir[950], AA_LARGE],
 ];
 
 let failed = 0;
@@ -282,6 +321,8 @@ ${band('green')}
 
 ${band('gold')}
 
+${band('noir')}
+
 ${band('sand')}
 
   --color-ink: ${BRAND.ink};
@@ -312,6 +353,44 @@ ${band('sand')}
   /* Validation errors. Solved for AA against the darkest ground it sits on. */
   --color-danger: ${danger};
   --color-danger-surface: ${dangerSurface};
+
+  /* ---- Premium surfaces -------------------------------------------------
+   * The luxury treatment. Deep ground, restrained gold, generous space — the
+   * expensive look comes from what is left out, not what is added. */
+  --color-premium: var(--color-noir-950);
+  --color-premium-raised: var(--color-noir-900);
+  --color-on-premium: var(--color-sand-50);
+  --color-on-premium-muted: var(--color-noir-300);
+  --color-on-premium-accent: var(--color-gold-300);
+  --color-rule-premium: color-mix(in oklab, var(--color-gold-500) 38%, transparent);
+
+  /* Hairline gold rules. A 1px line at partial opacity reads as a deliberate
+   * edge; a solid gold border reads as a warning label. */
+  --color-rule-gold: color-mix(in oklab, var(--color-gold-500) 30%, transparent);
+
+  /* ---- Elevation --------------------------------------------------------
+   * Layered, low-opacity and warm-tinted rather than one grey blur. Neutral
+   * black shadows on a cream ground are what make a page look cheap. */
+  --shadow-card: 0 1px 2px color-mix(in oklab, var(--color-noir-900) 5%, transparent),
+    0 2px 8px color-mix(in oklab, var(--color-noir-900) 4%, transparent);
+  --shadow-lift: 0 2px 4px color-mix(in oklab, var(--color-noir-900) 5%, transparent),
+    0 12px 28px color-mix(in oklab, var(--color-noir-900) 8%, transparent);
+  --shadow-float: 0 4px 8px color-mix(in oklab, var(--color-noir-900) 6%, transparent),
+    0 24px 56px color-mix(in oklab, var(--color-noir-900) 12%, transparent);
+  --shadow-premium: 0 1px 0 color-mix(in oklab, var(--color-gold-500) 14%, transparent) inset,
+    0 20px 48px color-mix(in oklab, #000 40%, transparent);
+
+  /* ---- Motion -----------------------------------------------------------
+   * Named once here so 200 pages cannot drift into 200 different easings.
+   * Everything using these is gated behind prefers-reduced-motion. */
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out-soft: cubic-bezier(0.65, 0, 0.35, 1);
+
+  --duration-fast: 180ms;
+  --duration-base: 320ms;
+  --duration-slow: 620ms;
+  --duration-reveal: 780ms;
 }
 `;
 

@@ -226,7 +226,7 @@ set in Chunk 10.
 
 ---
 
-### Chunk 2 — Luxury design system uplift · ~2 days
+### Chunk 2 — Luxury design system uplift · ~2 days · **DONE 20 Aug 2026**
 
 You asked for a luxurious feel. That is mostly restraint, contrast and typography — not
 more decoration.

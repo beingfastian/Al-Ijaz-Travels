@@ -30,6 +30,18 @@
   --color-gold-800: #533D1B;
   --color-gold-900: #3A2B13;
 
+  --color-noir-50: #F1F4F3;
+  --color-noir-100: #E2E6E4;
+  --color-noir-200: #C7CCC9;
+  --color-noir-300: #A1A6A3;
+  --color-noir-400: #767C79;
+  --color-noir-500: #545A57;
+  --color-noir-600: #3B423E;
+  --color-noir-700: #262D2A;
+  --color-noir-800: #141D19;
+  --color-noir-900: #07100B;
+  --color-noir-950: #010704;
+
   --color-sand-50: #FAF8F5;
   --color-sand-100: #F4F1EC;
   --color-sand-200: #E6E2DC;
@@ -69,4 +81,42 @@
   /* Validation errors. Solved for AA against the darkest ground it sits on. */
   --color-danger: #BD423B;
   --color-danger-surface: #FDEBE9;
+
+  /* ---- Premium surfaces -------------------------------------------------
+   * The luxury treatment. Deep ground, restrained gold, generous space — the
+   * expensive look comes from what is left out, not what is added. */
+  --color-premium: var(--color-noir-950);
+  --color-premium-raised: var(--color-noir-900);
+  --color-on-premium: var(--color-sand-50);
+  --color-on-premium-muted: var(--color-noir-300);
+  --color-on-premium-accent: var(--color-gold-300);
+  --color-rule-premium: color-mix(in oklab, var(--color-gold-500) 38%, transparent);
+
+  /* Hairline gold rules. A 1px line at partial opacity reads as a deliberate
+   * edge; a solid gold border reads as a warning label. */
+  --color-rule-gold: color-mix(in oklab, var(--color-gold-500) 30%, transparent);
+
+  /* ---- Elevation --------------------------------------------------------
+   * Layered, low-opacity and warm-tinted rather than one grey blur. Neutral
+   * black shadows on a cream ground are what make a page look cheap. */
+  --shadow-card: 0 1px 2px color-mix(in oklab, var(--color-noir-900) 5%, transparent),
+    0 2px 8px color-mix(in oklab, var(--color-noir-900) 4%, transparent);
+  --shadow-lift: 0 2px 4px color-mix(in oklab, var(--color-noir-900) 5%, transparent),
+    0 12px 28px color-mix(in oklab, var(--color-noir-900) 8%, transparent);
+  --shadow-float: 0 4px 8px color-mix(in oklab, var(--color-noir-900) 6%, transparent),
+    0 24px 56px color-mix(in oklab, var(--color-noir-900) 12%, transparent);
+  --shadow-premium: 0 1px 0 color-mix(in oklab, var(--color-gold-500) 14%, transparent) inset,
+    0 20px 48px color-mix(in oklab, #000 40%, transparent);
+
+  /* ---- Motion -----------------------------------------------------------
+   * Named once here so 200 pages cannot drift into 200 different easings.
+   * Everything using these is gated behind prefers-reduced-motion. */
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out-soft: cubic-bezier(0.65, 0, 0.35, 1);
+
+  --duration-fast: 180ms;
+  --duration-base: 320ms;
+  --duration-slow: 620ms;
+  --duration-reveal: 780ms;
 }

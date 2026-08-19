@@ -59,6 +59,24 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en-GB" className={`${playfair.variable} ${inter.variable} ${naskh.variable}`}>
+      <head>
+        {/*
+          Sets `.js` before first paint, which is what scopes every scroll-reveal
+          starting state. Done here rather than in an effect because effects run
+          after paint — the content would flash in, then hide, then animate back.
+
+          The failure mode is the reason it is written this way round: if this
+          script never runs, `.js` never lands, and every reveal element simply
+          renders in its final visible state. Content is never hidden by default,
+          so a crawler or a reader with a blocked script sees the whole page.
+        */}
+        <script
+          // Authored here, not user input.
+          dangerouslySetInnerHTML={{
+            __html: `document.documentElement.classList.add('js')`,
+          }}
+        />
+      </head>
       <body className="min-h-dvh">
         <a
           href="#main"
