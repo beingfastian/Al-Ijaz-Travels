@@ -45,7 +45,19 @@ export function PackageCard({ pkg }: { pkg: Package }) {
       <div className="flex flex-1 flex-col gap-4 p-6">
         <div className="flex flex-col gap-2">
           <h3 className="text-subheading">
-            <Link href={`/packages/${pkg.slug}/`} className="after:absolute after:inset-0">
+            {/*
+              prefetch={false} because the listing renders up to 195 cards, and
+              Next prefetches every link that enters the viewport. Scrolling the
+              catalogue would fire ~195 speculative payload requests for pages the
+              visitor will mostly never open — wasted bandwidth on exactly the
+              mobile connections this audience is browsing on. The card is one tap
+              from a fully prerendered static page; it does not need the help.
+            */}
+            <Link
+              href={`/packages/${pkg.slug}/`}
+              prefetch={false}
+              className="after:absolute after:inset-0"
+            >
               {pkg.name}
             </Link>
           </h3>

@@ -33,7 +33,7 @@ const naskh = Noto_Naskh_Arabic({
 
 export const metadata: Metadata = {
   title: {
-    default: `${site.name} — Umrah Packages from Pakistan`,
+    default: `${site.name} — Umrah Packages from the UK`,
     template: `%s · ${site.name}`,
   },
   description:

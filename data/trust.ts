@@ -2,7 +2,7 @@
  * TRUST SIGNALS
  *
  * Everything on this page exists to answer one unspoken question: why should a
- * family hand this agency several lakh rupees? Credentials, and a plain
+ * family hand this agency several thousand pounds? Credentials, and a plain
  * comparison of what we do differently.
  * ========================================================================== */
 

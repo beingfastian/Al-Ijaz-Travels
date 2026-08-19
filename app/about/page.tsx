@@ -3,7 +3,7 @@ import { site } from '@/data/site';
 
 export const metadata: Metadata = {
   title: 'About',
-  description: `${site.name} arranges Umrah from Pakistan, with hotels rated by real walking distance to the Haram.`,
+  description: `${site.name} arranges Umrah from the UK, with hotels rated by real walking distance to the Haram.`,
 };
 
 export default function AboutPage() {

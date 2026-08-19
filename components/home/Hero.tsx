@@ -42,7 +42,7 @@ export function Hero() {
             <span className="mx-2 text-gold-400" aria-hidden="true">
               ·
             </span>
-            Umrah from Pakistan
+            Umrah from the UK
           </p>
 
           <h1 className="text-display-xl">

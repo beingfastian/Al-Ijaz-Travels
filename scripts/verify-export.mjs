@@ -75,19 +75,50 @@ function extractRefs(html, pageUrl) {
   return refs;
 }
 
+/**
+ * Every internal destination the HTML links to.
+ *
+ * Separate from asset references on purpose: an <img> that 404s is a visible
+ * hole, but an <a> that 404s is a dead end a visitor only finds by clicking, and
+ * a crawler finds immediately. This check exists because exactly that shipped —
+ * the navbar linked to four routes that had not been built, every page 404'd on
+ * prefetch, and the asset check reported success because it never looked at
+ * navigation targets.
+ */
+function extractLinks(html) {
+  const links = new Set();
+  for (const match of html.matchAll(/<a[^>]+href="([^"]+)"/gi)) {
+    const href = match[1];
+    if (!href) continue;
+    if (/^(https?:|data:|mailto:|tel:|#|\/\/)/.test(href)) continue;
+    if (!href.startsWith('/')) continue; // relative links are covered by the asset pass
+    links.add(href.split('#')[0].split('?')[0]);
+  }
+  return links;
+}
+
 const server = await serveStatic({ root: OUT, port: PORT });
 
 const files = await walk(OUT);
 const pages = files.filter((f) => f.endsWith('.html'));
 
 let checked = 0;
+let linksChecked = 0;
 const failures = [];
+const deadLinks = [];
 const optimizerRefs = [];
+/** Destination -> the pages that link to it. Cached so 206 pages stay fast. */
+const linkTargets = new Map();
 
 for (const page of pages) {
   const rel = relative(OUT, page).split('\\').join('/');
   const pageUrl = '/' + rel.replace(/index\.html$/, '');
   const html = await readFile(page, 'utf8');
+
+  for (const href of extractLinks(html)) {
+    if (!linkTargets.has(href)) linkTargets.set(href, new Set());
+    linkTargets.get(href).add(pageUrl);
+  }
 
   for (const ref of extractRefs(html, pageUrl)) {
     // Special-case the base repo's exact failure so the message is unmistakable.
@@ -99,17 +130,36 @@ for (const page of pages) {
   }
 }
 
+// Each distinct destination is requested once, however many pages link to it.
+for (const [href, sources] of linkTargets) {
+  const res = await fetch(`http://localhost:${PORT}${href}`);
+  linksChecked++;
+  if (!res.ok) deadLinks.push({ href, status: res.status, sources: [...sources] });
+}
+
 server.close();
 
 console.log(`\nStatic export check`);
 console.log(`  pages:            ${pages.length}`);
 console.log(`  asset references: ${checked}`);
+console.log(`  internal links:   ${linksChecked} distinct destinations`);
 
 if (optimizerRefs.length > 0) {
   console.error(
     `\n  ${optimizerRefs.length} reference(s) point at the image optimizer (/_next/image).`
   );
   console.error(`  There is no optimizer on a static host. Set images.unoptimized in next.config.`);
+}
+
+if (deadLinks.length > 0) {
+  console.error(`\n  ${deadLinks.length} DEAD internal link(s) — a visitor clicking these gets a 404:\n`);
+  for (const d of deadLinks.slice(0, 20)) {
+    const from = d.sources.slice(0, 3).join(', ');
+    const more = d.sources.length > 3 ? ` …and ${d.sources.length - 3} more pages` : '';
+    console.error(`    ${d.status}  ${d.href}\n          linked from ${from}${more}`);
+  }
+  console.error('');
+  process.exit(1);
 }
 
 if (failures.length > 0) {

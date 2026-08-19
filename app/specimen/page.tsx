@@ -23,8 +23,21 @@ export const metadata: Metadata = {
  * than not having one, because it is consulted and believed.
  */
 
-const RAMPS = ['green', 'gold', 'noir', 'sand'] as const;
-const STEPS = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950] as const;
+const BASE_STEPS = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900] as const;
+
+/**
+ * Steps per ramp, mirroring scripts/palette.mjs. Only green and noir carry a 950
+ * — green because the brief pins a second dark anchor, noir because a premium
+ * ground needs somewhere to go below 900. Rendering a uniform 50–950 grid across
+ * every ramp, which is what this page did first, draws two empty swatches and
+ * reads as a broken token rather than a ramp that simply ends at 900.
+ */
+const RAMPS = [
+  { name: 'green', steps: [...BASE_STEPS, 950] },
+  { name: 'gold', steps: [...BASE_STEPS] },
+  { name: 'noir', steps: [...BASE_STEPS, 950] },
+  { name: 'sand', steps: [...BASE_STEPS] },
+] as const;
 
 const TYPE_STEPS = [
   { name: 'display-xl', cls: 'text-display-xl font-serif', sample: 'Umrah, done properly' },
@@ -106,14 +119,14 @@ export default function SpecimenPage() {
       >
         <div className="flex flex-col gap-6">
           {RAMPS.map((ramp) => (
-            <div key={ramp} className="flex flex-col gap-2">
-              <h3 className="text-body font-medium">{ramp}</h3>
+            <div key={ramp.name} className="flex flex-col gap-2">
+              <h3 className="text-body font-medium">{ramp.name}</h3>
               <div className="flex flex-wrap gap-1">
-                {STEPS.map((step) => (
+                {ramp.steps.map((step) => (
                   <div key={step} className="flex flex-col items-center gap-1">
                     <div
                       className="h-14 w-14 rounded-card border border-border"
-                      style={{ background: `var(--color-${ramp}-${step})` }}
+                      style={{ background: `var(--color-${ramp.name}-${step})` }}
                     />
                     <span className="text-body-sm text-text-muted">{step}</span>
                   </div>

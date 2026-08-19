@@ -6,7 +6,13 @@
  *   gold-500  #A88146   (OKLCH L 62.8% C 0.091 H 76)
  */
 
-@theme {
+/* `static` matters: Tailwind 4 tree-shakes @theme variables that no utility
+ * references, which silently drops most of these ramps from the built CSS. The
+ * site itself survived that because it uses utilities, but any var(--color-*)
+ * reference — inline styles, the specimen sheet, future one-off usage — resolved
+ * to nothing. A design system has to publish its whole scale, not the subset
+ * that happened to be used this week. */
+@theme static {
   --color-green-50: #EEF9F3;
   --color-green-100: #DAF1E6;
   --color-green-200: #BCE4D1;
@@ -64,13 +70,14 @@
   --color-border-strong: var(--color-sand-300);
 
   --color-text: var(--color-ink);
-  --color-text-muted: var(--color-sand-600);
+  /* Derived, not sand-600: that step fails AA on the sunk surface. */
+  --color-text-muted: #706B65;
   --color-heading: var(--color-green-900);
   --color-link: var(--color-green-700);
 
   /* Gold as TEXT on cream must be this value — the brand gold #A88146 measures
    * 3.36:1 there and fails AA. */
-  --color-gold-text: #8F692E;
+  --color-gold-text: #8B6529;
   /* Gold as a RULE, border, icon stroke or large numeral — never small text. */
   --color-gold-line: var(--color-gold-500);
 

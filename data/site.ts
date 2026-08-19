@@ -102,30 +102,53 @@ export const site = {
  * "umrah packages from manchester". Visa is ours, and it is the one page in this
  * list a competitor does not have.
  */
-export const navLinks = [
-  { href: '/packages/', label: 'Umrah Packages' },
-  { href: '/monthly-packages/', label: 'Monthly Packages' },
-  { href: '/city-packages/', label: 'City Packages' },
-  { href: '/ramadan-umrah-packages/', label: 'Ramadan Packages' },
-  { href: '/visa/', label: 'Visas' },
+/**
+ * `ready: false` means the route is part of the target information architecture
+ * but has not been built yet, so it is filtered out of every rendered menu.
+ *
+ * The alternative — adding links as pages land — loses the record of what the
+ * navigation is meant to become. The alternative to *that* is what actually
+ * happened here: the full list shipped, four routes did not exist, and every
+ * page quietly 404'd on prefetch while the export check reported success,
+ * because it only verifies asset URLs and not `<a href>` targets. Both holes are
+ * now closed — see `assertInternalLinks` in scripts/verify-export.mjs.
+ *
+ * Flip these to `true` as Chunks 6, 7 and 8 land.
+ */
+export const allNavLinks = [
+  { href: '/packages/', label: 'Umrah Packages', ready: true },
+  { href: '/monthly-packages/', label: 'Monthly Packages', ready: false },
+  { href: '/city-packages/', label: 'City Packages', ready: false },
+  { href: '/ramadan-umrah-packages/', label: 'Ramadan Packages', ready: false },
+  { href: '/visa/', label: 'Visas', ready: false },
 ] as const;
+
+export const navLinks = allNavLinks.filter((l) => l.ready);
 
 /** Secondary nav — present in the footer and the mobile drawer, not the top bar. */
-export const secondaryNavLinks = [
-  { href: '/about/', label: 'About Us' },
-  { href: '/blog/', label: 'Blog' },
-  { href: '/faq/', label: 'FAQ' },
-  { href: '/contact/', label: 'Contact Us' },
+export const allSecondaryNavLinks = [
+  { href: '/about/', label: 'About Us', ready: true },
+  { href: '/blog/', label: 'Blog', ready: false },
+  { href: '/faq/', label: 'FAQ', ready: true },
+  { href: '/contact/', label: 'Contact Us', ready: true },
 ] as const;
 
-/** Legal and assurance pages. UK travel selling carries real disclosure duties. */
-export const legalNavLinks = [
-  { href: '/terms-and-conditions/', label: 'Terms and Conditions' },
-  { href: '/privacy-policy/', label: 'Privacy Policy' },
-  { href: '/travel-insurance/', label: 'Travel Insurance' },
-  { href: '/payment-security/', label: 'Payment Security' },
-  { href: '/our-responsibility/', label: 'Our Responsibility' },
+export const secondaryNavLinks = allSecondaryNavLinks.filter((l) => l.ready);
+
+/**
+ * Legal and assurance pages. UK travel selling carries real disclosure duties,
+ * so these are not optional — but none are built yet (Chunk 9), and a link to a
+ * missing Terms page is worse than no link at all.
+ */
+export const allLegalNavLinks = [
+  { href: '/terms-and-conditions/', label: 'Terms and Conditions', ready: false },
+  { href: '/privacy-policy/', label: 'Privacy Policy', ready: false },
+  { href: '/travel-insurance/', label: 'Travel Insurance', ready: false },
+  { href: '/payment-security/', label: 'Payment Security', ready: false },
+  { href: '/our-responsibility/', label: 'Our Responsibility', ready: false },
 ] as const;
+
+export const legalNavLinks = allLegalNavLinks.filter((l) => l.ready);
 
 /** Steps shown in the "how booking works" section on the home page. */
 export const bookingSteps = [
