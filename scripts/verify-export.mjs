@@ -22,7 +22,7 @@ import { serveStatic } from './static-server.mjs';
 
 const ROOT = join(fileURLToPath(new URL('.', import.meta.url)), '..');
 const OUT = join(ROOT, 'out');
-const PORT = 4319;
+
 
 async function walk(dir) {
   const found = [];
@@ -97,7 +97,8 @@ function extractLinks(html) {
   return links;
 }
 
-const server = await serveStatic({ root: OUT, port: PORT });
+const server = await serveStatic({ root: OUT });
+const PORT = server.address().port;
 
 const files = await walk(OUT);
 const pages = files.filter((f) => f.endsWith('.html'));

@@ -319,7 +319,7 @@ carries a "checked on" date.
 
 ---
 
-### Chunk 8 — Blog · ~2 days
+### Chunk 8 — Blog · ~2 days · **DONE 20 Aug 2026, with one caveat**
 
 12 articles matching their topic map — Umrah cost from the UK, visa cost, step-by-step
 guide, Hajj vs Umrah, how long Umrah takes, what a package includes, Ramadan explained.
@@ -329,6 +329,29 @@ guide, Hajj vs Umrah, how long Umrah takes, what a package includes, Ramadan exp
   to be genuinely better — more specific, better structured, honestly sourced.
 
 **Done when:** each post is substantive and internally links to the relevant packages.
+
+**Delivered:** all 12 articles, the index, `Article` JSON-LD, computed reading time,
+related posts, and a contents list built from the headings so it cannot drift from the
+article. Content is typed blocks rather than MDX — no extra build dependency, and an
+article cannot produce invalid markup.
+
+**The caveat, stated plainly.** Measured body length after building:
+
+| Article | Words |
+|---|---|
+| `umrah-cost-from-uk` | 1,154 |
+| `umrah-visa-cost-from-uk` | 949 |
+| the other ten | 268–571 |
+
+The two commercial articles were expanded to competitive depth because those queries are
+complex and are where the money is. The remaining ten are specific, correctly sourced and
+well structured, but they are **short** — and the criterion above says "genuinely better"
+than an established competitor, which at 300 words they are not yet for the broader
+queries.
+
+They are not padding candidates. What they need is more of what the two long ones have:
+worked examples, the mistakes people actually make, and figures drawn from the catalogue.
+Roughly a day's work, and it is real remaining scope rather than polish.
 
 ---
 

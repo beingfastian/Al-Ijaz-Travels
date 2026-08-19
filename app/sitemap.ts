@@ -4,6 +4,7 @@ import { site } from '@/data/site';
 import { tiers } from '@/data/tiers';
 import { months } from '@/data/months';
 import { airports } from '@/data/airports';
+import { articles } from '@/data/blog';
 import { cityHref, monthHref, packageHref, tierHref } from '@/lib/routes';
 
 /**
@@ -21,6 +22,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/city-packages',
     '/ramadan-umrah-packages',
     '/visa',
+    '/blog',
     '/about',
     '/faq',
     '/contact',
@@ -47,6 +49,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: `${site.url}${cityHref(a.slug)}`,
       changeFrequency: 'monthly' as const,
       priority: 0.8,
+    })),
+    ...articles.map((a) => ({
+      url: `${site.url}/blog/${a.slug}/`,
+      changeFrequency: 'monthly' as const,
+      priority: 0.7,
     })),
     ...tiers.map((t) => ({
       url: `${site.url}${tierHref(t.tier)}`,

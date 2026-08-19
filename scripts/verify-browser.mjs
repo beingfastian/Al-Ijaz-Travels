@@ -33,7 +33,7 @@ import { serveStatic } from './static-server.mjs';
 const ROOT = join(fileURLToPath(new URL('.', import.meta.url)), '..');
 const OUT = join(ROOT, 'out');
 const SHOTS = join(ROOT, 'screenshots');
-const PORT = 4321;
+
 
 /** One page per template. Checking all 206 would be slow and tell us no more. */
 const PAGES = [
@@ -49,6 +49,8 @@ const PAGES = [
   { path: '/city-packages/newcastle-umrah-packages/', name: 'city-connecting' },
   { path: '/ramadan-umrah-packages/', name: 'ramadan' },
   { path: '/visa/', name: 'visa' },
+  { path: '/blog/', name: 'blog-index' },
+  { path: '/blog/umrah-cost-from-uk/', name: 'blog-article' },
   { path: '/quote/', name: 'quote' },
   { path: '/about/', name: 'about' },
   { path: '/contact/', name: 'contact' },
@@ -115,7 +117,8 @@ async function runAxe(page) {
 await rm(SHOTS, { recursive: true, force: true });
 await mkdir(SHOTS, { recursive: true });
 
-const server = await serveStatic({ root: OUT, port: PORT });
+const server = await serveStatic({ root: OUT });
+const PORT = server.address().port;
 const browser = await chromium.launch({ channel: 'chrome', headless: true });
 const base = `http://localhost:${PORT}`;
 

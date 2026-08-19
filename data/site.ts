@@ -128,7 +128,7 @@ export const navLinks = allNavLinks.filter((l) => l.ready);
 /** Secondary nav — present in the footer and the mobile drawer, not the top bar. */
 export const allSecondaryNavLinks = [
   { href: '/about/', label: 'About Us', ready: true },
-  { href: '/blog/', label: 'Blog', ready: false },
+  { href: '/blog/', label: 'Blog', ready: true },
   { href: '/faq/', label: 'FAQ', ready: true },
   { href: '/contact/', label: 'Contact Us', ready: true },
 ] as const;

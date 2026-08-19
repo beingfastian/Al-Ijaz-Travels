@@ -56,10 +56,15 @@ async function resolveFile(root, urlPath) {
 /**
  * Start the server and resolve once it is listening.
  *
- * @param {{ root: string, port: number, onRequest?: (info: { path: string, status: number }) => void }} options
+ * Pass `port: 0` to bind an ephemeral port, then read `server.address().port`.
+ * That is the default for the automated checks: a fixed port fails the whole gate
+ * if a previous run has not released it yet, and a gate that fails intermittently
+ * teaches people to re-run rather than investigate.
+ *
+ * @param {{ root: string, port?: number, onRequest?: (info: { path: string, status: number }) => void }} options
  * @returns {Promise<import('node:http').Server>}
  */
-export function serveStatic({ root, port, onRequest }) {
+export function serveStatic({ root, port = 0, onRequest }) {
   return new Promise((resolve, reject) => {
     const server = createServer(async (req, res) => {
       const path = decodeURIComponent((req.url ?? '/').split('?')[0]);
