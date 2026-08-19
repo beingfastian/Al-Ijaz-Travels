@@ -58,10 +58,11 @@ pairing regresses.
 - **Filters live in the URL**, not a store — so a consultant can send a client a
   link to a filtered listing and it survives a refresh. Bounds are derived from the
   catalogue; Tripix hardcodes `[0, 500]` USD, which matches no PKR package.
-  (Caveat, measured: the listing reads `useSearchParams`, so its *prerendered* HTML
-  is the Suspense fallback and contains no package links at all. Detail pages each
-  prerender fully, so packages stay indexable — but the listing itself is not yet
-  crawlable. See `GAPS.md` 2.1c.)
+- **The listing prerenders its catalogue.** Because the listing reads
+  `useSearchParams`, the Suspense *fallback* is what gets exported — so the fallback
+  is the real, default-sorted catalogue rather than a skeleton. Without that,
+  `out/packages/index.html` shipped 0 package links. It now carries all 6, and the
+  order matches the hydrated default view because both call the same `applyFilters`.
 - **Package pages are real routes** (`/packages/[slug]/`) with
   `generateStaticParams`, not `?id=`. Each gets its own metadata and `TouristTrip`
   JSON-LD.
@@ -141,8 +142,6 @@ phase notes but not the tree (`ComparisonTable`, `SeasonalBanner`). Layering is 
 
 ## Not yet built
 
-- A crawlable listing page. Its prerendered HTML is the Suspense fallback, so it
-  carries **0** package links today (home carries 3). `GAPS.md` 2.1c.
 - A photography slot on detail pages — `PackageCard` is currently the only consumer
   of `images[]`, so the page where someone decides has no photograph on it.
 - Seasonal landing pages driven by `departureMonths` (the data supports it; the

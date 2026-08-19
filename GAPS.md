@@ -158,7 +158,7 @@ code too, and nothing was checking *it*.
 
 ### 2.1c The prerendered listing page contains no package links
 
-**Severity: high · SEO · open — found 19 Aug 2026**
+**Status: RESOLVED 19 Aug 2026** · was: high · SEO
 
 `PackageListing` is a client component (it reads filters from `useSearchParams`), so
 `app/packages/page.tsx` wraps it in `<Suspense>`. Under `output: 'export'` that means the
@@ -182,6 +182,25 @@ skeleton. It is prerendered, so crawlers and no-JS visitors get all six cards, a
 client component takes over with filters applied on hydration. Roughly the same work as
 the skeleton it replaces — but it is a visible change to what appears during load, so it
 is worth deciding deliberately rather than folding into another task.
+
+**Done —** `ListingFallback` in `app/packages/page.tsx`.
+
+| | before | after |
+|---|---|---|
+| package links in `out/packages/index.html` | **0** | **6** |
+
+- The fallback calls the same `applyFilters(packages, DEFAULT_FILTERS)` the client
+  calls, so "unfiltered" means the same thing on both sides of hydration. Verified:
+  the prerendered order is 285k → 335k → 425k → 465k → 745k → 1,150k, which is the
+  client's default `price-asc` exactly. The handover is a swap of equivalent markup,
+  not a reshuffle.
+- Real card content ships, not just links — names, nights split, price, distance.
+- The filter column stays a placeholder on purpose. `FilterPanel` is a client
+  component, and a filter UI that cannot filter is worse than none; it holds the
+  grid column and announces nothing (`aria-hidden`).
+
+Every package now has a static inbound link from the page a crawler reaches first
+from the nav. Previously three of six had none anywhere on the site.
 
 ### 2.1d Detail pages have no photography slot
 
@@ -295,12 +314,12 @@ Recorded so this register is not mistaken for a list of everything outstanding.
    No plan-level code gaps remain.
 3. ~~**2.1** image pipeline~~ — **done 19 Aug 2026**, along with **2.1b**, the verifier
    blind spot it exposed.
-4. **2.1c** the listing page prerendering no package links — the highest-value item still
-   open, and it is a small change. ← next
+4. ~~**2.1c** the listing page prerendering no package links~~ — **done 19 Aug 2026.**
 5. **3** client content — #1 and #2 are what make the site non-functional in production,
-   rather than merely incomplete.
+   rather than merely incomplete. ← next, and it is not mine to do
 6. **2.1d** detail-page photography slot, then **2.2** seasonal pages.
-7. **2.3** Lighthouse and axe, once real images and copy are in, since both change the numbers.
+7. **2.3** Lighthouse and axe, once real images and copy are in, since both change the
+   numbers — running them before the content lands means running them twice.
 
 ## Still unverified after the 19 Aug fixes
 
