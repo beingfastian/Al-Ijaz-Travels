@@ -15,7 +15,7 @@ import {
  *
  * Filter bounds are always DERIVED from the data (see `filterBounds`), never
  * hardcoded. The Tripix reference hardcodes `priceRange: [0, 500]` in USD, which
- * against PKR-denominated packages silently matches nothing at all.
+ * against GBP-denominated packages silently matches nothing at all.
  */
 
 const SORT_KEYS: readonly SortKey[] = [
@@ -30,17 +30,17 @@ const VALID_TIERS: readonly Tier[] = [3, 4, 5];
 /** Real min/max across the catalogue, for slider ends and sanity checks. */
 export function filterBounds(packages: Package[]) {
   if (packages.length === 0) {
-    return { minPricePkr: 0, maxPricePkr: 0, minNights: 0, maxNights: 0, maxDistanceM: 0 };
+    return { minPriceGbp: 0, maxPriceGbp: 0, minNights: 0, maxNights: 0, maxDistanceM: 0 };
   }
-  const prices = packages.map((p) => p.price.pkr);
+  const prices = packages.map((p) => p.price.gbp);
   const nights = packages.map(totalNights);
   const distances = packages
     .map(nearestHaramDistanceM)
     .filter((d): d is number => d !== null);
 
   return {
-    minPricePkr: Math.min(...prices),
-    maxPricePkr: Math.max(...prices),
+    minPriceGbp: Math.min(...prices),
+    maxPriceGbp: Math.max(...prices),
     minNights: Math.min(...nights),
     maxNights: Math.max(...nights),
     maxDistanceM: distances.length > 0 ? Math.max(...distances) : 0,
@@ -54,7 +54,7 @@ export function matchesFilters(pkg: Package, f: PackageFilters): boolean {
   if (f.minNights !== null && nights < f.minNights) return false;
   if (f.maxNights !== null && nights > f.maxNights) return false;
 
-  if (f.maxPricePkr !== null && pkg.price.pkr > f.maxPricePkr) return false;
+  if (f.maxPriceGbp !== null && pkg.price.gbp > f.maxPriceGbp) return false;
 
   if (f.maxDistanceM !== null) {
     const d = nearestHaramDistanceM(pkg);
@@ -70,9 +70,9 @@ export function sortPackages(packages: Package[], sort: SortKey): Package[] {
   const out = [...packages];
   switch (sort) {
     case 'price-asc':
-      return out.sort((a, b) => a.price.pkr - b.price.pkr);
+      return out.sort((a, b) => a.price.gbp - b.price.gbp);
     case 'price-desc':
-      return out.sort((a, b) => b.price.pkr - a.price.pkr);
+      return out.sort((a, b) => b.price.gbp - a.price.gbp);
     case 'nights-desc':
       return out.sort((a, b) => totalNights(b) - totalNights(a));
     case 'distance-asc':
@@ -122,7 +122,7 @@ export function filtersFromSearchParams(params: URLSearchParams): PackageFilters
     tiers: [...new Set(tiers)].sort((a, b) => a - b),
     minNights: parsePositiveInt(params.get('minNights')),
     maxNights: parsePositiveInt(params.get('maxNights')),
-    maxPricePkr: parsePositiveInt(params.get('maxPrice')),
+    maxPriceGbp: parsePositiveInt(params.get('maxPrice')),
     maxDistanceM: parsePositiveInt(params.get('maxDistance')),
     month: month !== null && month.trim() !== '' ? month : null,
     sort,
@@ -138,7 +138,7 @@ export function searchParamsFromFilters(f: PackageFilters): string {
   if (f.tiers.length > 0) params.set('tier', f.tiers.join(','));
   if (f.minNights !== null) params.set('minNights', String(f.minNights));
   if (f.maxNights !== null) params.set('maxNights', String(f.maxNights));
-  if (f.maxPricePkr !== null) params.set('maxPrice', String(f.maxPricePkr));
+  if (f.maxPriceGbp !== null) params.set('maxPrice', String(f.maxPriceGbp));
   if (f.maxDistanceM !== null) params.set('maxDistance', String(f.maxDistanceM));
   if (f.month !== null) params.set('month', f.month);
   if (f.sort !== DEFAULT_FILTERS.sort) params.set('sort', f.sort);
@@ -151,7 +151,7 @@ export function isDefaultFilters(f: PackageFilters): boolean {
     f.tiers.length === 0 &&
     f.minNights === null &&
     f.maxNights === null &&
-    f.maxPricePkr === null &&
+    f.maxPriceGbp === null &&
     f.maxDistanceM === null &&
     f.month === null
   );

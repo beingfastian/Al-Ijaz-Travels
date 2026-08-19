@@ -19,12 +19,14 @@ function pkg(over: Partial<Package> & { slug: string }): Package {
     summary: '',
     tier: 4,
     nights: { makkah: 4, madinah: 3 },
-    price: { pkr: 300_000, perPerson: true, sharing: 'quad' },
+    price: { gbp: 300_000, perPerson: true, sharing: 'quad' },
     hotels: [{ city: 'makkah', name: 'H', stars: 4, distanceToHaramM: 500 }],
     itinerary: [],
     inclusions: [],
     exclusions: [],
-    departureMonths: ['2027-02'],
+    departureMonths: ['february'],
+    departures: ['LHR', 'MAN'],
+    atolProtected: false,
     images: [],
     ...over,
   };
@@ -39,7 +41,7 @@ const CATALOGUE: Package[] = [
   pkg({
     slug: 'cheap-far',
     tier: 3,
-    price: { pkr: 250_000, perPerson: true, sharing: 'quad' },
+    price: { gbp: 250_000, perPerson: true, sharing: 'quad' },
     hotels: [{ city: 'makkah', name: 'Far', stars: 3, distanceToHaramM: 1400 }],
     nights: { makkah: 6, madinah: 4 },
     departureMonths: ['2027-02', '2027-04'],
@@ -47,7 +49,7 @@ const CATALOGUE: Package[] = [
   pkg({
     slug: 'mid-close',
     tier: 4,
-    price: { pkr: 465_000, perPerson: true, sharing: 'triple' },
+    price: { gbp: 465_000, perPerson: true, sharing: 'triple' },
     hotels: [{ city: 'makkah', name: 'Near', stars: 4, distanceToHaramM: 300 }],
     nights: { makkah: 8, madinah: 6 },
     departureMonths: ['2027-02'],
@@ -55,7 +57,7 @@ const CATALOGUE: Package[] = [
   pkg({
     slug: 'premium-closest',
     tier: 5,
-    price: { pkr: 745_000, perPerson: true, sharing: 'double' },
+    price: { gbp: 745_000, perPerson: true, sharing: 'double' },
     hotels: [{ city: 'makkah', name: 'Closest', stars: 5, distanceToHaramM: 120 }],
     nights: { makkah: 6, madinah: 4 },
     departureMonths: ['ramadan-2027'],
@@ -64,8 +66,8 @@ const CATALOGUE: Package[] = [
 
 test('bounds are derived from the catalogue, not hardcoded', () => {
   const b = filterBounds(CATALOGUE);
-  assert.equal(b.minPricePkr, 250_000);
-  assert.equal(b.maxPricePkr, 745_000);
+  assert.equal(b.minPriceGbp, 250_000);
+  assert.equal(b.maxPriceGbp, 745_000);
   assert.equal(b.minNights, 10);
   assert.equal(b.maxNights, 14);
   assert.equal(b.maxDistanceM, 1400);
@@ -73,9 +75,9 @@ test('bounds are derived from the catalogue, not hardcoded', () => {
 
 test('empty catalogue yields zeroed bounds rather than Infinity', () => {
   // Math.min() of an empty spread returns Infinity, which would render as
-  // "Up to PKR Infinity" on the slider label.
+  // "Up to £Infinity" on the slider label.
   const b = filterBounds([]);
-  assert.equal(b.maxPricePkr, 0);
+  assert.equal(b.maxPriceGbp, 0);
   assert.equal(b.minNights, 0);
 });
 
@@ -92,8 +94,8 @@ test('tier filter is a union, not an intersection', () => {
 });
 
 test('price ceiling is inclusive', () => {
-  assert.ok(matchesFilters(CATALOGUE[1]!, filters({ maxPricePkr: 465_000 })));
-  assert.ok(!matchesFilters(CATALOGUE[1]!, filters({ maxPricePkr: 464_999 })));
+  assert.ok(matchesFilters(CATALOGUE[1]!, filters({ maxPriceGbp: 465_000 })));
+  assert.ok(!matchesFilters(CATALOGUE[1]!, filters({ maxPriceGbp: 464_999 })));
 });
 
 test('distance filter uses the nearest hotel across both cities', () => {
@@ -150,7 +152,7 @@ test('filters survive a round trip through the query string', () => {
   const original = filters({
     tiers: [4, 5],
     minNights: 7,
-    maxPricePkr: 500_000,
+    maxPriceGbp: 500_000,
     maxDistanceM: 400,
     month: '2027-02',
     sort: 'distance-asc',
@@ -168,7 +170,7 @@ test('malformed URL params degrade to defaults instead of throwing', () => {
     new URLSearchParams('tier=9,abc&maxPrice=-5&minNights=three&sort=nonsense&month=')
   );
   assert.deepEqual(restored.tiers, []);
-  assert.equal(restored.maxPricePkr, null);
+  assert.equal(restored.maxPriceGbp, null);
   assert.equal(restored.minNights, null);
   assert.equal(restored.month, null);
   assert.equal(restored.sort, DEFAULT_FILTERS.sort);

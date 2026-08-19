@@ -3,7 +3,7 @@ import { Photo } from '@/components/ui/Photo';
 import { Star, Footprints } from 'lucide-react';
 import type { Package } from '@/lib/types';
 import { nearestHaramDistanceM, totalNights } from '@/lib/types';
-import { formatDistance, formatNights, formatPkrCompact, formatSharing } from '@/lib/format';
+import { formatDistance, formatNights, formatPriceFrom, formatSharing } from '@/lib/format';
 
 /**
  * Card leads on the two things that actually decide an Umrah booking: price and
@@ -67,7 +67,7 @@ export function PackageCard({ pkg }: { pkg: Package }) {
         <div className="mt-auto flex items-end justify-between gap-4 border-t border-border pt-4">
           <div className="flex flex-col">
             <span className="font-serif text-subheading text-green-900">
-              {formatPkrCompact(pkg.price.pkr)}
+              {formatPriceFrom(pkg.price.gbp)}
             </span>
             <span className="text-body-sm text-text-muted">
               per person, {formatSharing(pkg.price.sharing)}

@@ -3,7 +3,7 @@
 import { SlidersHorizontal, X } from 'lucide-react';
 import type { PackageFilters, Tier } from '@/lib/types';
 import type { filterBounds } from '@/lib/filter';
-import { formatMonthKey, formatPkrCompact } from '@/lib/format';
+import { formatMonthKey, formatGbp } from '@/lib/format';
 
 /**
  * Filter controls for the package listing.
@@ -14,7 +14,7 @@ import { formatMonthKey, formatPkrCompact } from '@/lib/format';
  * can be reused by a seasonal landing page later.
  *
  * Every bound is passed in, derived from the catalogue. Nothing here is a magic
- * number; the Tripix reference hardcodes a USD price range that matches no PKR
+ * number; the Tripix reference hardcodes a [0,500] USD range that matches no real
  * package at all.
  */
 
@@ -89,20 +89,20 @@ export function FilterPanel({
         <input
           id="maxPrice"
           type="range"
-          min={bounds.minPricePkr}
-          max={bounds.maxPricePkr}
+          min={bounds.minPriceGbp}
+          max={bounds.maxPriceGbp}
           step={5000}
-          value={filters.maxPricePkr ?? bounds.maxPricePkr}
+          value={filters.maxPriceGbp ?? bounds.maxPriceGbp}
           onChange={(e) => {
             const value = Number(e.target.value);
             // At the top of the range the filter is off, not "everything under max" —
             // so the URL stays clean and the "clear all" control disappears correctly.
-            onChange({ maxPricePkr: value >= bounds.maxPricePkr ? null : value });
+            onChange({ maxPriceGbp: value >= bounds.maxPriceGbp ? null : value });
           }}
           className="accent-green-700"
         />
         <p className="text-body-sm text-text-muted">
-          Up to {formatPkrCompact(filters.maxPricePkr ?? bounds.maxPricePkr)}
+          Up to {formatGbp(filters.maxPriceGbp ?? bounds.maxPriceGbp)}
         </p>
       </div>
 

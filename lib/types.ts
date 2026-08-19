@@ -5,6 +5,27 @@ import type { ImageKey } from '../data/images.generated.ts';
 /** Star tier of a package. Drives the primary filter facet. */
 export type Tier = 3 | 4 | 5;
 
+/** The six UK departure points. Defined here so data/ depends on lib/, not the reverse. */
+export type AirportCode = 'LHR' | 'MAN' | 'BHX' | 'NCL' | 'GLA' | 'EDI';
+
+/**
+ * Lowercase English month name — the segment Al Habib uses in its URLs
+ * (`10-nights-5-star-january-umrah-package`), so it is the segment we use too.
+ */
+export type MonthKey =
+  | 'january'
+  | 'february'
+  | 'march'
+  | 'april'
+  | 'may'
+  | 'june'
+  | 'july'
+  | 'august'
+  | 'september'
+  | 'october'
+  | 'november'
+  | 'december';
+
 export type HolyCity = 'makkah' | 'madinah';
 
 /** Room occupancy the quoted price assumes. Umrah pricing is always per-person. */
@@ -53,7 +74,7 @@ export interface Package {
   tier: Tier;
   nights: { makkah: number; madinah: number };
   price: {
-    pkr: number;
+    gbp: number;
     perPerson: true;
     sharing: Sharing;
   };
@@ -66,6 +87,24 @@ export interface Package {
    * signal, not a risk.
    */
   exclusions: string[];
+  /**
+   * Set on a month variant, absent on the evergreen base package. This is the
+   * axis that turns 15 packages into 195, and it is what makes a month page a
+   * page rather than a filtered view.
+   */
+  month?: MonthKey;
+  /**
+   * Which of the six UK airports this package is bookable from. Modelled per
+   * package because a 21-night 5-star departure will not run from every regional
+   * airport, and discovering that at quote stage is the complaint we are trying
+   * to design out.
+   */
+  departures: AirportCode[];
+  /**
+   * Whether this specific departure is ATOL protected. Never hardcode `true` —
+   * it is a legal claim, and it is read from data/site.ts holding a real number.
+   */
+  atolProtected: boolean;
   /** Month keys, e.g. 'ramadan-2027'. Drives seasonal landing pages and filtering. */
   departureMonths: string[];
   images: PackageImage[];
@@ -97,8 +136,8 @@ export interface PackageFilters {
   /** Inclusive bounds on total nights. */
   minNights: number | null;
   maxNights: number | null;
-  /** Inclusive upper bound on per-person price in PKR. */
-  maxPricePkr: number | null;
+  /** Inclusive upper bound on per-person price in GBP. */
+  maxPriceGbp: number | null;
   /** Inclusive upper bound on walking distance to the nearest Haram, in metres. */
   maxDistanceM: number | null;
   month: string | null;
@@ -109,7 +148,7 @@ export const DEFAULT_FILTERS: PackageFilters = {
   tiers: [],
   minNights: null,
   maxNights: null,
-  maxPricePkr: null,
+  maxPriceGbp: null,
   maxDistanceM: null,
   month: null,
   sort: 'price-asc',

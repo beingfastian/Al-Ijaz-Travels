@@ -1,6 +1,6 @@
 import type { Package } from '@/lib/types';
 import { nearestHaramDistanceM, totalNights } from '@/lib/types';
-import { formatDistance, formatMonthKey, formatPkr, formatSharing } from '@/lib/format';
+import { formatDistance, formatMonthKey, formatGbp, formatSharing } from '@/lib/format';
 import { Button } from '@/components/ui/Button';
 import { whatsappUrl } from '@/lib/whatsapp';
 import { site } from '@/data/site';
@@ -20,7 +20,7 @@ export function PriceRail({ pkg }: { pkg: Package }) {
   return (
     <div className="flex flex-col gap-5 rounded-panel border border-border bg-surface p-6 shadow-card">
       <div className="flex flex-col gap-1">
-        <span className="font-serif text-heading text-green-900">{formatPkr(pkg.price.pkr)}</span>
+        <span className="font-serif text-heading text-green-900">{formatGbp(pkg.price.gbp)}</span>
         <span className="text-body-sm text-text-muted">
           per person, {formatSharing(pkg.price.sharing)}
         </span>

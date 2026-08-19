@@ -2,31 +2,32 @@ import type { Package, Sharing } from './types.ts';
 import { totalNights } from './types.ts';
 
 /**
- * Display formatting. Pakistani market, so prices are PKR and read in the
- * lakh-friendly grouping the en-PK locale produces.
+ * Display formatting. UK market, so prices are GBP in the en-GB locale.
+ *
+ * Umrah packages are quoted in whole pounds — `£1,095`, never `£1,095.00`. The
+ * pence are noise on a four-figure price and they make a card column ragged.
  */
 
-const PKR = new Intl.NumberFormat('en-PK', {
+const GBP = new Intl.NumberFormat('en-GB', {
   style: 'currency',
-  currency: 'PKR',
+  currency: 'GBP',
   maximumFractionDigits: 0,
 });
 
-export function formatPkr(amount: number): string {
-  return PKR.format(amount);
+export function formatGbp(amount: number): string {
+  return GBP.format(amount);
 }
 
 /**
- * Compact price for cards, where the full figure crowds the layout.
- * 385000 -> "3.85 lakh". Lakh is how this market actually talks about price.
+ * The headline price on a card.
+ *
+ * "from £1,095" is the honest framing: the figure is the lowest departure across
+ * the airports and dates this package runs, so a bare "£1,095" would read as a
+ * fixed price and generate the complaint at quote stage. Al Habib prints a bare
+ * number; stating the basis is the cheaper choice for us.
  */
-export function formatPkrCompact(amount: number): string {
-  if (amount >= 100_000) {
-    const lakh = amount / 100_000;
-    const text = lakh % 1 === 0 ? String(lakh) : lakh.toFixed(2).replace(/0$/, '');
-    return `PKR ${text} lakh`;
-  }
-  return PKR.format(amount);
+export function formatPriceFrom(amount: number): string {
+  return `from ${GBP.format(amount)}`;
 }
 
 /** "7 nights · 4 Makkah / 3 Madinah" */
@@ -67,7 +68,7 @@ export function formatMonthKey(key: string): string {
   if (numeric && numeric[1] && numeric[2]) {
     // Day 1 at UTC noon: avoids the month sliding backwards in negative offsets.
     const date = new Date(Date.UTC(Number(numeric[1]), Number(numeric[2]) - 1, 1, 12));
-    return date.toLocaleDateString('en-PK', { month: 'long', year: 'numeric', timeZone: 'UTC' });
+    return date.toLocaleDateString('en-GB', { month: 'long', year: 'numeric', timeZone: 'UTC' });
   }
   return key;
 }

@@ -168,7 +168,7 @@ Estimates assume the existing design system carries over — which it does.
 
 ---
 
-### Chunk 0 — Re-scope the foundation · ~0.5 day
+### Chunk 0 — Re-scope the foundation · ~0.5 day · **DONE 20 Aug 2026**
 
 Currency and market change before anything is built on top of them.
 
@@ -179,12 +179,19 @@ Currency and market change before anything is built on top of them.
   as "examples" would leak into a build.
 - `data/airports.ts` — the 6 departure points, with IATA codes and served cities.
 
-**Done when:** `npm run verify` is green with an empty catalogue and zero PKR references
-anywhere in `out/`.
+~~**Done when:** `npm run verify` is green with an empty catalogue.~~ **This criterion was
+wrong.** Next refuses an empty `generateStaticParams()` under `output: 'export'` — *"at
+least one route must be generated"* — so an empty catalogue is not a buildable state and
+Chunks 0 and 1 have to land together. Corrected and done.
+
+**Delivered:** `formatGbp` / `formatPriceFrom` (`£1,095`, no pence), `en-GB` throughout,
+`priceCurrency: 'GBP'`, `<html lang="en-GB">`, `data/airports.ts` with the six departure
+points, UK company and accreditation slots in `data/site.ts`, and the new three-tier
+navigation. The six PKR packages were deleted, not converted.
 
 ---
 
-### Chunk 1 — Content model and the generated matrix · ~1.5 days
+### Chunk 1 — Content model and the generated matrix · ~1.5 days · **DONE 20 Aug 2026**
 
 The heart of the rebuild. Everything downstream reads from this.
 
@@ -194,8 +201,28 @@ The heart of the rebuild. Everything downstream reads from this.
 - Canonical policy from 4.2 encoded in data, not scattered through templates
 - Unit tests in `lib/` for the generator, the canonical rules, and price bounds
 
-**Done when:** the matrix generates 194 packages, unit tests pass against the real
-dataset with no React involved, and every generated slug matches the URL shape in §2.
+**Done when:** the matrix generates the full set, unit tests pass with no React involved,
+and every generated slug matches the URL shape in §2. **All met.**
+
+**Count correction: 195, not 194.** Al Habib publishes 179 month variants because their
+October 5-star set is missing its 21-night page — that reads as an oversight, not a
+decision, and reproducing an accidental gap would be silly. We generate the complete
+3 × 5 × 12 = 180, plus 15 evergreen.
+
+**Delivered:** `data/tiers.ts`, `data/durations.ts`, `data/months.ts`, `lib/catalogue.ts`,
+and 15 unit tests in `lib/catalogue.test.ts`.
+
+Two things in there worth knowing:
+
+- **Pricing splits fixed from per-night cost.** A flight does not get cheaper on a shorter
+  trip, so a flat per-night model prices 7-night packages visibly wrong. There is a test
+  asserting 14 nights costs less than double 7 nights.
+- **`atolProtected` can never be `true` from the generator**, and a test enforces it. It
+  has to come from real accreditation data, because it is a legal claim.
+
+**Measured after this chunk:** 205 pages, 2,250 asset references all resolving, 41 unit
+tests, full `npm run verify` in **1m17s** — comfortably inside the 3-minute build budget
+set in Chunk 10.
 
 ---
 
@@ -348,17 +375,37 @@ document.
 
 ## 7. Open decisions
 
-| # | Question | My assumption if you do not answer |
+### Decided 20 Aug 2026
+
+| # | Question | **Decision** |
 |---|---|---|
 | **D1** | "Scotland" — Edinburgh or Aberdeen? | **Edinburgh** |
-| **D2** | All 179 month variants standalone, or canonicalised where thin? | **Canonicalise thin ones** (4.2) |
-| **D3** | 6 city pages or all 14 like Al Habib? | **6**, matching real departures |
-| **D4** | Do you hold ATOL / IATA? Numbers and artwork? | **Badge slot stays empty** |
-| **D5** | Blog: 12 posts now, or ship without and add later? | **Build in Chunk 8**, after the money pages |
-| **D6** | Real GBP prices, or my researched placeholders? | **Placeholders, clearly marked**, until you supply real ones |
-| **D7** | Company details — UK address, company number, VAT? | Blocks Chunk 9 |
+| **D2** | All 179 month variants standalone, or canonicalised where thin? | **All 179 standalone**, matching Al Habib exactly |
+| **D3** | 6 city pages or all 14? | **6**, matching real departures |
+| **D4** | ATOL / IATA held? | **Yes** — numbers and artwork to follow |
 
-D1 and D3 block Chunk 1. Everything else can wait until its chunk comes up.
+**On D2.** I recommended canonicalising the thin variants; the call went the other way,
+and that is the client's to make. Building all 179 as standalone indexable pages.
+
+Within that decision I will still push every month page as far from its siblings as the
+data allows — real seasonal pricing, Ramadan and Hajj windows, UK school-holiday overlap,
+Makkah weather and crowd levels. That improves the chosen approach rather than quietly
+reversing it, and it is the difference between 179 pages that earn their place and 179
+that look automated.
+
+**On D4.** Badge component, data slot and the Package Travel Regulations disclosures get
+built ready to switch on. Nothing renders until the real numbers and artwork arrive — a
+placeholder ATOL number is the one thing on this site that could draw a CAA enforcement
+letter, so the slot stays empty rather than filled with something plausible.
+
+### Still open
+
+| # | Question | Assumption until answered |
+|---|---|---|
+| **D5** | Blog: 12 posts now or later? | **Chunk 8**, after the money pages |
+| **D6** | Real GBP prices, or researched placeholders? | **Placeholders, clearly marked** |
+| **D7** | UK address, company number, VAT number? | Blocks Chunk 9 |
+| **D8** | WhatsApp number | Client supplying later |
 
 ---
 

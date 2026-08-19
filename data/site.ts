@@ -11,7 +11,7 @@ export const site = {
   /** Arabic wordmark from the logo. Rendered with lang="ar" so it gets the
    *  Naskh face and RTL direction — see the [lang='ar'] rule in globals.css. */
   nameArabic: 'الإعجاز',
-  tagline: 'Umrah, arranged with care',
+  tagline: 'Umrah from the UK, arranged with care',
 
   /**
    * Canonical origin. Read at build time, because a static export bakes absolute
@@ -33,14 +33,48 @@ export const site = {
       ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
       : 'https://example.invalid'),
 
+  /** UK market. Drives currency, date formatting and hreflang. */
+  locale: 'en-GB',
+  currency: 'GBP',
+
   contact: {
     // TODO(client): real WhatsApp business number in E.164 without the +.
+    // Client is supplying this separately — see PLAN-UK.md D8.
     whatsapp: '000000000000',
-    // TODO(client): real numbers and inbox.
-    phone: '+92 000 0000000',
+    // TODO(client): real UK numbers and inbox.
+    phone: '+44 000 000 0000',
     email: 'info@example.invalid',
-    // TODO(client): real office address.
-    address: 'Office address, City, Pakistan',
+    // TODO(client): real UK registered office address, including postcode.
+    address: 'Office address, City, United Kingdom',
+  },
+
+  /**
+   * UK company identity. Legally required on a trading website under the
+   * Companies Act and the E-Commerce Regulations — a UK travel site without a
+   * company number and registered address is non-compliant, not merely sparse.
+   *
+   * TODO(client): company number, VAT number, registered office. Blocks Chunk 9.
+   */
+  company: {
+    legalName: '',
+    companyNumber: '',
+    vatNumber: '',
+  },
+
+  /**
+   * ⚠ ACCREDITATION — LEGAL, NOT DECORATIVE.
+   *
+   * Selling flight-inclusive packages without an ATOL is a criminal offence under
+   * the Civil Aviation (ATOL) Regulations, and displaying an ATOL number you do
+   * not hold is separately actionable by the CAA. The client has confirmed these
+   * are held; nothing renders until the real numbers and artwork arrive.
+   *
+   * TODO(client): ATOL number, IATA number, and the official badge artwork.
+   * `TrustRow` and the footer render nothing while these are empty.
+   */
+  accreditation: {
+    atolNumber: '',
+    iataNumber: '',
   },
 
   /**
@@ -60,11 +94,37 @@ export const site = {
   },
 } as const;
 
+/**
+ * Primary navigation, matching the competitor's information architecture.
+ *
+ * Al Habib leads with the three package axes — tier, month, city — because that
+ * is genuinely how this audience searches: "5 star umrah", "ramadan umrah 2027",
+ * "umrah packages from manchester". Visa is ours, and it is the one page in this
+ * list a competitor does not have.
+ */
 export const navLinks = [
-  { href: '/packages/', label: 'Packages' },
-  { href: '/about/', label: 'About' },
+  { href: '/packages/', label: 'Umrah Packages' },
+  { href: '/monthly-packages/', label: 'Monthly Packages' },
+  { href: '/city-packages/', label: 'City Packages' },
+  { href: '/ramadan-umrah-packages/', label: 'Ramadan Packages' },
+  { href: '/visa/', label: 'Visas' },
+] as const;
+
+/** Secondary nav — present in the footer and the mobile drawer, not the top bar. */
+export const secondaryNavLinks = [
+  { href: '/about/', label: 'About Us' },
+  { href: '/blog/', label: 'Blog' },
   { href: '/faq/', label: 'FAQ' },
-  { href: '/contact/', label: 'Contact' },
+  { href: '/contact/', label: 'Contact Us' },
+] as const;
+
+/** Legal and assurance pages. UK travel selling carries real disclosure duties. */
+export const legalNavLinks = [
+  { href: '/terms-and-conditions/', label: 'Terms and Conditions' },
+  { href: '/privacy-policy/', label: 'Privacy Policy' },
+  { href: '/travel-insurance/', label: 'Travel Insurance' },
+  { href: '/payment-security/', label: 'Payment Security' },
+  { href: '/our-responsibility/', label: 'Our Responsibility' },
 ] as const;
 
 /** Steps shown in the "how booking works" section on the home page. */

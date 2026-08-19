@@ -61,8 +61,8 @@ export default async function PackageDetailPage({ params }: Props) {
     },
     offers: {
       '@type': 'Offer',
-      price: pkg.price.pkr,
-      priceCurrency: 'PKR',
+      price: pkg.price.gbp,
+      priceCurrency: 'GBP',
       availability: 'https://schema.org/InStock',
     },
     provider: { '@type': 'TravelAgency', name: site.name },
