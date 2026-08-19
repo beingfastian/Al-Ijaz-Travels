@@ -292,7 +292,7 @@ prerenders its catalogue (the `2.1c` fix, carried forward).
 
 ---
 
-### Chunk 6 — Monthly, city and Ramadan hubs · ~1.5 days
+### Chunk 6 — Monthly, city and Ramadan hubs · ~1.5 days · **DONE 20 Aug 2026**
 
 - 12 month pages with real seasonal content — pricing, weather, crowds, school holidays
 - 6 city pages, each naming its actual airport and routing honestly

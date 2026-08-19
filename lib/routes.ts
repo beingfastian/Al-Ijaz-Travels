@@ -38,6 +38,33 @@ export function listingHref(query?: Record<string, string | number | undefined>)
   return qs ? `/packages/?${qs}` : '/packages/';
 }
 
+/* ------------------------------------------------------------------- hubs */
+
+/**
+ * Hub slugs carry the `-umrah-packages` suffix because that is the URL shape the
+ * audience already searches for — "january umrah packages", "manchester umrah
+ * packages" — and it is what the competitor ranks on. The route segment is the
+ * whole slug, so these two helpers are the only place the suffix is written.
+ */
+export function monthHref(month: string): string {
+  return `/monthly-packages/${month}-umrah-packages/`;
+}
+
+export function cityHref(citySlug: string): string {
+  return `/city-packages/${citySlug}-umrah-packages/`;
+}
+
+/** Recover the key from a route segment, or null if the shape is wrong. */
+export function monthFromSegment(segment: string): string | null {
+  const match = /^([a-z]+)-umrah-packages$/.exec(segment);
+  return match?.[1] ?? null;
+}
+
+export function cityFromSegment(segment: string): string | null {
+  const match = /^([a-z-]+?)-umrah-packages$/.exec(segment);
+  return match?.[1] ?? null;
+}
+
 /** The quote flow, optionally carrying the package the visitor came from. */
 export function quoteHref(pkg?: Package): string {
   return pkg ? `/quote/?package=${pkg.slug}` : '/quote/';
