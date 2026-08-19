@@ -1,6 +1,6 @@
 import {
   DEFAULT_FILTERS,
-  nearestHaramDistanceM,
+  makkahHaramDistanceM,
   totalNights,
   type Package,
   type PackageFilters,
@@ -35,7 +35,7 @@ export function filterBounds(packages: Package[]) {
   const prices = packages.map((p) => p.price.gbp);
   const nights = packages.map(totalNights);
   const distances = packages
-    .map(nearestHaramDistanceM)
+    .map(makkahHaramDistanceM)
     .filter((d): d is number => d !== null);
 
   return {
@@ -57,7 +57,7 @@ export function matchesFilters(pkg: Package, f: PackageFilters): boolean {
   if (f.maxPriceGbp !== null && pkg.price.gbp > f.maxPriceGbp) return false;
 
   if (f.maxDistanceM !== null) {
-    const d = nearestHaramDistanceM(pkg);
+    const d = makkahHaramDistanceM(pkg);
     if (d === null || d > f.maxDistanceM) return false;
   }
 
@@ -78,8 +78,8 @@ export function sortPackages(packages: Package[], sort: SortKey): Package[] {
     case 'distance-asc':
       return out.sort((a, b) => {
         // Packages with no hotel data sort last rather than randomly.
-        const da = nearestHaramDistanceM(a) ?? Number.POSITIVE_INFINITY;
-        const db = nearestHaramDistanceM(b) ?? Number.POSITIVE_INFINITY;
+        const da = makkahHaramDistanceM(a) ?? Number.POSITIVE_INFINITY;
+        const db = makkahHaramDistanceM(b) ?? Number.POSITIVE_INFINITY;
         return da - db;
       });
   }

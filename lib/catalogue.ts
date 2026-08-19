@@ -1,4 +1,5 @@
 import type { AirportCode, MonthKey, Package, Tier } from './types.ts';
+import type { ImageKey } from '../data/images.generated.ts';
 import { tiers, type TierDefinition } from '../data/tiers.ts';
 import { baseDurations, monthDurations, type Duration } from '../data/durations.ts';
 import { months, type MonthDefinition } from '../data/months.ts';
@@ -39,6 +40,34 @@ const DIRECT_ONLY: AirportCode[] = ['LHR', 'MAN', 'BHX'];
 function departuresFor(nights: number): AirportCode[] {
   return nights >= 20 ? DIRECT_ONLY : ALL_AIRPORTS;
 }
+
+/**
+ * Photography, assigned by tier.
+ *
+ * Landscape crops only. The card slot is 16:10 and the detail hero is wider
+ * still, so a portrait source gets centre-cropped to a strip — which on
+ * `nabawi-green-dome` means losing the dome, the one thing the image is of.
+ * Those portraits earn their place elsewhere, not here.
+ *
+ * The pairing is deliberate rather than decorative: the tier a visitor is
+ * looking at should show them the view that tier actually buys. Five-star is
+ * the night Haram seen from the arcade — which is what 120 m from the gates
+ * looks like at Isha. Three-star is the courtyard from further out.
+ */
+const TIER_IMAGE: Record<Tier, { key: ImageKey; alt: string }> = {
+  5: {
+    key: 'haram-courtyard',
+    alt: 'The Masjid al-Haram courtyard seen from an upper level, the Kaaba at its centre',
+  },
+  4: {
+    key: 'nabawi-twilight',
+    alt: 'Masjid an-Nabawi in Madinah at twilight, its minarets lit against a pink sky',
+  },
+  3: {
+    key: 'makkah-skyline-night',
+    alt: 'Makkah at night, the Haram and the clock tower above the surrounding city',
+  },
+};
 
 /** Prices are quoted in whole pounds and read better rounded to a clean step. */
 function roundPrice(amount: number): number {
@@ -164,7 +193,7 @@ function buildPackage(
     // Read from real accreditation data at render time; never asserted here.
     atolProtected: false,
     departureMonths: month ? [month.key] : months.map((m) => m.key),
-    images: [],
+    images: [TIER_IMAGE[tierDef.tier]],
     // The mid-tier 10-night package is the one most people actually book.
     featured: !month && duration.nights === 10,
   };

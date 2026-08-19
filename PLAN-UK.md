@@ -248,7 +248,7 @@ variant; no text pairing falls below 4.5:1; the whole page is still calm with mo
 
 ---
 
-### Chunk 3 — Photography · ~1 day
+### Chunk 3 — Photography · ~1 day · **DONE 20 Aug 2026**
 
 The visual argument. The pipeline already exists (`npm run images`).
 

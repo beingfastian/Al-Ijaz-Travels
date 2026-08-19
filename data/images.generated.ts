@@ -20,7 +20,159 @@ export interface GeneratedImage {
 }
 
 export const IMAGES = {
-
+  'haram-courtyard': {
+    width: 1600,
+    height: 1200,
+    avif: [
+      '/img/haram-courtyard-400.avif 400w',
+      '/img/haram-courtyard-800.avif 800w',
+      '/img/haram-courtyard-1200.avif 1200w',
+      '/img/haram-courtyard-1600.avif 1600w',
+    ],
+    webp: [
+      '/img/haram-courtyard-400.webp 400w',
+      '/img/haram-courtyard-800.webp 800w',
+      '/img/haram-courtyard-1200.webp 1200w',
+      '/img/haram-courtyard-1600.webp 1600w',
+    ],
+    fallback: '/img/haram-courtyard-800.jpg',
+  },
+  'haram-night': {
+    width: 1600,
+    height: 1280,
+    avif: [
+      '/img/haram-night-400.avif 400w',
+      '/img/haram-night-800.avif 800w',
+      '/img/haram-night-1200.avif 1200w',
+      '/img/haram-night-1600.avif 1600w',
+    ],
+    webp: [
+      '/img/haram-night-400.webp 400w',
+      '/img/haram-night-800.webp 800w',
+      '/img/haram-night-1200.webp 1200w',
+      '/img/haram-night-1600.webp 1600w',
+    ],
+    fallback: '/img/haram-night-800.jpg',
+  },
+  'kaaba-day': {
+    width: 1600,
+    height: 2133,
+    avif: [
+      '/img/kaaba-day-400.avif 400w',
+      '/img/kaaba-day-800.avif 800w',
+      '/img/kaaba-day-1200.avif 1200w',
+      '/img/kaaba-day-1600.avif 1600w',
+    ],
+    webp: [
+      '/img/kaaba-day-400.webp 400w',
+      '/img/kaaba-day-800.webp 800w',
+      '/img/kaaba-day-1200.webp 1200w',
+      '/img/kaaba-day-1600.webp 1600w',
+    ],
+    fallback: '/img/kaaba-day-800.jpg',
+  },
+  'kiswah-detail': {
+    width: 1600,
+    height: 2845,
+    avif: [
+      '/img/kiswah-detail-400.avif 400w',
+      '/img/kiswah-detail-800.avif 800w',
+      '/img/kiswah-detail-1200.avif 1200w',
+      '/img/kiswah-detail-1600.avif 1600w',
+    ],
+    webp: [
+      '/img/kiswah-detail-400.webp 400w',
+      '/img/kiswah-detail-800.webp 800w',
+      '/img/kiswah-detail-1200.webp 1200w',
+      '/img/kiswah-detail-1600.webp 1600w',
+    ],
+    fallback: '/img/kiswah-detail-800.jpg',
+  },
+  'makkah-skyline-night': {
+    width: 1600,
+    height: 1200,
+    avif: [
+      '/img/makkah-skyline-night-400.avif 400w',
+      '/img/makkah-skyline-night-800.avif 800w',
+      '/img/makkah-skyline-night-1200.avif 1200w',
+      '/img/makkah-skyline-night-1600.avif 1600w',
+    ],
+    webp: [
+      '/img/makkah-skyline-night-400.webp 400w',
+      '/img/makkah-skyline-night-800.webp 800w',
+      '/img/makkah-skyline-night-1200.webp 1200w',
+      '/img/makkah-skyline-night-1600.webp 1600w',
+    ],
+    fallback: '/img/makkah-skyline-night-800.jpg',
+  },
+  'nabawi-green-dome': {
+    width: 1600,
+    height: 2842,
+    avif: [
+      '/img/nabawi-green-dome-400.avif 400w',
+      '/img/nabawi-green-dome-800.avif 800w',
+      '/img/nabawi-green-dome-1200.avif 1200w',
+      '/img/nabawi-green-dome-1600.avif 1600w',
+    ],
+    webp: [
+      '/img/nabawi-green-dome-400.webp 400w',
+      '/img/nabawi-green-dome-800.webp 800w',
+      '/img/nabawi-green-dome-1200.webp 1200w',
+      '/img/nabawi-green-dome-1600.webp 1600w',
+    ],
+    fallback: '/img/nabawi-green-dome-800.jpg',
+  },
+  'nabawi-twilight': {
+    width: 1600,
+    height: 1067,
+    avif: [
+      '/img/nabawi-twilight-400.avif 400w',
+      '/img/nabawi-twilight-800.avif 800w',
+      '/img/nabawi-twilight-1200.avif 1200w',
+      '/img/nabawi-twilight-1600.avif 1600w',
+    ],
+    webp: [
+      '/img/nabawi-twilight-400.webp 400w',
+      '/img/nabawi-twilight-800.webp 800w',
+      '/img/nabawi-twilight-1200.webp 1200w',
+      '/img/nabawi-twilight-1600.webp 1600w',
+    ],
+    fallback: '/img/nabawi-twilight-800.jpg',
+  },
+  'pilgrims-ihram': {
+    width: 1600,
+    height: 1586,
+    avif: [
+      '/img/pilgrims-ihram-400.avif 400w',
+      '/img/pilgrims-ihram-800.avif 800w',
+      '/img/pilgrims-ihram-1200.avif 1200w',
+      '/img/pilgrims-ihram-1600.avif 1600w',
+    ],
+    webp: [
+      '/img/pilgrims-ihram-400.webp 400w',
+      '/img/pilgrims-ihram-800.webp 800w',
+      '/img/pilgrims-ihram-1200.webp 1200w',
+      '/img/pilgrims-ihram-1600.webp 1600w',
+    ],
+    fallback: '/img/pilgrims-ihram-800.jpg',
+  },
+  'tawaf-crowd': {
+    width: 1600,
+    height: 2133,
+    avif: [
+      '/img/tawaf-crowd-400.avif 400w',
+      '/img/tawaf-crowd-800.avif 800w',
+      '/img/tawaf-crowd-1200.avif 1200w',
+      '/img/tawaf-crowd-1600.avif 1600w',
+    ],
+    webp: [
+      '/img/tawaf-crowd-400.webp 400w',
+      '/img/tawaf-crowd-800.webp 800w',
+      '/img/tawaf-crowd-1200.webp 1200w',
+      '/img/tawaf-crowd-1600.webp 1600w',
+    ],
+    fallback: '/img/tawaf-crowd-800.jpg',
+  },
 } as const satisfies Record<string, GeneratedImage>;
 
 /** Every processed photograph. Empty until assets/photos/ has something in it. */

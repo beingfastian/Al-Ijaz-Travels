@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { Photo } from '@/components/ui/Photo';
 import { Star, Footprints } from 'lucide-react';
 import type { Package } from '@/lib/types';
-import { nearestHaramDistanceM, totalNights } from '@/lib/types';
+import { makkahHaramDistanceM, totalNights } from '@/lib/types';
 import { formatDistance, formatNights, formatPriceFrom, formatSharing } from '@/lib/format';
 
 /**
@@ -11,7 +11,7 @@ import { formatDistance, formatNights, formatPriceFrom, formatSharing } from '@/
  * table further down the page; putting it on the card is the whole advantage.
  */
 export function PackageCard({ pkg }: { pkg: Package }) {
-  const distance = nearestHaramDistanceM(pkg);
+  const distance = makkahHaramDistanceM(pkg);
   const nights = totalNights(pkg);
 
   return (
@@ -70,7 +70,7 @@ export function PackageCard({ pkg }: { pkg: Package }) {
           <p className="inline-flex items-center gap-2 text-body-sm text-green-700">
             <Footprints size={16} aria-hidden />
             <span>
-              Nearest hotel <strong className="font-semibold">{formatDistance(distance)}</strong>{' '}
+              Makkah hotel <strong className="font-semibold">{formatDistance(distance)}</strong>{' '}
               from the Haram
             </span>
           </p>

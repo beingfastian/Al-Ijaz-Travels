@@ -122,6 +122,29 @@ export function nearestHaramDistanceM(pkg: Package): number | null {
   return Math.min(...pkg.hotels.map((h) => h.distanceToHaramM));
 }
 
+/**
+ * Walking distance to Masjid al-Haram, from the Makkah hotel only.
+ *
+ * This is the number the site means when it says "from the Haram", and using
+ * anything else is the exact dishonesty the whole project is positioned against.
+ *
+ * `nearestHaramDistanceM` takes the minimum across both cities, so a package with
+ * a 500 m hotel in Madinah and a 1,400 m hotel in Makkah reported "500 m from the
+ * Haram" — the flattering number under the wrong label. Colloquially "the Haram"
+ * is Masjid al-Haram; Madinah's mosque is Masjid an-Nabawi, and conflating them
+ * to produce a better figure is precisely what the comparison table on the home
+ * page accuses competitors of.
+ *
+ * Cards, the price rail, the distance filter and the distance sort all use this.
+ * `nearestHaramDistanceM` is kept for anywhere that genuinely wants the closest
+ * of the two, and named so it cannot be mistaken for this one.
+ */
+export function makkahHaramDistanceM(pkg: Package): number | null {
+  const makkah = pkg.hotels.filter((h) => h.city === 'makkah');
+  if (makkah.length === 0) return null;
+  return Math.min(...makkah.map((h) => h.distanceToHaramM));
+}
+
 /* -------------------------------------------------------------- filter state */
 
 export type SortKey = 'price-asc' | 'price-desc' | 'nights-desc' | 'distance-asc';

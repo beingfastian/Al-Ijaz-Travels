@@ -98,7 +98,7 @@ test('price ceiling is inclusive', () => {
   assert.ok(!matchesFilters(CATALOGUE[1]!, filters({ maxPriceGbp: 464_999 })));
 });
 
-test('distance filter uses the nearest hotel across both cities', () => {
+test('distance filter measures Makkah only, never the flattering city', () => {
   const multi = pkg({
     slug: 'multi',
     hotels: [
@@ -106,7 +106,22 @@ test('distance filter uses the nearest hotel across both cities', () => {
       { city: 'madinah', name: 'Close', stars: 4, distanceToHaramM: 150 },
     ],
   });
-  assert.ok(matchesFilters(multi, filters({ maxDistanceM: 200 })));
+
+  // "Within 200 m of the Haram" means Masjid al-Haram, in Makkah. This package
+  // is 1,200 m from it. Taking the minimum across both cities — which is what
+  // this did until a screenshot showed a card claiming "500 m from the Haram"
+  // for a package whose Makkah hotel was 1,400 m away — would match it here on
+  // the strength of a Madinah hotel, and Madinah's mosque is not the Haram.
+  assert.ok(!matchesFilters(multi, filters({ maxDistanceM: 200 })));
+  assert.ok(matchesFilters(multi, filters({ maxDistanceM: 1200 })), 'inclusive at the boundary');
+});
+
+test('a package with only a Madinah hotel cannot satisfy a Haram distance filter', () => {
+  const madinahOnly = pkg({
+    slug: 'madinah-only',
+    hotels: [{ city: 'madinah', name: 'Close', stars: 4, distanceToHaramM: 100 }],
+  });
+  assert.ok(!matchesFilters(madinahOnly, filters({ maxDistanceM: 500 })));
 });
 
 test('a package with no hotel data is excluded by a distance filter', () => {

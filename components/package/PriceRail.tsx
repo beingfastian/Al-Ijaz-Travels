@@ -1,5 +1,5 @@
 import type { Package } from '@/lib/types';
-import { nearestHaramDistanceM, totalNights } from '@/lib/types';
+import { makkahHaramDistanceM, totalNights } from '@/lib/types';
 import { formatDistance, formatMonthKey, formatGbp, formatSharing } from '@/lib/format';
 import { Button } from '@/components/ui/Button';
 import { whatsappUrl } from '@/lib/whatsapp';
@@ -14,7 +14,7 @@ import { site } from '@/data/site';
  * same reason — a consultant should not have to ask "which package?".
  */
 export function PriceRail({ pkg }: { pkg: Package }) {
-  const distance = nearestHaramDistanceM(pkg);
+  const distance = makkahHaramDistanceM(pkg);
   const nights = totalNights(pkg);
 
   return (
@@ -39,7 +39,7 @@ export function PriceRail({ pkg }: { pkg: Package }) {
         </div>
         {distance !== null && (
           <div className="flex-between gap-4">
-            <dt className="text-text-muted">Nearest hotel</dt>
+            <dt className="text-text-muted">Makkah hotel</dt>
             <dd className="font-medium">{formatDistance(distance)}</dd>
           </div>
         )}

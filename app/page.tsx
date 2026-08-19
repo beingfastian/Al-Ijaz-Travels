@@ -1,5 +1,6 @@
 import { SeasonalBanner } from '@/components/home/SeasonalBanner';
 import { Hero } from '@/components/home/Hero';
+import { PhotoBand } from '@/components/home/PhotoBand';
 import { FeaturedPackages } from '@/components/home/FeaturedPackages';
 import { ComparisonTable } from '@/components/home/ComparisonTable';
 import { TrustRow } from '@/components/home/TrustRow';
@@ -17,6 +18,7 @@ export default function HomePage() {
     <>
       <SeasonalBanner />
       <Hero />
+      <PhotoBand />
       <FeaturedPackages />
       <ComparisonTable />
       <TrustRow />
