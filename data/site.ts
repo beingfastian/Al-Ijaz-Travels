@@ -13,8 +13,25 @@ export const site = {
   nameArabic: 'الإعجاز',
   tagline: 'Umrah, arranged with care',
 
-  // TODO(client): real URL, needed for canonical tags, sitemap and JSON-LD.
-  url: 'https://example.invalid',
+  /**
+   * Canonical origin. Read at build time, because a static export bakes absolute
+   * URLs into canonical tags, sitemap.xml, robots.txt and JSON-LD — there is no
+   * server later to correct them.
+   *
+   * Resolution order:
+   *   NEXT_PUBLIC_SITE_URL              the real domain, once it exists — set this
+   *   VERCEL_PROJECT_PRODUCTION_URL     supplied by Vercel, so previews self-describe
+   *   the placeholder                   local builds, and a loud one on purpose
+   *
+   * TODO(client): set NEXT_PUBLIC_SITE_URL to the real domain before launch. Until
+   * then a deployed build describes itself by its deployment URL, which is wrong but
+   * at least reachable — unlike example.invalid, which is not.
+   */
+  url:
+    process.env.NEXT_PUBLIC_SITE_URL ??
+    (process.env.VERCEL_PROJECT_PRODUCTION_URL
+      ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+      : 'https://example.invalid'),
 
   contact: {
     // TODO(client): real WhatsApp business number in E.164 without the +.
