@@ -44,8 +44,18 @@ export const site = {
     // TODO(client): real UK numbers and inbox.
     phone: '+44 000 000 0000',
     email: 'info@example.invalid',
-    // TODO(client): real UK registered office address, including postcode.
-    address: 'Office address, City, United Kingdom',
+    /*
+      Supplied by the client 20 Aug 2026 as: "13th Station Road, Southeast London,
+      near Norwood Junction". Written below in a postal format.
+
+      TODO(client): this address is not yet complete enough for a UK trading site.
+      It needs (a) the postcode — Norwood Junction is in South Norwood, SE25, but
+      guessing it would be worse than leaving it out, and (b) confirmation of the
+      building number, since "13th Station Road" is almost certainly "13 Station
+      Road". The Companies Act and the E-Commerce Regulations both require a
+      full, accurate registered address on the site.
+    */
+    address: '13 Station Road, South Norwood, London',
   },
 
   /**
@@ -73,8 +83,16 @@ export const site = {
    * `TrustRow` and the footer render nothing while these are empty.
    */
   accreditation: {
-    atolNumber: '',
-    iataNumber: '',
+    /*
+      Supplied by the client 20 Aug 2026. Rendered as given.
+
+      Both are publicly checkable, which is the point of printing them: an ATOL
+      number can be verified on the CAA register and an IATA code on IATA's own
+      agency lookup. Anyone can confirm these in under a minute, which is exactly
+      the property that makes them worth displaying.
+    */
+    atolNumber: '74904',
+    iataNumber: '91245302',
   },
 
   /**
@@ -146,9 +164,9 @@ export const secondaryNavLinks = allSecondaryNavLinks.filter((l) => l.ready);
 export const allLegalNavLinks = [
   { href: '/terms-and-conditions/', label: 'Terms and Conditions', ready: false },
   { href: '/privacy-policy/', label: 'Privacy Policy', ready: false },
-  { href: '/travel-insurance/', label: 'Travel Insurance', ready: false },
-  { href: '/payment-security/', label: 'Payment Security', ready: false },
-  { href: '/our-responsibility/', label: 'Our Responsibility', ready: false },
+  { href: '/travel-insurance/', label: 'Travel Insurance', ready: true },
+  { href: '/payment-security/', label: 'Payment Security', ready: true },
+  { href: '/our-responsibility/', label: 'Our Responsibility', ready: true },
 ] as const;
 
 export const legalNavLinks = allLegalNavLinks.filter((l) => l.ready);

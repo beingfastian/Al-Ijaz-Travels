@@ -51,7 +51,11 @@ function buildAccreditations(): Accreditation[] {
     out.push({
       name: 'ATOL Protected',
       reference: `ATOL ${atol}`,
-      logo: '/brand/atol.svg',
+      // No `logo` until the real artwork arrives. TrustRow falls back to an icon
+      // when it is absent; pointing at a file that does not exist ships a broken
+      // image, which the export check caught immediately.
+      // TODO(client): official ATOL badge artwork -> public/brand/atol.svg
+
     });
   }
 
@@ -59,7 +63,8 @@ function buildAccreditations(): Accreditation[] {
     out.push({
       name: 'IATA Accredited Agent',
       reference: `IATA ${iata}`,
-      logo: '/brand/iata.svg',
+      // TODO(client): official IATA logo -> public/brand/iata.svg
+
     });
   }
 

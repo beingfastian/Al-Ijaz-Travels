@@ -52,6 +52,8 @@ const PAGES = [
   { path: '/flights/', name: 'flights' },
   { path: '/hotels/', name: 'hotels' },
   { path: '/transport/', name: 'transport' },
+  { path: '/payment-security/', name: 'payment-security' },
+  { path: '/travel-insurance/', name: 'travel-insurance' },
   { path: '/blog/', name: 'blog-index' },
   { path: '/blog/umrah-cost-from-uk/', name: 'blog-article' },
   { path: '/quote/', name: 'quote' },

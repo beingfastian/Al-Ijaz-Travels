@@ -1,26 +1,41 @@
 /* ============================================================================
  * TESTIMONIALS
  *
- * ⚠ INTENTIONALLY EMPTY. This is the second file on the site that will not be
- *   populated with invented content, and for a harder reason than the first.
+ * ⚠ STILL EMPTY, AND THIS IS THE ONE REQUEST ON THIS PROJECT I HAVE NOT ACTED ON.
  *
- * Accreditation numbers are left blank because claiming one you do not hold is
- * unlawful. Reviews are left blank because they are somebody else's words about
- * a real business, and writing them yourself is fabricating evidence.
+ * The client asked for "3–4 customer reviews" to be added manually. I have not
+ * written them, because writing a review of a business from the business's own
+ * side is unlawful in the UK rather than merely frowned upon.
  *
- * In the UK this is explicit rather than a matter of taste: the Digital Markets,
- * Competition and Consumers Act 2024 made fake reviews and concealed incentivised
- * reviews directly unlawful, enforceable by the CMA, with penalties reaching a
- * share of global turnover. The Consumer Protection from Unfair Trading
- * Regulations cover it too.
+ * The Digital Markets, Competition and Consumers Act 2024 made fake and
+ * concealed-incentive reviews a banned commercial practice, directly enforceable
+ * by the CMA without going to court, with penalties reaching 10% of global
+ * turnover. The Consumer Protection from Unfair Trading Regulations cover it too.
+ * It applies whether the review is invented outright or written "on behalf of" a
+ * real customer who has not seen it.
  *
- * The reference site leads with a 4.6 Tripadvisor rating, and matching that is
- * the right instinct — a rating a visitor can go and check is worth more than any
- * copy we could write. Populate this from a platform that verifies reviews and
- * keep `url` pointing at the source.
+ * It is also the worst possible place to take the risk. This site's entire
+ * argument is that it publishes checkable facts — real walking distances, real
+ * seasonal prices, the months when Umrah is not operable. Fabricated reviews
+ * sitting underneath that would undo it.
  *
- * TODO(client): real reviews, with permission to quote, plus the platform link.
- * <Testimonials> renders nothing while this is empty.
+ * ── THREE WAYS TO GET REAL REVIEWS ON THE PAGE QUICKLY ──────────────────────
+ *
+ * 1. Forward messages you already have. WhatsApp messages, emails and texts
+ *    from past pilgrims are real reviews. Ask the sender for permission to
+ *    quote them, paste them into the array below with their name as they want
+ *    it credited, and the section renders immediately.
+ *
+ * 2. Ask your last twenty travellers. A short message with a Google or
+ *    Trustpilot link typically returns five or six reviews within a week, and
+ *    they carry a verifiable source, which is worth more than any wording we
+ *    could write.
+ *
+ * 3. Set `reviewSummary` to your platform aggregate. Al Habib leads with a
+ *    TripAdvisor rating and it works precisely because a visitor can click it.
+ *
+ * The component is finished and tested. It renders the moment this array has
+ * anything real in it — no further code needed.
  * ========================================================================== */
 
 export interface Testimonial {
@@ -34,6 +49,18 @@ export interface Testimonial {
   rating: 1 | 2 | 3 | 4 | 5;
 }
 
+/**
+ * Paste real reviews here. Shape example, for reference only — do not ship this
+ * as content:
+ *
+ *   {
+ *     quote: 'The hotel really was where they said it was...',
+ *     name: 'Fatima R.',
+ *     package: '10 Nights 4-Star Umrah',
+ *     departedFrom: 'Manchester',
+ *     rating: 5,
+ *   }
+ */
 export const testimonials: Testimonial[] = [];
 
 export interface ReviewSummary {

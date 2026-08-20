@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Mail, MapPin, Phone } from 'lucide-react';
-import { navLinks, site } from '@/data/site';
+import { legalNavLinks, navLinks, secondaryNavLinks, site } from '@/data/site';
 import { accreditations } from '@/data/trust';
 
 /**
@@ -38,6 +38,25 @@ export function Footer() {
                   Request a quote
                 </Link>
               </li>
+            </ul>
+          </nav>
+
+          {/* Services and company. Without these the flights, hotels, transport
+              and assurance pages are built, prerendered and unreachable — which
+              the dead-link check cannot catch, because an orphan page is not a
+              broken link. */}
+          <nav aria-label="Services and company" className="flex flex-col gap-4">
+            <h2 className="text-label uppercase tracking-[0.14em] text-gold-300">
+              Services
+            </h2>
+            <ul className="flex flex-col gap-3">
+              {secondaryNavLinks.map((link) => (
+                <li key={link.href}>
+                  <Link href={link.href} className="text-body-sm text-sand-50 hover:text-gold-200">
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </nav>
 
@@ -82,10 +101,29 @@ export function Footer() {
           )}
         </div>
 
-        <div className="max-container padding-container border-t border-green-800 py-6">
+        <div className="max-container padding-container flex flex-col gap-4 border-t border-green-800 py-6 lg:flex-row lg:items-center lg:justify-between">
           <p className="text-body-sm text-gold-100">
             © {year} {site.name}. All rights reserved.
+            {site.company.companyNumber && ` Company no. ${site.company.companyNumber}.`}
+            {site.company.vatNumber && ` VAT no. ${site.company.vatNumber}.`}
           </p>
+
+          {legalNavLinks.length > 0 && (
+            <nav aria-label="Legal">
+              <ul className="flex flex-wrap gap-x-5 gap-y-2">
+                {legalNavLinks.map((link) => (
+                  <li key={link.href}>
+                    <Link
+                      href={link.href}
+                      className="text-body-sm text-gold-100 hover:text-sand-50 hover:underline"
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          )}
         </div>
       </div>
     </footer>
