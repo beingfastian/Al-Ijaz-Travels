@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from 'next';
 import { Playfair_Display, Inter, Noto_Naskh_Arabic } from 'next/font/google';
 import { Navbar } from '@/components/layout/Navbar';
+import { UtilityBar } from '@/components/layout/UtilityBar';
+import { WhatsAppFab } from '@/components/layout/WhatsAppFab';
 import { Footer } from '@/components/layout/Footer';
 import { site } from '@/data/site';
 import './globals.css';
@@ -84,9 +86,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         >
           Skip to content
         </a>
-        <Navbar />
+        {/* One header landmark. Left loose, both sat outside any landmark and axe
+            flagged the page for it — moderate rather than serious, but content
+            outside landmarks is genuinely harder to navigate with a screen reader. */}
+        <header>
+          <UtilityBar />
+          <Navbar />
+        </header>
         <main id="main">{children}</main>
         <Footer />
+        <WhatsAppFab />
       </body>
     </html>
   );

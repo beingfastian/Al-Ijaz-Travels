@@ -321,30 +321,13 @@ console.log('');
     );
   }
 
-  const reachable = await page.evaluate(() => {
-    const sel =
-      'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
-    return [...document.querySelectorAll(sel)].filter((el) => {
-      const s = getComputedStyle(el);
-      return s.display !== 'none' && s.visibility !== 'hidden';
-    }).length;
-  });
-
-  // Every interactive element must show a visible focus ring.
-  await page.keyboard.press('Tab');
-  const hasVisibleFocus = await page.evaluate(() => {
-    const el = document.activeElement;
-    if (!el || el === document.body) return false;
-    const s = getComputedStyle(el);
-    return s.outlineStyle !== 'none' || s.boxShadow !== 'none';
-  });
-
-  if (reachable > 0 && hasVisibleFocus) {
-    console.log(`  ok    keyboard — ${reachable} focusable elements, first Tab shows a focus ring`);
-  } else {
-    record('/quote/', 'keyboard', `focusable=${reachable}, visible focus ring=${hasVisibleFocus}`);
-    console.log(`  FAIL  keyboard — focusable=${reachable}, visible focus=${hasVisibleFocus}`);
-  }
+  /*
+    The single-Tab check that used to live here has been removed. It ran after the
+    full traversal above had already walked forty stops, so focus had left the
+    document and it reported "no visible focus ring" on nothing at all — a false
+    failure caused by check ordering, not by the page. The traversal is strictly
+    stronger: it asserts a visible ring on every stop rather than on one.
+  */
   await page.close();
 }
 
@@ -439,6 +422,21 @@ console.log('');
    * 2500 ms on its simulated profile; 3000 ms here is a stricter real-device
    * measurement than that, and it is one we can actually hold.
    */
+  /*
+    3000 ms, and the home page now exceeds it at roughly 3.3 s.
+
+    That is the measured cost of the full-bleed photographic hero the client
+    asked for: with a text LCP element the page hit 2.2 s, and making the
+    photograph the subject makes the photograph the LCP. FCP is 2.78 s on its
+    own, so the image accounts for only ~500 ms of it — the floor is the
+    stylesheet and hydration, not the picture.
+
+    The budget is deliberately NOT raised to cover it. It was moved once already,
+    from 2000 to 3000, for a real measurement reason. Moving it a second time to
+    accommodate a design decision would be defining the problem away, and the
+    gap is worth keeping visible: closing it means cutting client JavaScript,
+    which is the same trade recorded against Lighthouse performance in PLAN-UK.md.
+  */
   const LCP_BUDGET = 3000;
   const CLS_BUDGET = 0.05;
   const lcpOk = lcp > 0 && lcp <= LCP_BUDGET;
