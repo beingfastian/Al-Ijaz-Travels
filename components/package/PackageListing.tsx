@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { packages, allDepartureMonths } from '@/data/packages';
 import {
@@ -26,6 +26,9 @@ import { FilterPanel } from './FilterPanel';
  * the logic and is unit tested without either.
  */
 
+/** Cards rendered per page. Twelve fills three rows on a wide screen. */
+const PAGE_SIZE = 12;
+
 const SORT_OPTIONS: Array<{ value: SortKey; label: string }> = [
   { value: 'price-asc', label: 'Price, lowest first' },
   { value: 'price-desc', label: 'Price, highest first' },
@@ -45,6 +48,22 @@ export function PackageListing() {
   const bounds = useMemo(() => filterBounds(packages), []);
   const months = useMemo(() => allDepartureMonths(), []);
   const results = useMemo(() => applyFilters(packages, filters), [filters]);
+
+  /**
+   * Render in pages rather than all at once.
+   *
+   * The catalogue is 195 packages. Rendering every match put ~195 cards in the
+   * DOM, and Lighthouse measured the consequence honestly: first contentful
+   * paint at 8.3 s on a throttled phone and nearly a second of blocking time.
+   * Nobody scrolls 195 cards; the filters exist so they do not have to.
+   *
+   * Reset on filter change, so narrowing the results never leaves a visitor
+   * looking at page three of a set that now has eight items in it.
+   */
+  const [visible, setVisible] = useState(PAGE_SIZE);
+  useEffect(() => setVisible(PAGE_SIZE), [filters]);
+
+  const shown = results.slice(0, visible);
 
   const update = useCallback(
     (patch: Partial<PackageFilters>) => {
@@ -110,12 +129,27 @@ export function PackageListing() {
           </div>
         ) : (
           <ul className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-            {results.map((pkg) => (
+            {shown.map((pkg) => (
               <li key={pkg.slug} className="flex">
                 <PackageCard pkg={pkg} />
               </li>
             ))}
           </ul>
+        )}
+
+        {shown.length < results.length && (
+          <div className="flex flex-col items-center gap-3 pt-2">
+            <p className="text-body-sm text-text-muted" role="status" aria-live="polite">
+              Showing {shown.length} of {results.length}
+            </p>
+            <button
+              type="button"
+              onClick={() => setVisible((v) => v + PAGE_SIZE)}
+              className="rounded-full border border-green-300 bg-surface px-6 py-3 text-body font-medium text-green-900 transition-colors hover:border-green-700 hover:bg-green-50"
+            >
+              Show {Math.min(PAGE_SIZE, results.length - shown.length)} more
+            </button>
+          </div>
         )}
       </div>
     </div>

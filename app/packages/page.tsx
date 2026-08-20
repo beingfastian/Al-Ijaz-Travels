@@ -96,8 +96,25 @@ export default function PackagesPage() {
  * component and a filter UI that cannot filter is worse than no filter UI, so it
  * holds the space and announces nothing.
  */
+/**
+ * How many cards the prerendered fallback renders.
+ *
+ * It rendered all 195, which was the fix for the listing shipping zero package
+ * links — and it cost more than it bought. Lighthouse measured first contentful
+ * paint at 8.3 seconds on a throttled phone, because the browser must parse,
+ * style and lay out 195 cards and their srcsets before it can paint anything.
+ *
+ * Twelve is enough to prove the page is a catalogue and to give crawlers real
+ * content. Full coverage does not depend on this list: every package is in
+ * sitemap.xml, the fifteen evergreen packages are linked from their tier hubs,
+ * and every month variant is linked from its month page. The orphan problem that
+ * prompted the original change is solved by those hubs, not by this grid.
+ */
+const PRERENDERED_CARDS = 12;
+
 function ListingFallback() {
   const all = applyFilters(packages, DEFAULT_FILTERS);
+  const shown = all.slice(0, PRERENDERED_CARDS);
 
   return (
     <div className="max-container padding-container grid gap-10 py-12 lg:grid-cols-[280px_1fr] lg:py-16">
@@ -109,12 +126,29 @@ function ListingFallback() {
         </p>
 
         <ul className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-          {all.map((pkg) => (
+          {shown.map((pkg) => (
             <li key={pkg.slug} className="flex">
               <PackageCard pkg={pkg} />
             </li>
           ))}
         </ul>
+
+        <nav aria-label="Browse the full catalogue" className="flex flex-col gap-3">
+          <p className="text-body-sm text-text-muted">
+            Showing {shown.length} of {all.length}. Browse the rest by star rating:
+          </p>
+          <div className="flex flex-wrap gap-3">
+            {tiers.map((t) => (
+              <Link
+                key={t.slug}
+                href={tierHref(t.tier)}
+                className="rule-gold rounded-full border bg-surface px-4 py-2 text-body-sm text-green-900"
+              >
+                {t.tier}-star
+              </Link>
+            ))}
+          </div>
+        </nav>
       </div>
     </div>
   );

@@ -15,8 +15,19 @@ import type { QuoteValues } from './schema';
  * form state rather than a form of its own with its own lifecycle to coordinate.
  */
 
+/**
+ * No `outline-none` here.
+ *
+ * It used to carry it, with a border colour change as the only focus indicator —
+ * which defeated the global :focus-visible ring in globals.css and left every
+ * field in the quote flow without a real focus indicator. A 1px border shifting
+ * shade is not something a low-vision keyboard user can track down a form.
+ *
+ * axe does not catch this; it does not evaluate focus visibility. The keyboard
+ * traversal in scripts/verify-browser.mjs does, and this is what it found.
+ */
 export const inputClass =
-  'w-full rounded-card border border-border bg-surface px-4 py-2.5 text-body outline-none transition-colors focus:border-green-700';
+  'w-full rounded-card border border-border bg-surface px-4 py-2.5 text-body transition-colors focus:border-green-700';
 
 interface StepProps {
   register: UseFormRegister<QuoteValues>;
