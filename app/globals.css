@@ -373,6 +373,33 @@
   }
 }
 
+/**
+ * The floating WhatsApp button's slide-in.
+ *
+ * Same contract as the reveal system: the hidden state is scoped to `.js`, set by
+ * a blocking script in <head>, so with JavaScript off the button renders in place
+ * rather than never arriving. The transition sits outside the reduced-motion
+ * guard deliberately — with motion reduced the button still appears, it just
+ * appears instantly instead of sliding.
+ */
+[data-fab] {
+  transition:
+    transform 500ms var(--ease-out-expo),
+    opacity 400ms linear;
+}
+
+.js [data-fab='out'] {
+  opacity: 0;
+  transform: translateX(-1.5rem);
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-fab] {
+    transition: none;
+  }
+}
+
 @media (prefers-reduced-motion: no-preference) {
   /* Pending state. Scoped to .js so no-JS readers never meet it. */
   .js [data-reveal='out'] {

@@ -76,8 +76,19 @@ export function Hero() {
         className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-b from-transparent to-noir-950"
       />
 
-      <div className="max-container padding-container relative grid items-center gap-10 py-12 lg:min-h-[38rem] lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] lg:py-16">
-        <div className="flex flex-col items-start gap-5">
+      <div className="max-container padding-container relative grid items-center gap-8 py-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] lg:py-8 [@media(min-height:900px)]:lg:py-14"
+        /*
+          Height is derived, not guessed. The chrome above this section is the
+          utility bar, the navbar and the seasonal banner — about 10.5rem in
+          total — so the hero claims exactly the rest of the viewport and no more.
+          A fixed min-height was the reason it fitted a maximised window and
+          overflowed a smaller one.
+
+          svh rather than vh: on mobile browsers vh is the tallest the viewport
+          ever gets, which leaves the section overflowing behind the address bar.
+        */
+        style={{ minHeight: 'calc(100svh - 11.5rem)' }}>
+        <div className="flex flex-col items-start gap-4">
           <p className="eyebrow-premium inline-flex items-center gap-2">
             <span lang="ar" className="text-body-sm">
               الإعجاز
@@ -122,7 +133,17 @@ export function Hero() {
             </Button>
           </div>
 
-          <nav aria-label="Browse by star rating" className="flex flex-wrap gap-2">
+          {/*
+            Shown only when the window is tall enough for them.
+            On a 720px laptop the hero content itself is the constraint, not the
+            min-height, and something has to give. These go first: the four
+            service pills already answer "what do I get", and every tier is one
+            tap away on the packages page.
+          */}
+          <nav
+            aria-label="Browse by star rating"
+            className="hidden flex-wrap gap-2 [@media(min-height:800px)]:flex"
+          >
             {tiers.map((tier) => {
               const from = Math.min(
                 ...packages.filter((p) => p.tier === tier.tier).map((p) => p.price.gbp)

@@ -134,6 +134,10 @@ export const site = {
  * Flip these to `true` as Chunks 6, 7 and 8 land.
  */
 export const allNavLinks = [
+  // Home first, matching theirs. An explicit Home link is redundant to anyone who
+  // knows a logo is clickable and reassuring to everyone else — and this audience
+  // skews toward everyone else.
+  { href: '/', label: 'Home', ready: true },
   { href: '/packages/', label: 'Umrah Packages', ready: true },
   { href: '/monthly-packages/', label: 'Monthly Packages', ready: true },
   { href: '/city-packages/', label: 'City Packages', ready: true },

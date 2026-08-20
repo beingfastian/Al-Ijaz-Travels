@@ -7,7 +7,6 @@ import { Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { navLinks, site } from '@/data/site';
 import { Logo } from '@/components/brand/Logo';
-import { whatsappUrl } from '@/lib/whatsapp';
 import { cn } from '@/lib/cn';
 
 /**
@@ -47,7 +46,7 @@ export function Navbar() {
   }, [open]);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-ground/90 backdrop-blur-sm">
+    <div className="sticky top-0 z-40 border-b border-border bg-ground/90 backdrop-blur-sm">
       <nav
         aria-label="Main"
         className="max-container padding-container flex-between gap-6 py-4"
@@ -77,8 +76,12 @@ export function Navbar() {
         </ul>
 
         <div className="hidden lg:block">
-          <Button href={whatsappUrl()} variant="primary" size="sm">
-            WhatsApp us
+          {/* Call Now, not WhatsApp. The WhatsApp route is covered twice already —
+              the utility bar above and the fixed button bottom-right — so the nav
+              slot is better spent on the phone, which is what an older pilgrim
+              reaches for first. */}
+          <Button href={`tel:${site.contact.phone.replace(/\s/g, '')}`} variant="primary" size="sm">
+            Call Now
           </Button>
         </div>
 
@@ -109,12 +112,12 @@ export function Navbar() {
             ))}
           </ul>
           <div className="padding-container pb-6 pt-2">
-            <Button href={whatsappUrl()} variant="primary" full>
-              WhatsApp us
+            <Button href={`tel:${site.contact.phone.replace(/\s/g, '')}`} variant="primary" full>
+              Call Now
             </Button>
           </div>
         </div>
       )}
-    </header>
+    </div>
   );
 }
