@@ -26,6 +26,7 @@ export function Testimonials() {
       id="reviews"
       eyebrow="Reviews"
       title="What pilgrims said afterwards"
+      centered
       description={
         reviewSummary
           ? `${reviewSummary.average.toFixed(1)} out of 5 from ${reviewSummary.count} reviews on ${reviewSummary.platform}.`

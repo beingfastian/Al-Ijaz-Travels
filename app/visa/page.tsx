@@ -91,14 +91,16 @@ export default function VisaPage() {
         </Reveal>
 
         <section aria-labelledby="routes" className="flex flex-col gap-8">
-          <div className="flex flex-col gap-3">
+          {/* Centred: what follows is a symmetric three-column grid, and a
+              left-flush header over it reads as a mistake rather than a choice. */}
+          <div className="section-header-centered">
             <h2 id="routes" className="text-heading">
               The three routes
             </h2>
-            <p className="prose-column text-body-lg text-text-muted">
-              All three permit Umrah outside the Hajj season. They differ in how long they
-              last, how long you may stay, and whether they are worth the trouble if you
-              only intend to travel once.
+            <p className="text-body-lg text-text-muted">
+              All three permit Umrah outside the Hajj season. They differ in how long
+              they last, how long you may stay, and whether they are worth the trouble
+              if you only intend to travel once.
             </p>
           </div>
 
@@ -115,18 +117,26 @@ export default function VisaPage() {
                   <p className="text-body-sm text-text-muted">{route.bestFor}</p>
                 </div>
 
-                <dl className="flex flex-col gap-2 rounded-card bg-surface-sunk p-4 text-body-sm">
-                  <div className="flex justify-between gap-3">
+                {/*
+                  Stacked, not a right-aligned two-column row. These values are
+                  sentences — "Issued for the pilgrimage; a one-year multiple-entry
+                  form is now available" — and right-aligning a sentence gives it a
+                  ragged left edge, so every wrapped line starts somewhere different.
+                  Right alignment is for short, scannable values; PriceRail keeps it
+                  because its values are "£1,500" and "120 m".
+                */}
+                <dl className="flex flex-col gap-3 rounded-card bg-surface-sunk p-4 text-body-sm">
+                  <div className="flex flex-col gap-0.5">
                     <dt className="text-text-muted">Valid for</dt>
-                    <dd className="text-right font-medium text-text">{route.validity}</dd>
+                    <dd className="font-medium text-text">{route.validity}</dd>
                   </div>
-                  <div className="flex justify-between gap-3">
+                  <div className="flex flex-col gap-0.5">
                     <dt className="text-text-muted">You may stay</dt>
-                    <dd className="text-right font-medium text-text">{route.stayLimit}</dd>
+                    <dd className="font-medium text-text">{route.stayLimit}</dd>
                   </div>
-                  <div className="flex justify-between gap-3">
+                  <div className="flex flex-col gap-0.5">
                     <dt className="text-text-muted">Entries</dt>
-                    <dd className="text-right font-medium text-text">{route.entries}</dd>
+                    <dd className="font-medium text-text">{route.entries}</dd>
                   </div>
                 </dl>
 
@@ -160,7 +170,7 @@ export default function VisaPage() {
 
                 <div className="mt-auto flex flex-col gap-2 border-t border-border pt-4">
                   <h4 className="eyebrow">How to apply</h4>
-                  <ol className="flex list-decimal flex-col gap-2 pl-4">
+                  <ol className="flex list-outside list-decimal flex-col gap-2 pl-5 marker:text-gold-text">
                     {route.howToApply.map((step) => (
                       <li key={step} className="text-body-sm text-text-muted">
                         {step}
@@ -186,14 +196,14 @@ export default function VisaPage() {
         </section>
 
         <section aria-labelledby="universal" className="flex flex-col gap-6">
-          <div className="flex flex-col gap-3">
+          <div className="section-header-centered">
             <h2 id="universal" className="text-heading">
               True whichever route you take
             </h2>
-            <p className="prose-column text-body-lg text-text-muted">
+            <p className="text-body-lg text-text-muted">
               These are the ones that actually catch people out — a passport with five
-              months left on it, or a vaccination given a week before departure instead of
-              ten days.
+              months left on it, or a vaccination given a week before departure instead
+              of ten days.
             </p>
           </div>
 
@@ -212,11 +222,12 @@ export default function VisaPage() {
           </ul>
         </section>
 
-        <section aria-labelledby="visa-faq" className="flex flex-col gap-6">
-          <h2 id="visa-faq" className="text-heading">
+        <section aria-labelledby="visa-faq" className="flex flex-col gap-8">
+          <h2 id="visa-faq" className="text-heading text-center">
             Questions we are asked most
           </h2>
-          <dl className="prose-column flex flex-col divide-y divide-border">
+          {/* Centred column, left-aligned text inside it. */}
+          <dl className="prose-centered flex w-full flex-col divide-y divide-border">
             {visaFaqs.map((faq) => (
               <div key={faq.question} className="flex flex-col gap-2 py-5">
                 <dt className="text-subheading">{faq.question}</dt>

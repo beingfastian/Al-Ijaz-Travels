@@ -21,6 +21,7 @@ export function Section({
   title,
   description,
   action,
+  centered = false,
   tone = 'ground',
   pattern = false,
   children,
@@ -32,6 +33,15 @@ export function Section({
   description?: string;
   /** Right-aligned control beside the heading — usually a "see all" link. */
   action?: ReactNode;
+  /**
+   * Centre the header block.
+   *
+   * For sections whose children are a symmetric grid. A left-flush heading over
+   * a three-column grid reads as an alignment mistake; over a left-weighted
+   * layout it reads as deliberate. Cannot be combined with `action`, which is
+   * inherently a left/right split — so `action` wins and centring is ignored.
+   */
+  centered?: boolean;
   tone?: Tone;
   /** Tile the khatam motif behind the section. */
   pattern?: boolean;
@@ -45,8 +55,20 @@ export function Section({
   const body = (
     <div className={cn('max-container padding-container py-16 lg:py-24', className)}>
       {(eyebrow || title || description || action) && (
-        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-          <div className="flex flex-col gap-3">
+        <div
+          className={cn(
+            'flex flex-col gap-4',
+            centered && !action
+              ? 'items-center'
+              : 'md:flex-row md:items-end md:justify-between'
+          )}
+        >
+          <div
+            className={cn(
+              'flex flex-col gap-3',
+              centered && !action && 'section-header-centered'
+            )}
+          >
             {eyebrow && (
               <p
                 className={cn(
@@ -66,7 +88,8 @@ export function Section({
             {description && (
               <p
                 className={cn(
-                  'prose-column text-body-lg',
+                  'text-body-lg',
+                  centered ? '' : 'prose-column',
                   dark ? 'text-gold-100' : 'text-text-muted'
                 )}
               >

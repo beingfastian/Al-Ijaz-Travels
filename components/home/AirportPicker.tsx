@@ -35,10 +35,10 @@ export function AirportPicker() {
   return (
     <section className="border-y border-border bg-surface-sunk">
       <div className="max-container padding-container flex flex-col gap-8 py-16 lg:py-20">
-        <Reveal className="flex flex-col gap-3">
+        <Reveal className="section-header-centered">
           <p className="eyebrow">Departures</p>
           <h2 className="text-heading">Flying from where?</h2>
-          <p className="prose-column text-body-lg text-text-muted">
+          <p className="text-body-lg text-text-muted">
             Six UK airports. Both numbers on each card are computed from the
             catalogue, not written by hand: the price is the cheapest package that
             genuinely departs from there, and the count is how many you can

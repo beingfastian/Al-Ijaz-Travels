@@ -22,8 +22,18 @@ export function Blocks({ blocks }: { blocks: Block[] }) {
             );
 
           case 'ul':
+            /*
+              list-outside (the default) with padding is what gives a hanging
+              indent: the marker sits in the gutter and every wrapped line aligns
+              with the first word, not under the bullet. list-inside would tuck
+              the marker into the text flow and leave wrapped lines hanging back
+              under it, which is the usual way list indentation goes wrong.
+            */
             return (
-              <ul key={i} className="flex list-disc flex-col gap-2 pl-5 marker:text-gold-500">
+              <ul
+                key={i}
+                className="flex list-outside list-disc flex-col gap-2 pl-6 marker:text-gold-500"
+              >
                 {block.items.map((item) => (
                   <li key={item} className="text-body-lg text-text">
                     {item}
@@ -34,7 +44,10 @@ export function Blocks({ blocks }: { blocks: Block[] }) {
 
           case 'ol':
             return (
-              <ol key={i} className="flex list-decimal flex-col gap-2 pl-5 marker:text-gold-text">
+              <ol
+                key={i}
+                className="flex list-outside list-decimal flex-col gap-2 pl-7 marker:font-medium marker:text-gold-text"
+              >
                 {block.items.map((item) => (
                   <li key={item} className="text-body-lg text-text">
                     {item}

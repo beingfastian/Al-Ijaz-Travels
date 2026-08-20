@@ -81,8 +81,8 @@ export default function RamadanPage() {
       </section>
 
       <div className="max-container padding-container flex flex-col gap-14 py-12 lg:py-16">
-        <section aria-labelledby="ramadan-truth" className="flex flex-col gap-6">
-          <h2 id="ramadan-truth" className="text-heading">
+        <section aria-labelledby="ramadan-truth" className="flex flex-col gap-8">
+          <h2 id="ramadan-truth" className="text-heading text-center">
             What to expect
           </h2>
           <div className="grid gap-4 sm:grid-cols-3">

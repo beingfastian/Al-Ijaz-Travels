@@ -23,6 +23,7 @@ export function TrustRow() {
       title="Registered and accountable"
       description="Every registration number below can be verified with the issuing authority."
       tone="surface"
+      centered
     >
       <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {accreditations.map((a) => (

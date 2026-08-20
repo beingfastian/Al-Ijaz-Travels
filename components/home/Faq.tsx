@@ -29,6 +29,9 @@ export function Faq() {
         </Button>
       }
     >
+      {/* Left, not centred: this header carries an "All questions" action, which
+          is inherently a left/right split. A centred list under a left-flush
+          header is worse than either treatment applied consistently. */}
       <div className="prose-column flex flex-col divide-y divide-border border-y border-border">
         {shown.map((f) => (
           <details key={f.question} className="group py-5">

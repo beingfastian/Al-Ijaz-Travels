@@ -106,8 +106,8 @@ export default async function MonthPage({ params }: Props) {
       )}
 
       <div className="max-container padding-container flex flex-col gap-12 py-12 lg:py-16">
-        <section aria-labelledby="month-facts" className="flex flex-col gap-6">
-          <h2 id="month-facts" className="text-heading">
+        <section aria-labelledby="month-facts" className="flex flex-col gap-8">
+          <h2 id="month-facts" className="text-heading text-center">
             What {def.name} is actually like
           </h2>
           <ul className="grid gap-4 sm:grid-cols-3">

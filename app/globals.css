@@ -136,8 +136,56 @@
   }
 }
 
+/**
+ * A reading column, capped at 68ch.
+ *
+ * 68 characters sits inside the 60–75 band where the eye reliably finds the next
+ * line without the head moving. It is the single most effective typographic
+ * control on the site and it costs nothing.
+ *
+ * `hyphens: auto` is on. It is not for justification — the text stays ragged
+ * right — but it lets long words like "Authorisation" and "accommodation" break
+ * rather than throwing a 200px hole into the previous line, which is the main
+ * cause of an ugly rag at this measure.
+ */
 @utility prose-column {
   max-width: var(--container-prose);
+  hyphens: auto;
+}
+
+/**
+ * The same column, centred in its container.
+ *
+ * For sections whose content below is a symmetric grid — FAQ lists, centred
+ * feature rows — where a left-flush paragraph leaves an obvious void on the
+ * right and reads as unfinished rather than as a deliberate asymmetry.
+ *
+ * Note what this does NOT do: it centres the column, not the text inside it.
+ * Centred body copy gives every line a different starting position, so the eye
+ * has to hunt for the start of each one. Headings and one-line intros can be
+ * centred; paragraphs should not be.
+ */
+@utility prose-centered {
+  max-width: var(--container-prose);
+  margin-inline: auto;
+  hyphens: auto;
+}
+
+/**
+ * A centred section header — eyebrow, heading and a short intro over a grid.
+ *
+ * Deliberately capped narrower than the reading column. A centred line longer
+ * than about 50 characters is hard to track back from, which is why centring
+ * suits headings and standfirsts and nothing longer.
+ */
+@utility section-header-centered {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: --spacing(3);
+  max-width: 54ch;
+  margin-inline: auto;
 }
 
 @utility flex-center {
