@@ -1,8 +1,12 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { Check, Minus, AlertTriangle } from 'lucide-react';
+import Link from 'next/link';
+import { Suspense } from 'react';
+import { Check, Minus, AlertTriangle, Plane, Bus, Car } from 'lucide-react';
 import { packages, getPackage } from '@/data/packages';
-import { formatNights } from '@/lib/format';
+import { formatNights, formatGbp, formatSharing } from '@/lib/format';
+import { faqs } from '@/data/faqs';
+import { EnquiryForm } from '@/components/quote/EnquiryForm';
 import { HotelCard } from '@/components/package/HotelCard';
 import { Itinerary } from '@/components/package/Itinerary';
 import { PriceRail } from '@/components/package/PriceRail';
@@ -105,6 +109,14 @@ export default async function PackageDetailPage({ params }: Props) {
           <h1 className="text-display text-on-premium">{pkg.name}</h1>
           <p className="prose-column text-body-lg text-on-premium-muted">{pkg.summary}</p>
 
+          <p className="text-body-lg text-on-premium">
+            From{' '}
+            <strong className="font-serif text-heading text-on-premium-accent">
+              {formatGbp(pkg.price.gbp)}
+            </strong>{' '}
+            per person, {formatSharing(pkg.price.sharing)}
+          </p>
+
           <ul className="mt-2 flex flex-wrap gap-x-6 gap-y-2 text-body-sm text-on-premium-muted">
             <li>
               Departs from{' '}
@@ -190,6 +202,73 @@ export default async function PackageDetailPage({ params }: Props) {
                 </ul>
               </div>
             </div>
+          </section>
+          {/* Transfers, named. The competitor states the vehicle class and route,
+              and they are right to — "transfers included" tells a family with
+              elderly parents nothing about what actually turns up. */}
+          <section aria-labelledby="transfers-heading" className="flex flex-col gap-6">
+            <h2 id="transfers-heading" className="text-heading">
+              Transfers included
+            </h2>
+            <ul className="grid gap-4 sm:grid-cols-3">
+              {[
+                { icon: Plane, label: 'Jeddah airport to Makkah', detail: 'Private vehicle, meets your flight' },
+                { icon: Bus, label: 'Makkah to Madinah', detail: 'By road, around 5 hours' },
+                { icon: Car, label: 'Madinah to the airport', detail: 'Timed to your departure' },
+              ].map(({ icon: Icon, label, detail }) => (
+                <li
+                  key={label}
+                  className="flex flex-col gap-2 rounded-panel border border-border bg-surface p-5"
+                >
+                  <Icon size={20} className="text-gold-text" aria-hidden />
+                  <span className="text-body font-medium text-text">{label}</span>
+                  <span className="text-body-sm text-text-muted">{detail}</span>
+                </li>
+              ))}
+            </ul>
+            <p className="prose-column text-body-sm text-text-muted">
+              Ziyarat coaches in both cities are included too.{' '}
+              <Link href="/transport/" className="text-link underline">
+                Full transfer detail
+              </Link>
+              .
+            </p>
+          </section>
+
+          {/* The enquiry form on the page itself, not a link to it. Sending a
+              visitor to another route to ask a question about the package they
+              are already reading is friction we were adding for no reason. */}
+          <section
+            id="enquire"
+            aria-labelledby="enquire-heading"
+            className="flex flex-col gap-6 rounded-panel border border-border bg-surface-sunk p-6 lg:p-8"
+          >
+            <div className="flex flex-col gap-2">
+              <h2 id="enquire-heading" className="text-heading">
+                Ask about this package
+              </h2>
+              <p className="prose-column text-body text-text-muted">
+                One form, about a minute. We confirm availability on your dates before
+                anyone is asked for a deposit.
+              </p>
+            </div>
+            <Suspense fallback={<p className="text-body-sm text-text-muted">Loading…</p>}>
+              <EnquiryForm packageSlug={pkg.slug} />
+            </Suspense>
+          </section>
+
+          <section aria-labelledby="package-faq" className="flex flex-col gap-6">
+            <h2 id="package-faq" className="text-heading">
+              Common questions
+            </h2>
+            <dl className="prose-column flex flex-col divide-y divide-border">
+              {faqs.slice(0, 5).map((faq) => (
+                <div key={faq.question} className="flex flex-col gap-2 py-5">
+                  <dt className="text-subheading">{faq.question}</dt>
+                  <dd className="text-body text-text-muted">{faq.answer}</dd>
+                </div>
+              ))}
+            </dl>
           </section>
         </div>
 

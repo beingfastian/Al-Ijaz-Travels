@@ -245,20 +245,20 @@ console.log('');
   const page = await context.newPage();
   await page.goto(`${base}/quote/`, { waitUntil: 'networkidle' });
 
-  await page.fill('#adults', '4');
+  await page.fill('#travellers', '4');
   await page.waitForTimeout(400); // let the draft write
 
   await page.reload({ waitUntil: 'networkidle' });
   await page.waitForTimeout(600); // rehydration happens in an effect
 
-  const restored = await page.inputValue('#adults');
-  const noticeShown = await page.getByText('We kept the answers you started earlier.').count();
+  const restored = await page.inputValue('#travellers');
+  const noticeShown = await page.getByText('We kept what you started earlier.').count();
 
   if (restored === '4' && noticeShown > 0) {
     console.log('  ok    quote draft — survives a reload, and says so');
   } else {
-    record('/quote/', 'draft', `after reload adults="${restored}", notice shown: ${noticeShown}`);
-    console.log(`  FAIL  quote draft — adults="${restored}" after reload (expected "4")`);
+    record('/quote/', 'draft', `after reload travellers="${restored}", notice shown: ${noticeShown}`);
+    console.log(`  FAIL  quote draft — travellers="${restored}" after reload (expected "4")`);
   }
 
   await page.screenshot({ path: join(SHOTS, 'quote-draft-restored.png'), fullPage: true });

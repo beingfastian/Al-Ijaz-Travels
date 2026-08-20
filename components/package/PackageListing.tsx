@@ -11,6 +11,10 @@ import {
   searchParamsFromFilters,
 } from '@/lib/filter';
 import type { PackageFilters, SortKey } from '@/lib/types';
+import Link from 'next/link';
+import { tiers } from '@/data/tiers';
+import { formatGbp } from '@/lib/format';
+import { tierHref } from '@/lib/routes';
 import { PackageCard } from './PackageCard';
 import { FilterPanel } from './FilterPanel';
 
@@ -127,6 +131,59 @@ export function PackageListing() {
               will put something together.
             </p>
           </div>
+        ) : cleared ? (
+          /*
+            Unfiltered: group by tier, the way the audience thinks and the way the
+            competitor lays it out. "5 star umrah packages" is a search; a flat
+            grid of 195 cards sorted by price is a database view, and the first
+            thing it hides is the one distinction anyone is actually choosing on.
+
+            Evergreen packages only in this view. The 180 month variants belong on
+            their month pages, and pouring them into a tier section would bury the
+            five durations that matter under sixty near-identical cards.
+          */
+          <div className="flex flex-col gap-14">
+            {tiers.map((tier) => {
+              const list = results.filter((p) => p.tier === tier.tier && !p.month);
+              if (list.length === 0) return null;
+              const from = Math.min(...list.map((p) => p.price.gbp));
+
+              return (
+                <section key={tier.slug} aria-labelledby={`tier-${tier.slug}`} className="flex flex-col gap-5">
+                  <div className="flex flex-wrap items-end justify-between gap-4 border-b border-border pb-4">
+                    <div className="flex flex-col gap-1">
+                      <h2 id={`tier-${tier.slug}`} className="font-serif text-heading text-green-900">
+                        {tier.tier}-Star Packages
+                      </h2>
+                      <p className="prose-column text-body-sm text-text-muted">{tier.summary}</p>
+                    </div>
+                    <Link
+                      href={tierHref(tier.tier)}
+                      className="inline-flex shrink-0 items-center gap-1.5 text-body-sm text-link underline"
+                    >
+                      All {tier.tier}-star from {formatGbp(from)}
+                    </Link>
+                  </div>
+
+                  <ul className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+                    {list.map((pkg) => (
+                      <li key={pkg.slug} className="flex">
+                        <PackageCard pkg={pkg} />
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              );
+            })}
+
+            <p className="text-body-sm text-text-muted">
+              Looking for a specific month? Use the filters, or browse{' '}
+              <Link href="/monthly-packages/" className="text-link underline">
+                packages by month
+              </Link>{' '}
+              — every departure month is priced separately.
+            </p>
+          </div>
         ) : (
           <ul className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
             {shown.map((pkg) => (
@@ -137,7 +194,7 @@ export function PackageListing() {
           </ul>
         )}
 
-        {shown.length < results.length && (
+        {!cleared && shown.length < results.length && (
           <div className="flex flex-col items-center gap-3 pt-2">
             <p className="text-body-sm text-text-muted" role="status" aria-live="polite">
               Showing {shown.length} of {results.length}

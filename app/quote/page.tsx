@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
-import { QuoteFlow } from '@/components/quote/QuoteFlow';
+import { EnquiryForm } from '@/components/quote/EnquiryForm';
 
 export const metadata: Metadata = {
   alternates: { canonical: '/quote/' },
@@ -17,13 +17,13 @@ export default function QuotePage() {
           <p className="eyebrow">Quote request</p>
           <h1 className="text-display">Tell us about your journey</h1>
           <p className="prose-column text-body-lg text-text-muted">
-            About two minutes. A consultant confirms availability and comes back to
-            you — requesting a quote does not commit you to anything.
+            One form, about a minute. A consultant confirms availability and comes back
+            to you — sending this does not commit you to anything.
           </p>
         </div>
       </section>
       <Suspense fallback={<div className="max-container padding-container py-16">Loading…</div>}>
-        <QuoteFlow />
+        <EnquiryForm />
       </Suspense>
     </>
   );

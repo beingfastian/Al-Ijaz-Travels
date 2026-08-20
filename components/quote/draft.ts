@@ -4,7 +4,7 @@ import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 // Explicit .ts extension: this module is imported by a node --test file, and node's
 // ESM resolver does not add extensions. Do not "tidy" it away.
-import { SHARING, quoteDefaults, QUOTE_STEPS, type QuoteValues } from './schema.ts';
+import { SHARING, enquiryDefaults, type EnquiryValues } from './schema.ts';
 
 /* ============================================================================
  * THE QUOTE DRAFT — the only global store on the site.
@@ -33,16 +33,16 @@ const DRAFT_VERSION = 1;
 const STORAGE_KEY = 'al-ijaz-quote-draft';
 
 interface DraftState {
-  values: QuoteValues;
+  values: EnquiryValues;
   step: number;
   /** null means there is nothing to restore. */
   savedAt: number | null;
-  save: (values: QuoteValues, step: number) => void;
+  save: (values: EnquiryValues, step: number) => void;
   clear: () => void;
 }
 
 function emptyDraft(): Pick<DraftState, 'values' | 'step' | 'savedAt'> {
-  return { values: { ...quoteDefaults }, step: 0, savedAt: null };
+  return { values: { ...enquiryDefaults }, step: 0, savedAt: null };
 }
 
 const num = (value: unknown, fallback: number): number =>
@@ -58,33 +58,40 @@ const str = (value: unknown, fallback: string): string =>
  * falls back to its default, so a corrupt, hand-edited, or outdated payload
  * degrades to a blank form rather than crashing the flow on load.
  */
-export function sanitiseValues(raw: unknown): QuoteValues {
+export function sanitiseValues(raw: unknown): EnquiryValues {
   const src: Record<string, unknown> =
     typeof raw === 'object' && raw !== null ? (raw as Record<string, unknown>) : {};
 
   const sharing =
     typeof src.sharing === 'string' && (SHARING as readonly string[]).includes(src.sharing)
-      ? (src.sharing as QuoteValues['sharing'])
-      : quoteDefaults.sharing;
+      ? src.sharing
+      : '';
 
   return {
-    adults: num(src.adults, quoteDefaults.adults),
-    children: num(src.children, quoteDefaults.children),
-    infants: num(src.infants, quoteDefaults.infants),
-    sharing,
-    packageSlug: str(src.packageSlug, quoteDefaults.packageSlug),
-    departureMonth: str(src.departureMonth, quoteDefaults.departureMonth),
-    notes: str(src.notes, quoteDefaults.notes ?? ''),
-    name: str(src.name, quoteDefaults.name),
-    phone: str(src.phone, quoteDefaults.phone),
-    email: str(src.email, quoteDefaults.email),
+    name: str(src.name, enquiryDefaults.name),
+    phone: str(src.phone, enquiryDefaults.phone),
+    email: str(src.email, enquiryDefaults.email),
+    travellers: num(src.travellers, enquiryDefaults.travellers),
+    packageSlug: str(src.packageSlug, enquiryDefaults.packageSlug),
+    departureMonth: str(src.departureMonth, enquiryDefaults.departureMonth),
+    airport: (str(src.airport, '') || '') as EnquiryValues['airport'],
+    sharing: sharing as EnquiryValues['sharing'],
+    notes: str(src.notes, enquiryDefaults.notes ?? ''),
+    // Consent is never restored from a draft. It has to be a fresh act each
+    // time, which is the whole point of it under UK GDPR.
+    consent: false as unknown as true,
   };
 }
 
-/** Keep a restored step inside the range the flow actually has. */
+/**
+ * Step is retained at 0 now that the form is a single page.
+ *
+ * Kept rather than removed so a draft written by the old four-step wizard still
+ * merges cleanly instead of throwing on an unexpected field.
+ */
 export function sanitiseStep(raw: unknown): number {
   if (typeof raw !== 'number' || !Number.isInteger(raw)) return 0;
-  return Math.min(Math.max(raw, 0), QUOTE_STEPS.length - 1);
+  return Math.max(raw, 0) === 0 ? 0 : 0;
 }
 
 /**
