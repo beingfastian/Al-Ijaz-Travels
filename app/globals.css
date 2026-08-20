@@ -82,7 +82,7 @@
   h3,
   h4 {
     font-family: var(--font-serif);
-    color: var(--color-heading);
+    color: var(--color-ink-heading);
     font-weight: 500;
     text-wrap: balance;
   }

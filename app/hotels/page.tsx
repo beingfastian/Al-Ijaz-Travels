@@ -7,6 +7,7 @@ import { formatDistance, formatGbp, formatSharing } from '@/lib/format';
 import { packagesByTier } from '@/data/packages';
 import { Reveal } from '@/components/ui/Reveal';
 import { Button } from '@/components/ui/Button';
+import { CalloutCta } from '@/components/ui/CalloutCta';
 import { Photo } from '@/components/ui/Photo';
 import { tierHref } from '@/lib/routes';
 
@@ -186,17 +187,16 @@ export default function HotelsPage() {
           </ul>
         </section>
 
-        <section className="flex flex-col items-start gap-4 rounded-panel border border-border bg-surface-sunk p-8">
-          <h2 className="text-subheading">Distances are approximate walking routes</h2>
-          <p className="prose-column text-body text-text-muted">
+        <CalloutCta
+          title="Distances are approximate walking routes"
+          actions={<Button href="/quote/">Ask which hotel suits you</Button>}
+        >
             Measured from the hotel entrance to the nearest gate, not to the mataf, and
             rounded honestly. In Ramadan the practical walk is longer than any map
             suggests, because the approaches are managed and the crowds are dense — which
             is exactly when the difference between 120 m and 1.4 km stops being a
             detail. Hotel allocation is confirmed with every booking.
-          </p>
-          <Button href="/quote/">Ask which hotel suits you</Button>
-        </section>
+        </CalloutCta>
       </div>
     </>
   );

@@ -9,6 +9,7 @@ import { formatGbp } from '@/lib/format';
 import { PackageCard } from '@/components/package/PackageCard';
 import { Reveal } from '@/components/ui/Reveal';
 import { Button } from '@/components/ui/Button';
+import { CalloutCta } from '@/components/ui/CalloutCta';
 import { monthHref, monthFromSegment, listingHref } from '@/lib/routes';
 
 /**
@@ -139,17 +140,16 @@ export default async function MonthPage({ params }: Props) {
           </ul>
         </section>
 
-        <section className="flex flex-col items-start gap-4 rounded-panel border border-border bg-surface-sunk p-8">
-          <h2 className="text-subheading">Dates not fixed yet?</h2>
-          <p className="prose-column text-body text-text-muted">
+        <CalloutCta
+          title="Dates not fixed yet?"
+          actions={<Button href="/quote/">Ask about {def.name}</Button>}
+        >
             Moving by a few weeks changes the price more than changing tier does.{' '}
             <a href={listingHref()} className="text-link underline">
               Compare every month
             </a>{' '}
             before you settle on one.
-          </p>
-          <Button href="/quote/">Ask about {def.name}</Button>
-        </section>
+        </CalloutCta>
       </div>
     </>
   );

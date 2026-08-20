@@ -9,6 +9,7 @@ import { PackageCard } from '@/components/package/PackageCard';
 import { Photo } from '@/components/ui/Photo';
 import { Reveal } from '@/components/ui/Reveal';
 import { Button } from '@/components/ui/Button';
+import { CalloutCta } from '@/components/ui/CalloutCta';
 import { monthHref } from '@/lib/routes';
 
 export const metadata: Metadata = {
@@ -149,15 +150,14 @@ export default function RamadanPage() {
           </a>
         </section>
 
-        <section className="flex flex-col items-start gap-4 rounded-panel border border-border bg-surface-sunk p-8">
-          <h2 className="text-subheading">Ramadan allocation is limited</h2>
-          <p className="prose-column text-body text-text-muted">
+        <CalloutCta
+          title="Ramadan allocation is limited"
+          actions={<Button href="/quote/">Check Ramadan availability</Button>}
+        >
             We hold a fixed number of rooms in each Haram-precinct hotel. Tell us your
             dates and party size and we will confirm what is genuinely still available
             rather than take a deposit and sort it out later.
-          </p>
-          <Button href="/quote/">Check Ramadan availability</Button>
-        </section>
+        </CalloutCta>
       </div>
     </>
   );

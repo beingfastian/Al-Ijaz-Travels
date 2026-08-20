@@ -385,7 +385,15 @@ ${band('sand')}
   --color-text: var(--color-ink);
   /* Derived, not sand-600: that step fails AA on the sunk surface. */
   --color-text-muted: ${mutedText};
-  --color-heading: var(--color-green-900);
+  /* Named ink-heading, not heading.
+   *
+   * Tailwind serves --text-* and --color-* from the same text-* namespace, so a
+   * colour token called heading collides with the type step called heading — and
+   * the colour wins. Every h2 carrying the text-heading class was getting a
+   * colour and no size, so it inherited 16px body text and rendered smaller than
+   * the h3 headings beneath it. The whole section hierarchy was inverted, and it
+   * was invisible in review because both tokens existed and both looked right. */
+  --color-ink-heading: var(--color-green-900);
   --color-link: var(--color-green-700);
 
   /* Gold as TEXT on cream must be this value — the brand gold #A88146 measures

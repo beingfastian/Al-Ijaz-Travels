@@ -3,6 +3,7 @@ import { Check, X, ShieldAlert, ExternalLink, CalendarCheck } from 'lucide-react
 import { visaRoutes, universalRequirements, visaFaqs } from '@/data/visa';
 import { Reveal } from '@/components/ui/Reveal';
 import { Button } from '@/components/ui/Button';
+import { CalloutCta } from '@/components/ui/CalloutCta';
 
 export const metadata: Metadata = {
   title: 'Umrah, ETA and Tourist Visas Explained',
@@ -237,15 +238,14 @@ export default function VisaPage() {
           </dl>
         </section>
 
-        <section className="flex flex-col items-start gap-4 rounded-panel border border-border bg-surface-sunk p-8">
-          <h2 className="text-subheading">Visa processing is included</h2>
-          <p className="prose-column text-body text-text-muted">
-            Every package on this site includes visa processing and the Nusuk permit. You
-            do not deal with the portal, and we confirm the current fee in writing with
-            your quote rather than publishing a figure that goes out of date.
-          </p>
-          <Button href="/quote/">Request a quote</Button>
-        </section>
+        <CalloutCta
+          title="Visa processing is included"
+          actions={<Button href="/quote/">Request a quote</Button>}
+        >
+          Every package on this site includes visa processing and the Nusuk permit. You
+          do not deal with the portal, and we confirm the current fee in writing with
+          your quote rather than publishing a figure that goes out of date.
+        </CalloutCta>
       </div>
     </>
   );

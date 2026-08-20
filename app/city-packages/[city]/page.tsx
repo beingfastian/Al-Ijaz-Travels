@@ -10,6 +10,7 @@ import { formatGbp } from '@/lib/format';
 import { PackageCard } from '@/components/package/PackageCard';
 import { Reveal } from '@/components/ui/Reveal';
 import { Button } from '@/components/ui/Button';
+import { CalloutCta } from '@/components/ui/CalloutCta';
 import { cityHref, cityFromSegment, listingHref } from '@/lib/routes';
 
 /**
@@ -130,15 +131,17 @@ export default async function CityPage({ params }: Props) {
           </p>
         </section>
 
-        <section className="flex flex-col items-start gap-4 rounded-panel border border-border bg-surface p-8 shadow-card">
-          <h2 className="text-subheading">Travelling as a group from {airport.city}?</h2>
+        <CalloutCta
+          title={`Travelling as a group from ${airport.city}?`}
+          tone="surface"
+          actions={<Button href="/quote/">Request a quote from {airport.city}</Button>}
+        >
           {/* City-specific rather than templated — see Airport.groupNote. */}
-          <p className="prose-column text-body text-text-muted">{airport.groupNote}</p>
-          <p className="text-body-sm text-text-muted">
+          <p>{airport.groupNote}</p>
+          <p className="mt-3 text-body-sm">
             We commonly collect from {airport.serves.join(', ')}.
           </p>
-          <Button href="/quote/">Request a quote from {airport.city}</Button>
-        </section>
+        </CalloutCta>
       </div>
     </>
   );

@@ -7,6 +7,7 @@ import { site } from '@/data/site';
 import { Blocks } from '@/components/blog/Blocks';
 import { Reveal } from '@/components/ui/Reveal';
 import { Button } from '@/components/ui/Button';
+import { CalloutCta } from '@/components/ui/CalloutCta';
 
 export function generateStaticParams() {
   return articles.map((a) => ({ slug: a.slug }));
@@ -110,19 +111,20 @@ export default async function ArticlePage({ params }: Props) {
             </section>
           ))}
 
-          <div className="flex flex-col items-start gap-4 rounded-panel border border-border bg-surface-sunk p-8">
-            <h2 className="text-subheading">Planning your Umrah?</h2>
-            <p className="prose-column text-body text-text-muted">
-              Every package on this site lists its hotels with real walking distances to
-              the Haram, per-person pricing, and what is genuinely not included.
-            </p>
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <Button href="/packages/">See packages</Button>
-              <Button href="/quote/" variant="secondary">
-                Request a quote
-              </Button>
-            </div>
-          </div>
+          <CalloutCta
+            title="Planning your Umrah?"
+            actions={
+              <>
+                <Button href="/packages/">See packages</Button>
+                <Button href="/quote/" variant="secondary">
+                  Request a quote
+                </Button>
+              </>
+            }
+          >
+            Every package on this site lists its hotels with real walking distances to the
+            Haram, per-person pricing, and what is genuinely not included.
+          </CalloutCta>
         </article>
 
         <aside className="flex flex-col gap-8 lg:sticky lg:top-28 lg:self-start">

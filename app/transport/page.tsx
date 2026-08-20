@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Bus, TrainFront, Car, Route, Accessibility } from 'lucide-react';
 import { Reveal } from '@/components/ui/Reveal';
 import { Button } from '@/components/ui/Button';
+import { CalloutCta } from '@/components/ui/CalloutCta';
 import { Photo } from '@/components/ui/Photo';
 
 export const metadata: Metadata = {
@@ -148,16 +149,15 @@ export default function TransportPage() {
           </ul>
         </section>
 
-        <section className="flex flex-col items-start gap-4 rounded-panel border border-border bg-surface-sunk p-8">
-          <h2 className="text-subheading">Ziyarat is included in both cities</h2>
-          <p className="prose-column text-body text-text-muted">
+        <CalloutCta
+          title="Ziyarat is included in both cities"
+          actions={<Button href="/quote/">Ask about transfers</Button>}
+        >
             Makkah covers Mina, Arafat, Jabal al-Nour and the Cave of Hira. Madinah
             covers Quba Mosque, Masjid al-Qiblatayn and Uhud. Both travel as a group with
             a guide; a private car and guide is available as an add-on if you would
             rather set your own pace.
-          </p>
-          <Button href="/quote/">Ask about transfers</Button>
-        </section>
+        </CalloutCta>
       </div>
     </>
   );

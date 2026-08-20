@@ -6,6 +6,7 @@ import { packages } from '@/data/packages';
 import { formatGbp } from '@/lib/format';
 import { Reveal } from '@/components/ui/Reveal';
 import { Button } from '@/components/ui/Button';
+import { CalloutCta } from '@/components/ui/CalloutCta';
 import { Photo } from '@/components/ui/Photo';
 import { RouteIllustration } from '@/components/home/RouteIllustration';
 import { cityHref, listingHref } from '@/lib/routes';
@@ -192,21 +193,21 @@ export default function FlightsPage() {
           </ul>
         </section>
 
-        <section className="flex flex-col items-start gap-4 rounded-panel border border-border bg-surface-sunk p-8">
-          <h2 className="text-subheading">Flying from somewhere else?</h2>
-          <p className="prose-column text-body text-text-muted">
-            We can usually arrange a connecting departure from other UK airports. We will
-            also tell you honestly when it is not worth it and you would be better
-            travelling to one of the six above — which is more often than you might
-            expect.
-          </p>
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <Button href="/quote/">Ask about your airport</Button>
-            <Button href={listingHref()} variant="secondary">
-              Browse packages
-            </Button>
-          </div>
-        </section>
+        <CalloutCta
+          title="Flying from somewhere else?"
+          actions={
+            <>
+              <Button href="/quote/">Ask about your airport</Button>
+              <Button href={listingHref()} variant="secondary">
+                Browse packages
+              </Button>
+            </>
+          }
+        >
+          We can usually arrange a connecting departure from other UK airports. We will
+          also tell you honestly when it is not worth it and you would be better
+          travelling to one of the six above — which is more often than you might expect.
+        </CalloutCta>
       </div>
     </>
   );
