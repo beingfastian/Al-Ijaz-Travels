@@ -41,6 +41,15 @@ import { Logo } from '@/components/brand/Logo';
  * columns, and the khatam pattern read as unfinished texture along the ragged
  * bottom edge.
  *
+ * The "Let us speak first" strip that used to sit above the columns — heading,
+ * standfirst, phone button, quote button — has been removed on client
+ * instruction. The reasoning for it was that somebody who has read a whole page
+ * without enquiring is worth handing a phone number to; the counter-argument is
+ * that by the footer they have already passed the utility bar, the nav "Call
+ * Now", every in-page CTA and the fixed WhatsApp button, so a fifth ask is
+ * repetition rather than convenience. The phone number is still in the Contact
+ * column and "Request a quote" is still the last item under Travel.
+ *
  * ---------------------------------------------------------------------------
  * ⚠ THE ATOL NOTICE HAS BEEN REMOVED FROM THIS FOOTER, ON CLIENT INSTRUCTION.
  *
@@ -86,36 +95,6 @@ export function Footer() {
 
   return (
     <footer className="mt-24 border-t border-green-800 bg-green-950 text-sand-50">
-      {/* Last call before they leave. Somebody who has read the whole page
-          without enquiring is the person most worth handing a phone number to. */}
-      <div className="border-b border-green-800/80 bg-green-900">
-        <div className="max-container padding-container flex flex-col gap-5 py-8 lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex flex-col gap-1.5">
-            <h2 className="font-serif text-subheading text-sand-50">Let us speak first</h2>
-            <p className="max-w-xl text-body-sm text-gold-100">
-              A quote costs nothing and commits you to nothing. We confirm availability
-              before anyone is asked for a deposit.
-            </p>
-          </div>
-
-          <div className="flex shrink-0 flex-col gap-3 sm:flex-row">
-            <a
-              href={`tel:${tel}`}
-              className="inline-flex items-center justify-center gap-2 rounded-full bg-gold-500 px-7 py-3 text-body font-semibold text-noir-950 transition-colors hover:bg-gold-400"
-            >
-              <Phone size={17} aria-hidden />
-              {site.contact.phone}
-            </a>
-            <Link
-              href="/quote/"
-              className="inline-flex items-center justify-center rounded-full border border-gold-500/70 px-7 py-3 text-body font-semibold text-gold-200 transition-colors hover:border-gold-400 hover:text-sand-50"
-            >
-              Request a quote
-            </Link>
-          </div>
-        </div>
-      </div>
-
       {/* Exactly four children. Five in a four-column grid is what broke this
           the first time. The brand column is given extra width so its paragraph
           sets at a readable measure rather than in a narrow ribbon. */}
