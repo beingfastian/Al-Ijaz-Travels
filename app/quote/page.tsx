@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
+import { Clock, Phone, ShieldCheck } from 'lucide-react';
 import { EnquiryForm } from '@/components/quote/EnquiryForm';
+import { site } from '@/data/site';
 
 export const metadata: Metadata = {
   alternates: { canonical: '/quote/' },
@@ -9,10 +11,44 @@ export const metadata: Metadata = {
     'Tell us who is travelling and when. Takes about two minutes and does not commit you to booking.',
 };
 
+/**
+ * The enquiry form is a bare <form> with no container of its own — deliberately,
+ * because on a package page it drops into a card that already has one. On this
+ * page nothing wrapped it, so every field ran edge to edge against the viewport:
+ * labels touching x=0, inputs 940px wide, and the submit button as a full-bleed
+ * green band across the window. Wrapping it here rather than inside the
+ * component keeps the package-page usage untouched.
+ *
+ * The form sits in a card at a sane measure with a reassurance column beside it,
+ * which is also what stops a single narrow card leaving half the page empty on a
+ * wide screen.
+ */
+const REASSURANCE = [
+  {
+    icon: Clock,
+    title: 'About a minute',
+    detail:
+      'Six fields, most of them optional. Nothing here is a commitment and no deposit is taken.',
+  },
+  {
+    icon: Phone,
+    title: 'A person, not an autoresponder',
+    detail:
+      'A consultant checks live availability for your dates and comes back with real options and real prices.',
+  },
+  {
+    icon: ShieldCheck,
+    title: 'Your details stay here',
+    detail: 'Used to answer this enquiry only. No mailing list, and nothing sold on.',
+  },
+];
+
 export default function QuotePage() {
+  const tel = site.contact.phone.replace(/\s/g, '');
+
   return (
     <>
-      <section className="border-b border-border khatam-field">
+      <section className="border-b border-border bg-green-50">
         <div className="max-container padding-container flex flex-col gap-4 py-14">
           <p className="eyebrow">Quote request</p>
           <h1 className="text-display">Tell us about your journey</h1>
@@ -22,9 +58,50 @@ export default function QuotePage() {
           </p>
         </div>
       </section>
-      <Suspense fallback={<div className="max-container padding-container py-16">Loading…</div>}>
-        <EnquiryForm />
-      </Suspense>
+
+      <section className="max-container padding-container py-14">
+        {/* min-w-0 on both children, not decoration: a single-column grid track is
+            `auto`, so the card was sized by its widest min-content — a <select>
+            with a long option label — and overflowed the viewport by 16px at
+            390px. The lg tracks already say minmax(0,1fr); the mobile one needs
+            saying too. */}
+        <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start">
+          <div className="min-w-0 rounded-card border border-border bg-ground p-6 shadow-card sm:p-8">
+            <Suspense
+              fallback={<p className="text-body text-text-muted">Loading the form…</p>}
+            >
+              <EnquiryForm />
+            </Suspense>
+          </div>
+
+          <aside className="flex min-w-0 flex-col gap-6 rounded-card border border-border bg-green-50 p-6 lg:sticky lg:top-24">
+            <h2 className="font-serif text-subheading text-green-900">What happens next</h2>
+
+            <ul className="flex flex-col gap-5">
+              {REASSURANCE.map(({ icon: Icon, title, detail }) => (
+                <li key={title} className="flex gap-3">
+                  <Icon size={18} className="mt-0.5 shrink-0 text-green-700" aria-hidden />
+                  <span className="flex flex-col gap-1">
+                    <span className="text-body font-medium text-green-900">{title}</span>
+                    <span className="text-body-sm text-text-muted">{detail}</span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+
+            <div className="flex flex-col gap-2 border-t border-border pt-5">
+              <p className="text-body-sm text-text-muted">Prefer to talk it through?</p>
+              <a
+                href={`tel:${tel}`}
+                className="inline-flex items-center gap-2 text-body-lg font-semibold text-green-900 hover:text-green-700"
+              >
+                <Phone size={17} className="shrink-0 text-green-700" aria-hidden />
+                {site.contact.phone}
+              </a>
+            </div>
+          </aside>
+        </div>
+      </section>
     </>
   );
 }

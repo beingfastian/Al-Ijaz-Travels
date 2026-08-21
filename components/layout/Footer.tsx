@@ -201,14 +201,21 @@ export function Footer() {
         Bottom bar: copyright, and the legal links inline rather than as a fifth
         column with its own heading.
 
-        pb-24 at every width, not just on mobile. The WhatsApp button is fixed to
-        the viewport, so at the very bottom of the page it overlaps whatever
-        occupies the last ~80px regardless of width — it was covering "Payment
-        Security" completely. Vertical clearance is the only guarantee that
-        holds; padding on the right would only work at some widths.
+        The WhatsApp button is fixed to the viewport and used to cover "Payment
+        Security" completely, which was first solved with 96px of bottom padding
+        — correct, and visibly a strip of empty ground under the footer. Clearing
+        it sideways instead: on large screens the links stop 288px short of the
+        right edge. 224px was tried first and still clipped "Our Responsibility"
+        by about 10px, because `max-container` is 1440px wide and therefore has no
+        margin at all on a 1440px window — the arithmetic that works on a padded
+        container does not work on a flush one.
+        Below lg the links are left-aligned and short enough to sit clear of the
+        collapsed button. Verified by bounding-box intersection at 1440/768/390
+        rather than by eye, because this is exactly the kind of fix that holds at
+        one width and fails at another.
       */}
       <div className="border-t border-green-800">
-        <div className="max-container padding-container flex flex-col gap-4 py-8 pb-24 lg:flex-row lg:items-center lg:justify-between">
+        <div className="max-container padding-container flex flex-col gap-4 py-8 lg:flex-row lg:items-center lg:justify-between lg:pr-72">
           <p className="text-body-sm text-gold-100/80">
             © {year} {site.name}
             {site.company.legalName && ` — ${site.company.legalName}`}
