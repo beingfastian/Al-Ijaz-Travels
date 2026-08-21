@@ -38,9 +38,27 @@ import { Logo } from '@/components/brand/Logo';
  *    construction, so no width can break them badly.
  *
  * Earlier passes: five grid items in a four-column grid left three empty
- * columns; the khatam pattern read as unfinished texture along the ragged
- * bottom edge; and the ATOL notice was set as ten lines of centred body copy on
- * a cream band, which made a legal footnote the loudest element on the page.
+ * columns, and the khatam pattern read as unfinished texture along the ragged
+ * bottom edge.
+ *
+ * ---------------------------------------------------------------------------
+ * ⚠ THE ATOL NOTICE HAS BEEN REMOVED FROM THIS FOOTER, ON CLIENT INSTRUCTION.
+ *
+ * The prescribed CAA paragraph ("Many of the flight-inclusive holidays on this
+ * website are financially protected by the ATOL scheme…") lived here in a band
+ * of its own. It went through three treatments — centred on cream, small print
+ * on dark, small print with more contrast — and the client rejected all three
+ * as the worst thing on the page. Removed, and the reclaimed height given to
+ * the columns and the bottom bar rather than left as a gap.
+ *
+ * What that costs: the footer is on every page, so this notice is now on none
+ * of them. The ATOL badge and number still show in the brand column, which is
+ * the claim; this paragraph is the qualification of that claim. A site selling
+ * flight-inclusive packages is expected to carry it, so before launch it needs
+ * a home — the quote flow and /payment-security/ are the natural places, and
+ * both are outside this component. This is deliberately not silent: do not
+ * treat its absence as an oversight already fixed.
+ * ---------------------------------------------------------------------------
  */
 
 /**
@@ -101,7 +119,7 @@ export function Footer() {
       {/* Exactly four children. Five in a four-column grid is what broke this
           the first time. The brand column is given extra width so its paragraph
           sets at a readable measure rather than in a narrow ribbon. */}
-      <div className="max-container padding-container grid gap-x-10 gap-y-11 py-12 md:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_1.15fr]">
+      <div className="max-container padding-container grid gap-x-10 gap-y-11 py-16 md:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_1.15fr]">
         <div className="flex flex-col gap-4">
           <Logo tone="light" />
 
@@ -180,39 +198,6 @@ export function Footer() {
       </div>
 
       {/*
-        The statutory ATOL notice, as small print.
-
-        This is the CAA's standard wording, not copy, and it is expected on any
-        UK site selling flight-inclusive packages. It was previously centred body
-        text on a cream band, which turned a legal footnote into the biggest
-        element on the page. Contrast is a little higher than a footnote strictly
-        needs, because the competitor's version sits on white and is legible and
-        ours was fading into the ground.
-
-        TODO(client): have a solicitor confirm this is the current prescribed
-        wording and that it matches the scope of ATOL 74904 before launch.
-      */}
-      {accreditations.length > 0 && (
-        <div className="border-t border-green-800/70">
-          {/* max-w on an inner element, not on `max-container` itself — putting it
-              on the container overrode that utility's own max-width, and its
-              mx-auto then indented the whole notice off the column grid. */}
-          <div className="max-container padding-container py-7">
-            <p className="max-w-4xl text-left text-[0.8125rem]/[1.7] text-gold-100/80">
-              Many of the flight-inclusive holidays on this website are financially
-              protected by the ATOL scheme under ATOL {site.accreditation.atolNumber}. When
-              you pay you will be supplied with an ATOL Certificate. Please ask for it and
-              check to ensure that everything you booked — flights, hotels and other
-              services — is listed on it. If you do receive an ATOL Certificate but all the
-              parts of your trip are not listed on it, those parts will not be ATOL
-              protected. Some of the flights on this website are also financially protected
-              by the ATOL scheme, but ATOL protection does not apply to all flights.
-            </p>
-          </div>
-        </div>
-      )}
-
-      {/*
         Bottom bar: copyright, and the legal links inline rather than as a fifth
         column with its own heading.
 
@@ -223,7 +208,7 @@ export function Footer() {
         holds; padding on the right would only work at some widths.
       */}
       <div className="border-t border-green-800">
-        <div className="max-container padding-container flex flex-col gap-4 py-7 pb-24 lg:flex-row lg:items-center lg:justify-between">
+        <div className="max-container padding-container flex flex-col gap-4 py-8 pb-24 lg:flex-row lg:items-center lg:justify-between">
           <p className="text-body-sm text-gold-100/80">
             © {year} {site.name}
             {site.company.legalName && ` — ${site.company.legalName}`}
