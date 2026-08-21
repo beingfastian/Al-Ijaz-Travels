@@ -2,44 +2,64 @@ import Link from 'next/link';
 import { Mail, MapPin, Phone, ShieldCheck } from 'lucide-react';
 import { legalNavLinks, navLinks, secondaryNavLinks, site } from '@/data/site';
 import { accreditations } from '@/data/trust';
+import { airports } from '@/data/airports';
 import { Logo } from '@/components/brand/Logo';
 
 /**
  * The footer.
  *
- * Second rebuild. The first one fixed the grid arithmetic and then failed on
- * three things that mattered more, all visible in one screenshot:
+ * Third pass, and this one came from holding our footer next to the
+ * competitor's rather than from reasoning about it. Five differences, in
+ * descending order of how much they cost us:
  *
- * 1. The tiled khatam pattern. Along the ragged bottom edge of four unequal
- *    columns it read as an unfinished background texture rather than as
- *    decoration, and it fought every line of text sitting on it. A footer is
- *    the one part of a page that should recede. Flat dark green now.
+ * 1. COLUMN HEADINGS. Theirs are large, bold and white and read unmistakably as
+ *    headings. Ours were 12px gold uppercase micro-labels with 0.14em tracking
+ *    — so quiet that in a screenshot of the footer they barely registered, and
+ *    the columns read as four unlabelled lists. That single choice accounted for
+ *    most of the difference in perceived polish. Now 18px semibold, cream.
  *
- * 2. The ATOL notice was set as ten lines of CENTRED body copy on a cream band
- *    — a wall of text, and the loudest element on the page. Worse, the comment
- *    on `prose-centered` in globals.css says in as many words that paragraphs
- *    should not be centred, which I then did to the longest paragraph on the
- *    site. It is small print now: left-aligned, low contrast, inside the dark
- *    footer. Still legally present, no longer shouting.
+ * 2. THE BRAND COLUMN WAS EMPTY. Theirs opens with a real paragraph of copy,
+ *    which is what makes their first column the same height as the other three.
+ *    Ours had a six-word tagline, so the column ended early and left a void.
+ *    There is now an actual description — factual, no "most trusted agency in
+ *    the UK" claims, which is theirs and is not checkable.
  *
- * 3. Six gold small-caps headings for four columns. The legal links have moved
- *    into the bottom bar as an inline row, which is where the competitor puts
- *    them and removes a heading nobody needed.
+ * 3. LINK SIZE AND RHYTHM. Ours were 14px on a 52px row pitch: small type,
+ *    loose spacing, which reads as sparse. Theirs are ~17px on ~36px. Now 16px
+ *    on ~36px — bigger text, tighter list.
  *
- * Vertical rhythm is tighter throughout, so the columns no longer leave a void
- * above the copyright rule.
+ * 4. THE CONTACT COLUMN HAD NO HIERARCHY. Theirs separates the phone (bold) and
+ *    email from a labelled "Office" block. Ours was three equal-weight rows, so
+ *    the phone number — the most valuable thing in the footer — had no more
+ *    prominence than the postcode.
  *
- * FAB clearance is bottom padding on the last band rather than horizontal
- * padding on its contents — the button is fixed to the viewport, so only
- * vertical space is a reliable guarantee at every width.
+ * 5. "IATA Accredited Agent · IATA 91245302" wrapped with "IATA" orphaned onto
+ *    the second line. The name and the number are now separate lines by
+ *    construction, so no width can break them badly.
+ *
+ * Earlier passes: five grid items in a four-column grid left three empty
+ * columns; the khatam pattern read as unfinished texture along the ragged
+ * bottom edge; and the ATOL notice was set as ten lines of centred body copy on
+ * a cream band, which made a legal footnote the loudest element on the page.
  */
+
+/**
+ * Spelled rather than numeric: "from 6 UK airports" reads as a spec sheet in the
+ * middle of a sentence. Derived from the data all the same, so the copy cannot
+ * drift out of step with `data/airports.ts` when a route is added.
+ */
+const NUMBER_WORDS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'];
+const airportCount = NUMBER_WORDS[airports.length] ?? String(airports.length);
+
+const ABOUT = `Al Ijaz Travel arranges all-inclusive Umrah for pilgrims travelling from ${airportCount} UK airports. Flights, visa, hotels near the Haram and every transfer come in one per-person price — with each hotel's walking distance stated in metres before you pay.`;
+
 export function Footer() {
   const year = new Date().getFullYear();
   const tel = site.contact.phone.replace(/\s/g, '');
 
   const columns = [
     {
-      title: 'Explore',
+      title: 'Travel',
       label: 'Footer',
       links: [...navLinks, { href: '/quote/', label: 'Request a quote' }],
     },
@@ -79,22 +99,29 @@ export function Footer() {
       </div>
 
       {/* Exactly four children. Five in a four-column grid is what broke this
-          the first time. */}
-      <div className="max-container padding-container grid gap-x-8 gap-y-10 py-12 md:grid-cols-2 lg:grid-cols-4">
+          the first time. The brand column is given extra width so its paragraph
+          sets at a readable measure rather than in a narrow ribbon. */}
+      <div className="max-container padding-container grid gap-x-10 gap-y-11 py-12 md:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_1.15fr]">
         <div className="flex flex-col gap-4">
           <Logo tone="light" />
-          <p className="max-w-xs text-body-sm text-gold-100">{site.tagline}</p>
+
+          {/* The competitor's first column carries a paragraph, and that is what
+              keeps it level with the other three. Ours carried six words. */}
+          <p className="max-w-sm text-body-sm/[1.7] text-gold-100">{ABOUT}</p>
 
           {/* In the brand column rather than a fifth grid cell. Renders only
-              when data/trust.ts holds real numbers. */}
+              when data/trust.ts holds real numbers. Name and number are
+              separate lines so no column width can orphan half of one. */}
           {accreditations.length > 0 && (
-            <ul className="mt-1 flex flex-col gap-2.5 border-t border-green-800 pt-4">
+            <ul className="mt-1 flex flex-wrap gap-x-8 gap-y-3 border-t border-green-800 pt-4">
               {accreditations.map((a) => (
-                <li key={a.name} className="flex items-center gap-2 text-body-sm">
-                  <ShieldCheck size={15} className="shrink-0 text-gold-400" aria-hidden />
-                  <span className="text-gold-100">
-                    <span className="text-sand-50">{a.name}</span>
-                    {a.reference && <span className="text-gold-200/80"> · {a.reference}</span>}
+                <li key={a.name} className="flex items-start gap-2">
+                  <ShieldCheck size={16} className="mt-0.5 shrink-0 text-gold-400" aria-hidden />
+                  <span className="flex flex-col">
+                    <span className="text-body-sm font-medium text-sand-50">{a.name}</span>
+                    {a.reference && (
+                      <span className="text-body-sm text-gold-200/85">{a.reference}</span>
+                    )}
                   </span>
                 </li>
               ))}
@@ -103,14 +130,14 @@ export function Footer() {
         </div>
 
         {columns.map((column) => (
-          <nav key={column.title} aria-label={column.label} className="flex flex-col gap-3.5">
-            <h2 className="text-label uppercase tracking-[0.14em] text-gold-300">{column.title}</h2>
-            <ul className="flex flex-col gap-2">
+          <nav key={column.title} aria-label={column.label} className="flex flex-col gap-4">
+            <h2 className="text-body-lg font-semibold text-sand-50">{column.title}</h2>
+            <ul className="flex flex-col gap-2.5">
               {column.links.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-body-sm text-sand-50/90 transition-colors hover:text-gold-200"
+                    className="text-body text-sand-50/85 transition-colors hover:text-gold-200"
                   >
                     {link.label}
                   </Link>
@@ -120,29 +147,35 @@ export function Footer() {
           </nav>
         ))}
 
-        <div className="flex flex-col gap-3.5">
-          <h2 className="text-label uppercase tracking-[0.14em] text-gold-300">Contact</h2>
-          <ul className="flex flex-col gap-3 text-body-sm">
-            <li className="flex items-start gap-2.5">
-              <Phone size={15} className="mt-1 shrink-0 text-gold-400" aria-hidden />
-              <a href={`tel:${tel}`} className="text-sand-50/90 hover:text-gold-200">
-                {site.contact.phone}
-              </a>
-            </li>
-            <li className="flex items-start gap-2.5">
-              <Mail size={15} className="mt-1 shrink-0 text-gold-400" aria-hidden />
-              <a
-                href={`mailto:${site.contact.email}`}
-                className="break-all text-sand-50/90 hover:text-gold-200"
-              >
-                {site.contact.email}
-              </a>
-            </li>
-            <li className="flex items-start gap-2.5">
-              <MapPin size={15} className="mt-1 shrink-0 text-gold-400" aria-hidden />
-              <span className="text-gold-100">{site.contact.address}</span>
-            </li>
-          </ul>
+        {/* Contact, with hierarchy. The phone number is the most valuable line
+            in the footer and previously had the same weight as the postcode. */}
+        <div className="flex flex-col gap-4">
+          <h2 className="text-body-lg font-semibold text-sand-50">Contact</h2>
+
+          <div className="flex flex-col gap-2.5">
+            <a
+              href={`tel:${tel}`}
+              className="flex items-center gap-2.5 text-body-lg font-semibold text-sand-50 transition-colors hover:text-gold-200"
+            >
+              <Phone size={17} className="shrink-0 text-gold-400" aria-hidden />
+              {site.contact.phone}
+            </a>
+            <a
+              href={`mailto:${site.contact.email}`}
+              className="flex items-center gap-2.5 text-body text-sand-50/85 transition-colors hover:text-gold-200"
+            >
+              <Mail size={16} className="shrink-0 text-gold-400" aria-hidden />
+              <span className="break-all">{site.contact.email}</span>
+            </a>
+          </div>
+
+          <div className="flex flex-col gap-1.5 border-t border-green-800 pt-4">
+            <h3 className="text-label uppercase tracking-[0.14em] text-gold-300">Office</h3>
+            <p className="flex items-start gap-2.5 text-body text-gold-100">
+              <MapPin size={16} className="mt-1 shrink-0 text-gold-400" aria-hidden />
+              {site.contact.address}
+            </p>
+          </div>
         </div>
       </div>
 
@@ -152,7 +185,9 @@ export function Footer() {
         This is the CAA's standard wording, not copy, and it is expected on any
         UK site selling flight-inclusive packages. It was previously centred body
         text on a cream band, which turned a legal footnote into the biggest
-        element on the page.
+        element on the page. Contrast is a little higher than a footnote strictly
+        needs, because the competitor's version sits on white and is legible and
+        ours was fading into the ground.
 
         TODO(client): have a solicitor confirm this is the current prescribed
         wording and that it matches the scope of ATOL 74904 before launch.
@@ -160,10 +195,10 @@ export function Footer() {
       {accreditations.length > 0 && (
         <div className="border-t border-green-800/70">
           {/* max-w on an inner element, not on `max-container` itself — putting it
-              on the container overrode its own max-width and its `mx-auto` then
-              indented the whole notice off the column grid. */}
+              on the container overrode that utility's own max-width, and its
+              mx-auto then indented the whole notice off the column grid. */}
           <div className="max-container padding-container py-7">
-            <p className="max-w-4xl text-left text-[0.8125rem]/[1.65] text-gold-100/65">
+            <p className="max-w-4xl text-left text-[0.8125rem]/[1.7] text-gold-100/80">
               Many of the flight-inclusive holidays on this website are financially
               protected by the ATOL scheme under ATOL {site.accreditation.atolNumber}. When
               you pay you will be supplied with an ATOL Certificate. Please ask for it and
