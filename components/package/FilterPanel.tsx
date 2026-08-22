@@ -2,7 +2,13 @@
 
 import { SlidersHorizontal, X } from 'lucide-react';
 import type { PackageFilters, Tier } from '@/lib/types';
-import type { filterBounds } from '@/lib/filter';
+import {
+  DISTANCE_MIN_M,
+  DISTANCE_STEP_M,
+  PRICE_STEP_GBP,
+  topStop,
+  type filterBounds,
+} from '@/lib/filter';
 import { formatMonthKey, formatGbp } from '@/lib/format';
 import { airports } from '@/data/airports';
 import type { AirportCode } from '@/lib/types';
@@ -37,6 +43,9 @@ export function FilterPanel({
   onChange: (patch: Partial<PackageFilters>) => void;
   onClear: () => void;
 }) {
+  const priceTop = topStop(bounds.minPriceGbp, bounds.maxPriceGbp, PRICE_STEP_GBP);
+  const distanceTop = topStop(DISTANCE_MIN_M, bounds.maxDistanceM, DISTANCE_STEP_M);
+
   const toggleTier = (tier: Tier) => {
     onChange({
       tiers: filters.tiers.includes(tier)
@@ -93,13 +102,16 @@ export function FilterPanel({
           type="range"
           min={bounds.minPriceGbp}
           max={bounds.maxPriceGbp}
-          step={5000}
-          value={filters.maxPriceGbp ?? bounds.maxPriceGbp}
+          step={PRICE_STEP_GBP}
+          // Parked at the top *reachable* stop when the filter is off, so the
+          // thumb sits hard right rather than hard left while the label reads
+          // like no filter is applied.
+          value={filters.maxPriceGbp ?? priceTop}
           onChange={(e) => {
             const value = Number(e.target.value);
             // At the top of the range the filter is off, not "everything under max" —
             // so the URL stays clean and the "clear all" control disappears correctly.
-            onChange({ maxPriceGbp: value >= bounds.maxPriceGbp ? null : value });
+            onChange({ maxPriceGbp: value >= priceTop ? null : value });
           }}
           className="accent-green-700"
         />
@@ -118,13 +130,13 @@ export function FilterPanel({
         <input
           id="maxDistance"
           type="range"
-          min={100}
+          min={DISTANCE_MIN_M}
           max={bounds.maxDistanceM}
-          step={50}
-          value={filters.maxDistanceM ?? bounds.maxDistanceM}
+          step={DISTANCE_STEP_M}
+          value={filters.maxDistanceM ?? distanceTop}
           onChange={(e) => {
             const value = Number(e.target.value);
-            onChange({ maxDistanceM: value >= bounds.maxDistanceM ? null : value });
+            onChange({ maxDistanceM: value >= distanceTop ? null : value });
           }}
           className="accent-green-700"
         />

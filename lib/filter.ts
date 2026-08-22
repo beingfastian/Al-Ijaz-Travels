@@ -28,6 +28,52 @@ const SORT_KEYS: readonly SortKey[] = [
 
 const VALID_TIERS: readonly Tier[] = [3, 4, 5];
 
+/* --------------------------------------------------------------- slider steps */
+
+/**
+ * Granularity of the two range sliders in FilterPanel.
+ *
+ * These live here, next to `filterBounds`, for one reason: they are only correct
+ * *relative to the catalogue*, so they need a test that reads the real bounds.
+ * The price step was `5000` until now — a leftover from when this catalogue was
+ * priced in rupees. Against GBP the whole span is £3,885, so a 5,000 step left
+ * the control with exactly one reachable value: the minimum. The browser pinned
+ * the thumb to the far left while the label beside it read "Up to £4,515", and
+ * the only thing a visitor could ask for was packages under £630.
+ *
+ * `sliderHasUsefulResolution` below is the guard against that returning.
+ */
+export const PRICE_STEP_GBP = 25;
+export const DISTANCE_STEP_M = 50;
+/** Nothing in the catalogue sits closer than this, so there is no point offering it. */
+export const DISTANCE_MIN_M = 100;
+
+/**
+ * The highest value a range input can actually produce.
+ *
+ * A range input only lands on `min + n * step`. When the span is not a whole
+ * number of steps, `max` itself is unreachable — so "drag it all the way right"
+ * never equals `max`, and any "at the maximum the filter is off" test written
+ * against `max` never fires. The listing stays quietly narrowed with the thumb
+ * hard right and "Clear all" showing, which reads as a bug in the results rather
+ * than in the control. FilterPanel compares against this instead.
+ */
+export function topStop(min: number, max: number, step: number): number {
+  if (step <= 0 || max <= min) return min;
+  return min + Math.floor((max - min) / step) * step;
+}
+
+/**
+ * Does a slider have enough distinct positions to be worth dragging?
+ *
+ * The threshold is deliberately low. This is not a taste check; it is a tripwire
+ * for a step that has drifted so far from the data that the control is inert.
+ */
+export function sliderHasUsefulResolution(min: number, max: number, step: number): boolean {
+  if (step <= 0 || max <= min) return false;
+  return Math.floor((max - min) / step) >= 10;
+}
+
 /** Real min/max across the catalogue, for slider ends and sanity checks. */
 export function filterBounds(packages: Package[]) {
   if (packages.length === 0) {

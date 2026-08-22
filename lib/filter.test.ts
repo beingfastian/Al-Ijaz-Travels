@@ -4,6 +4,11 @@ import assert from 'node:assert/strict';
 import {
   applyFilters,
   filterBounds,
+  topStop,
+  sliderHasUsefulResolution,
+  PRICE_STEP_GBP,
+  DISTANCE_STEP_M,
+  DISTANCE_MIN_M,
   filtersFromSearchParams,
   isDefaultFilters,
   matchesFilters,
@@ -11,6 +16,11 @@ import {
   sortPackages,
 } from './filter.ts';
 import { DEFAULT_FILTERS, type Package, type PackageFilters } from './types.ts';
+// The REAL 195-package catalogue, not the three-package fixture below. The
+// slider-resolution tests are only meaningful against live prices: the bug they
+// guard was a step that suited the old rupee figures and was larger than the
+// entire GBP span.
+import { buildCatalogue } from './catalogue.ts';
 
 /** Minimal package factory — only the fields the filters read. */
 function pkg(over: Partial<Package> & { slug: string }): Package {
@@ -221,4 +231,72 @@ test('duplicate and unsorted tiers are normalised', () => {
 test('isDefaultFilters ignores sort order', () => {
   assert.ok(isDefaultFilters(filters({ sort: 'price-desc' })));
   assert.ok(!isDefaultFilters(filters({ tiers: [5] })));
+});
+
+/* ------------------------------------------------------- slider control bounds */
+
+/**
+ * These three tests exist because of a real, shipped fault, not a hypothetical.
+ *
+ * The price slider carried `step={5000}` — correct when this catalogue was priced
+ * in rupees, nonsense once it moved to GBP. The entire price span is £3,885, so a
+ * 5,000 step left the control with exactly ONE reachable value: the minimum. The
+ * browser clamped the thumb to the far left while the label beside it read "Up to
+ * £4,515", so the panel contradicted itself on screen, and the only thing a
+ * visitor could ask for was packages under £630.
+ *
+ * Nothing caught it. It is not a type error, axe has no opinion on it, and a
+ * screenshot looks like a slider at its minimum rather than a broken one. These
+ * assertions run against the real catalogue bounds, so if the pricing shifts by
+ * an order of magnitude again the test fails instead of the customer.
+ */
+
+test('price slider step gives the control real resolution against live bounds', () => {
+  const b = filterBounds(buildCatalogue());
+  assert.ok(
+    sliderHasUsefulResolution(b.minPriceGbp, b.maxPriceGbp, PRICE_STEP_GBP),
+    `price step ${PRICE_STEP_GBP} over a span of ${b.maxPriceGbp - b.minPriceGbp} ` +
+      `leaves only ${Math.floor((b.maxPriceGbp - b.minPriceGbp) / PRICE_STEP_GBP) + 1} positions`
+  );
+});
+
+test('distance slider step gives the control real resolution against live bounds', () => {
+  const b = filterBounds(buildCatalogue());
+  assert.ok(
+    sliderHasUsefulResolution(DISTANCE_MIN_M, b.maxDistanceM, DISTANCE_STEP_M),
+    `distance step ${DISTANCE_STEP_M} over a span of ${b.maxDistanceM - DISTANCE_MIN_M}`
+  );
+});
+
+test('topStop returns the highest value a range input can actually reach', () => {
+  // Span divides evenly: the max is reachable.
+  assert.equal(topStop(100, 1400, 50), 1400);
+  // Span does not divide evenly: the max is NOT reachable, and this is the point.
+  assert.equal(topStop(630, 4515, 25), 4505);
+  assert.equal(topStop(0, 10, 3), 9);
+  // Degenerate inputs must not produce NaN or Infinity for a `value` prop.
+  assert.equal(topStop(0, 0, 25), 0);
+  assert.equal(topStop(500, 100, 25), 500);
+  assert.equal(topStop(100, 200, 0), 100);
+});
+
+test('a slider parked at its top stop reads as "no filter", not as a filter at max', () => {
+  // The regression this guards: comparing against `max` rather than the top stop
+  // means dragging fully right leaves maxPrice pinned one step below the most
+  // expensive package, so the dearest package vanishes and "Clear all" never
+  // goes away — with the thumb sitting hard right, looking untouched.
+  const live = buildCatalogue();
+  const b = filterBounds(live);
+  const top = topStop(b.minPriceGbp, b.maxPriceGbp, PRICE_STEP_GBP);
+  assert.ok(top < b.maxPriceGbp, 'this catalogue is the case where max is unreachable');
+
+  const atTop = applyFilters(live, { ...DEFAULT_FILTERS, maxPriceGbp: null });
+  assert.equal(atTop.length, live.length, 'null means unfiltered');
+
+  const atTopStop = applyFilters(live, { ...DEFAULT_FILTERS, maxPriceGbp: top });
+  assert.ok(
+    atTopStop.length < live.length,
+    'filtering AT the top stop does drop the dearest package — which is exactly why ' +
+      'the control must report null there rather than the numeric value'
+  );
 });
