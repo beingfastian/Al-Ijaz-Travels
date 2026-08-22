@@ -38,9 +38,13 @@ export function UtilityBar() {
         </ul>
 
         <div className="flex items-center gap-4">
+          {/* py-1 is not decoration: at 14px this link measured 149x22, which is
+              under the 24px minimum target size, and it is the phone number for
+              an audience that skews older. The padding costs nothing here and
+              takes the target to 24px without moving the bar. */}
           <a
             href={`tel:${phone}`}
-            className="inline-flex items-center gap-1.5 text-body-sm font-medium text-sand-50 hover:text-gold-200"
+            className="inline-flex items-center gap-1.5 py-1 text-body-sm font-medium text-sand-50 hover:text-gold-200"
           >
             <Phone size={14} aria-hidden />
             {site.contact.phone}

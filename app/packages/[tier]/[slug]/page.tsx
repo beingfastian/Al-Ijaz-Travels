@@ -153,8 +153,22 @@ export default async function PackageDetailPage({ params }: Props) {
         </div>
       )}
 
-      <div className="max-container padding-container grid gap-12 py-12 lg:grid-cols-[1fr_340px] lg:py-16">
-        <div className="flex flex-col gap-14">
+      {/*
+        min-w-0 on both children, and on the lg track too.
+
+        A single-column grid track is `auto`, which means min-content, and a
+        native <select> computes white-space: pre — so its min-content is the
+        width of its LONGEST OPTION. The enquiry form's "Departing from" and
+        "Preferred month" menus dragged this track out to 381px inside a 342px
+        container and the whole page scrolled sideways by 16px at 390px wide.
+        Nothing visibly wrapped, so it read as a stray margin rather than as a
+        control forcing the layout.
+
+        Verified min-width:0 collapses the track to 342px and clips nothing but
+        the sr-only spans, which are 1px by design.
+      */}
+      <div className="max-container padding-container grid gap-12 py-12 lg:grid-cols-[minmax(0,1fr)_340px] lg:py-16">
+        <div className="flex min-w-0 flex-col gap-14">
           <section aria-labelledby="hotels-heading" className="flex flex-col gap-6">
             <h2 id="hotels-heading" className="text-heading">
               Where you stay
@@ -272,7 +286,7 @@ export default async function PackageDetailPage({ params }: Props) {
           </section>
         </div>
 
-        <aside className="lg:sticky lg:top-28 lg:self-start">
+        <aside className="min-w-0 lg:sticky lg:top-28 lg:self-start">
           <PriceRail pkg={pkg} />
         </aside>
       </div>

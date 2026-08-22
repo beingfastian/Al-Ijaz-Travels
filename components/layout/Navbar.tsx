@@ -22,6 +22,11 @@ export function Navbar() {
   const pathname = usePathname();
 
   // Close on route change, or the drawer stays open over the new page.
+  //
+  // Necessary but not sufficient: tapping the link for the page you are already
+  // on does not change the pathname, so this effect never fires and the drawer
+  // stays open with body scroll still locked. On the home page, tapping "Home"
+  // looked like the menu had frozen. Every link below also closes on click.
   useEffect(() => {
     setOpen(false);
   }, [pathname]);
@@ -104,6 +109,7 @@ export function Navbar() {
               <li key={link.href}>
                 <Link
                   href={link.href}
+                  onClick={() => setOpen(false)}
                   className="block border-b border-border py-4 text-body-lg text-green-900"
                 >
                   {link.label}
