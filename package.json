@@ -12,6 +12,7 @@
     "test": "node --test \"lib/**/*.test.ts\" \"components/**/*.test.ts\"",
     "serve:out": "node scripts/serve-out.mjs",
     "verify:export": "node scripts/verify-export.mjs",
+    "send-test": "node scripts/send-test-enquiry.mjs",
     "verify:browser": "node scripts/verify-browser.mjs",
     "verify:lighthouse": "node scripts/verify-lighthouse.mjs",
     "verify": "npm run images && npm run palette && npm run build && npm run test && npm run verify:export && npm run verify:browser"

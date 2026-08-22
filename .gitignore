@@ -5,3 +5,7 @@ next-env.d.ts
 *.tsbuildinfo
 .DS_Store
 screenshots/
+
+# WhatsApp Web session for scripts/send-test-enquiry.mjs — a real logged-in
+# profile. Never commit it: it is a live session token for a phone number.
+.whatsapp-profile/
