@@ -150,14 +150,18 @@ export function EnquiryForm({ packageSlug, compact = false }: EnquiryFormProps) 
     router.push('/quote/sent/');
   }
 
-  const field = 'w-full rounded-card border border-border bg-surface px-4 py-2.5 text-body transition-colors focus:border-green-700';
+  const field =
+    'w-full rounded-card border border-border bg-surface px-4 py-2 text-body transition-colors focus:border-green-700 [@media(min-height:1150px)]:py-2.5';
   const label = 'text-body-sm font-medium text-text';
   const errorText = 'text-body-sm text-danger';
 
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className={cn('flex flex-col', compact ? 'gap-4' : 'gap-6')}
+      className={cn(
+        'flex flex-col',
+        compact ? 'gap-4' : 'gap-4 [@media(min-height:1150px)]:gap-6'
+      )}
       noValidate
     >
       {restored && (
@@ -166,8 +170,19 @@ export function EnquiryForm({ packageSlug, compact = false }: EnquiryFormProps) 
         </p>
       )}
 
-      <div className={cn('grid gap-4', compact ? 'grid-cols-1' : 'sm:grid-cols-2')}>
-        <div className="flex flex-col gap-1.5">
+      <div
+        className={cn(
+          'grid gap-3 [@media(min-height:1150px)]:gap-4',
+          compact
+            ? 'grid-cols-1'
+            : // Two columns is the shape when there is vertical room. When there is
+              // not, trade width for height — three columns on a laptop, four on a
+              // wide monitor. These are eight short fields; the only one that
+              // suffers at 240px is a <select> whose longest option truncates.
+              'sm:grid-cols-2 [@media(max-height:1149px)]:lg:grid-cols-3 [@media(max-height:1149px)]:2xl:grid-cols-4'
+        )}
+      >
+        <div className="flex flex-col gap-1 [@media(min-height:1150px)]:gap-1.5">
           <label htmlFor="name" className={label}>
             Your name
           </label>
@@ -175,7 +190,7 @@ export function EnquiryForm({ packageSlug, compact = false }: EnquiryFormProps) 
           {errors.name && <p className={errorText}>{errors.name.message}</p>}
         </div>
 
-        <div className="flex flex-col gap-1.5">
+        <div className="flex flex-col gap-1 [@media(min-height:1150px)]:gap-1.5">
           <label htmlFor="phone" className={label}>
             Phone or WhatsApp
           </label>
@@ -190,7 +205,7 @@ export function EnquiryForm({ packageSlug, compact = false }: EnquiryFormProps) 
           {errors.phone && <p className={errorText}>{errors.phone.message}</p>}
         </div>
 
-        <div className="flex flex-col gap-1.5">
+        <div className="flex flex-col gap-1 [@media(min-height:1150px)]:gap-1.5">
           <label htmlFor="email" className={label}>
             Email <span className="font-normal text-text-muted">(optional)</span>
           </label>
@@ -198,7 +213,7 @@ export function EnquiryForm({ packageSlug, compact = false }: EnquiryFormProps) 
           {errors.email && <p className={errorText}>{errors.email.message}</p>}
         </div>
 
-        <div className="flex flex-col gap-1.5">
+        <div className="flex flex-col gap-1 [@media(min-height:1150px)]:gap-1.5">
           <label htmlFor="travellers" className={label}>
             How many travelling
           </label>
@@ -214,12 +229,15 @@ export function EnquiryForm({ packageSlug, compact = false }: EnquiryFormProps) 
         </div>
 
         {!locked && (
-          <div className="flex flex-col gap-1.5">
+          <div className="flex flex-col gap-1 [@media(min-height:1150px)]:gap-1.5">
             <label htmlFor="packageSlug" className={label}>
               Package <span className="font-normal text-text-muted">(optional)</span>
             </label>
             <select id="packageSlug" {...register('packageSlug')} className={field}>
-              <option value="">Not sure yet — please advise</option>
+              {/* Short enough to survive a narrow column. The message sent to
+                  WhatsApp still says "Not sure yet — please advise", which is
+                  read by a consultant, not squeezed into a select. */}
+              <option value="">Not sure yet</option>
               {/* Evergreen only. Offering all 195 in a <select> would be unusable;
                   a consultant sorts the exact month from the enquiry. */}
               {tierGroups.map(({ tier, list }) => (
@@ -235,7 +253,7 @@ export function EnquiryForm({ packageSlug, compact = false }: EnquiryFormProps) 
           </div>
         )}
 
-        <div className="flex flex-col gap-1.5">
+        <div className="flex flex-col gap-1 [@media(min-height:1150px)]:gap-1.5">
           <label htmlFor="airport" className={label}>
             Departing from
           </label>
@@ -249,7 +267,7 @@ export function EnquiryForm({ packageSlug, compact = false }: EnquiryFormProps) 
           </select>
         </div>
 
-        <div className="flex flex-col gap-1.5">
+        <div className="flex flex-col gap-1 [@media(min-height:1150px)]:gap-1.5">
           <label htmlFor="departureMonth" className={label}>
             Preferred month
           </label>
@@ -263,7 +281,7 @@ export function EnquiryForm({ packageSlug, compact = false }: EnquiryFormProps) 
           </select>
         </div>
 
-        <div className="flex flex-col gap-1.5">
+        <div className="flex flex-col gap-1 [@media(min-height:1150px)]:gap-1.5">
           <label htmlFor="sharing" className={label}>
             Room sharing
           </label>
@@ -278,13 +296,13 @@ export function EnquiryForm({ packageSlug, compact = false }: EnquiryFormProps) 
         </div>
       </div>
 
-      <div className="flex flex-col gap-1.5">
+      <div className="flex flex-col gap-1 [@media(min-height:1150px)]:gap-1.5">
         <label htmlFor="notes" className={label}>
           Anything we should know? <span className="font-normal text-text-muted">(optional)</span>
         </label>
         <textarea
           id="notes"
-          rows={compact ? 2 : 3}
+          rows={compact ? 2 : 2}
           {...register('notes')}
           className={field}
           placeholder="Mobility needs, travelling with children or elderly parents, fixed dates…"
@@ -292,7 +310,7 @@ export function EnquiryForm({ packageSlug, compact = false }: EnquiryFormProps) 
         {errors.notes && <p className={errorText}>{errors.notes.message}</p>}
       </div>
 
-      <div className="flex flex-col gap-1.5">
+      <div className="flex flex-col gap-1 [@media(min-height:1150px)]:gap-1.5">
         <label htmlFor="consent" className="flex items-start gap-3 text-body-sm text-text-muted">
           <input
             id="consent"
@@ -323,7 +341,7 @@ export function EnquiryForm({ packageSlug, compact = false }: EnquiryFormProps) 
         Send enquiry on WhatsApp
       </Button>
 
-      <p className="text-body-sm text-text-muted">
+      <p className="hidden text-body-sm text-text-muted [@media(min-height:840px)]:block">
         Sending this does not commit you to booking. A consultant confirms availability
         first, then sends written confirmation.
       </p>
