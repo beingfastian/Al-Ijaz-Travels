@@ -105,20 +105,40 @@ export function EnquiryForm({ packageSlug, compact = false }: EnquiryFormProps) 
 
   const chosen = getPackage(values.packageSlug);
 
+  /*
+    The outgoing WhatsApp message is the actual business artefact here — it is
+    what a consultant reads and replies to — so it is worth getting right.
+    Three faults this replaces, all visible in a real submission:
+
+    - The departure airport and the email address were concatenated into the
+      free-text `notes`, so a message read "Notes: Departing from: MAN / Email:
+      ... / <what the visitor actually typed>" — three unrelated things under one
+      label. Each has its own line now: the airport beside the travellers, the
+      email beside the phone.
+    - The airport arrived as a bare IATA code. "MAN" is unambiguous to us and not
+      to everyone reading a phone at 11pm.
+    - The month and sharing basis arrived as raw form values, "april" and "quad",
+      because formatMonthKey only capitalises keys shaped like "april-2027" while
+      this <select> uses bare month names.
+  */
+  const chosenAirport = airports.find((a) => a.code === values.airport);
+  const monthLabel = values.departureMonth
+    ? formatMonthKey(values.departureMonth).replace(/^./, (c) => c.toUpperCase())
+    : undefined;
+
   const message: QuoteMessage = {
     packageName: chosen?.name ?? 'Not sure yet — please advise',
     travellers: { adults: Number(values.travellers) || 0, children: 0, infants: 0 },
-    departureMonth: values.departureMonth ? formatMonthKey(values.departureMonth) : undefined,
-    sharing: values.sharing || undefined,
+    airport: chosenAirport ? `${chosenAirport.city} (${chosenAirport.code})` : undefined,
+    departureMonth: monthLabel,
+    // Capitalised, not formatSharing() — that returns "quad sharing", which under
+    // a "Room sharing:" label reads "Room sharing: quad sharing".
+    sharing: values.sharing ? values.sharing.replace(/^./, (c) => c.toUpperCase()) : undefined,
     name: values.name,
     phone: values.phone,
-    notes: [
-      values.airport ? `Departing from: ${values.airport}` : '',
-      values.email ? `Email: ${values.email}` : '',
-      values.notes ?? '',
-    ]
-      .filter(Boolean)
-      .join('\n'),
+    email: values.email || undefined,
+    // Free text only. Everything structured now has its own line.
+    notes: values.notes?.trim() || undefined,
   };
 
   function onSubmit() {

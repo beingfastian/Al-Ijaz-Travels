@@ -1,4 +1,8 @@
-import { site } from '@/data/site';
+// Relative, not the '@/' alias, so this module can be unit tested with
+// `node --test` — the alias is a bundler concern and node cannot resolve it.
+// The message this builds is the one artefact the business actually acts on,
+// so it is worth being able to assert its shape.
+import { site } from '../data/site.ts';
 
 /**
  * A static export has no server and therefore no route handler, so the quote flow
@@ -15,10 +19,14 @@ export interface QuoteMessage {
   packageName?: string;
   packageUrl?: string;
   travellers?: { adults: number; children: number; infants: number };
+  /** Human label, e.g. "Manchester (MAN)" — not the bare IATA code. */
+  airport?: string;
   departureMonth?: string;
   sharing?: string;
   name?: string;
   phone?: string;
+  email?: string;
+  /** Free text from the visitor ONLY. Structured fields have their own lines. */
   notes?: string;
 }
 
@@ -36,10 +44,17 @@ function lines(msg: QuoteMessage): string[] {
     out.push('', `Travellers: ${parts.join(', ')}`);
   }
 
+  if (msg.airport) out.push(`Departing from: ${msg.airport}`);
   if (msg.departureMonth) out.push(`Preferred departure: ${msg.departureMonth}`);
   if (msg.sharing) out.push(`Room sharing: ${msg.sharing}`);
+
   if (msg.name) out.push('', `Name: ${msg.name}`);
   if (msg.phone) out.push(`Phone: ${msg.phone}`);
+  // Beside the phone number, not buried in the notes. It is a way to reach the
+  // enquirer, and a consultant scanning for contact details should find both in
+  // the same place.
+  if (msg.email) out.push(`Email: ${msg.email}`);
+
   if (msg.notes) out.push('', `Notes: ${msg.notes}`);
 
   return out;

@@ -38,11 +38,21 @@ export const site = {
   currency: 'GBP',
 
   contact: {
-    // TODO(client): real WhatsApp business number in E.164 without the +.
-    // Client is supplying this separately — see PLAN-UK.md D8.
-    whatsapp: '000000000000',
-    // TODO(client): real UK numbers and inbox.
-    phone: '+44 000 000 0000',
+    /*
+      ⚠ TEST NUMBER, NOT THE BUSINESS NUMBER.
+
+      Supplied 22 Aug 2026 as +92 3189047157 so the WhatsApp handoff can be
+      exercised end to end before the real line exists. It is a Pakistani
+      mobile; the site sells to the UK, so shipping it would put a +92 number on
+      every page of a British travel agency and route real enquiries to a test
+      handset.
+
+      TODO(client): replace with the real UK WhatsApp Business number in E.164
+      without the + (see PLAN-UK.md D8) BEFORE launch. Both fields below.
+    */
+    whatsapp: '923189047157',
+    phone: '+92 318 904 7157',
+    // TODO(client): real inbox.
     email: 'info@example.invalid',
     /*
       Supplied by the client 20 Aug 2026 as: "13th Station Road, Southeast London,
