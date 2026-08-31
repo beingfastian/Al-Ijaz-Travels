@@ -4,7 +4,7 @@ import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 // Explicit .ts extension: this module is imported by a node --test file, and node's
 // ESM resolver does not add extensions. Do not "tidy" it away.
-import { SHARING, enquiryDefaults, type EnquiryValues } from './schema.ts';
+import { enquiryDefaults, type EnquiryValues } from './schema.ts';
 
 /* ============================================================================
  * THE QUOTE DRAFT — the only global store on the site.
@@ -45,9 +45,6 @@ function emptyDraft(): Pick<DraftState, 'values' | 'step' | 'savedAt'> {
   return { values: { ...enquiryDefaults }, step: 0, savedAt: null };
 }
 
-const num = (value: unknown, fallback: number): number =>
-  typeof value === 'number' && Number.isFinite(value) ? value : fallback;
-
 const str = (value: unknown, fallback: string): string =>
   typeof value === 'string' ? value : fallback;
 
@@ -62,24 +59,24 @@ export function sanitiseValues(raw: unknown): EnquiryValues {
   const src: Record<string, unknown> =
     typeof raw === 'object' && raw !== null ? (raw as Record<string, unknown>) : {};
 
-  const sharing =
-    typeof src.sharing === 'string' && (SHARING as readonly string[]).includes(src.sharing)
-      ? src.sharing
-      : '';
-
   return {
     name: str(src.name, enquiryDefaults.name),
     phone: str(src.phone, enquiryDefaults.phone),
     email: str(src.email, enquiryDefaults.email),
-    travellers: num(src.travellers, enquiryDefaults.travellers),
-    packageSlug: str(src.packageSlug, enquiryDefaults.packageSlug),
-    departureMonth: str(src.departureMonth, enquiryDefaults.departureMonth),
-    airport: (str(src.airport, '') || '') as EnquiryValues['airport'],
-    sharing: sharing as EnquiryValues['sharing'],
-    notes: str(src.notes, enquiryDefaults.notes ?? ''),
+    // A draft written before the form was narrowed to six fields stored
+    // `travellers` as a number. Carry it across rather than dropping it: someone
+    // mid-enquiry when the site deployed should not lose what they typed.
+    passengers: str(
+      src.passengers,
+      // Number.isFinite, not typeof: NaN and Infinity are numbers, and
+      // String(NaN) would put the literal text "NaN" in the passengers box.
+      Number.isFinite(src.travellers) ? String(src.travellers) : enquiryDefaults.passengers
+    ),
+    message: str(src.message, str(src.notes, enquiryDefaults.message ?? '')),
     // Consent is never restored from a draft. It has to be a fresh act each
     // time, which is the whole point of it under UK GDPR.
     consent: false as unknown as true,
+    packageSlug: str(src.packageSlug, enquiryDefaults.packageSlug),
   };
 }
 

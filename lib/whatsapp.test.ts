@@ -22,10 +22,7 @@ import { site } from '../data/site.ts';
 
 const FULL: QuoteMessage = {
   packageName: '10 Nights 5-Star Umrah',
-  travellers: { adults: 4, children: 2, infants: 1 },
-  airport: 'Manchester (MAN)',
-  departureMonth: 'April',
-  sharing: 'Quad',
+  passengers: '2 adults & 2 children',
   name: 'Fatima Bibi',
   phone: '+44 7911 123456',
   email: 'fatima@example.com',
@@ -38,10 +35,7 @@ test('every field the consultant needs reaches the message, each on its own line
   assert.equal(lines[0], `${site.whatsappGreeting}, I would like a quote for Umrah.`);
   for (const expected of [
     'Package: 10 Nights 5-Star Umrah',
-    'Travellers: 4 adults, 2 children, 1 infant',
-    'Departing from: Manchester (MAN)',
-    'Preferred departure: April',
-    'Room sharing: Quad',
+    'Passengers: 2 adults & 2 children',
     'Name: Fatima Bibi',
     'Phone: +44 7911 123456',
     'Email: fatima@example.com',
@@ -69,20 +63,13 @@ test('email sits beside the phone, not adrift at the end', () => {
 
 test('empty optional fields are omitted rather than sent as blank labels', () => {
   const bare = whatsappMessagePreview({
-    packageName: 'Not sure yet',
-    travellers: { adults: 2, children: 0, infants: 0 },
+    passengers: '2 adults',
     name: 'Yusuf Khan',
     phone: '07700 900123',
   });
-  for (const absent of ['Departing from', 'Preferred departure', 'Room sharing', 'Email:', 'Notes:']) {
+  for (const absent of ['Package:', 'Email:', 'Notes:']) {
     assert.ok(!bare.includes(absent), `should not appear when unset: ${absent}`);
   }
-  // Singulars, so a solo traveller is not "1 adults".
-  assert.ok(
-    whatsappMessagePreview({ travellers: { adults: 1, children: 1, infants: 1 } }).includes(
-      'Travellers: 1 adult, 1 child, 1 infant'
-    )
-  );
 });
 
 test('the url targets the configured number and survives awkward input', () => {

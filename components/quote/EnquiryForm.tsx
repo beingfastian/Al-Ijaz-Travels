@@ -5,31 +5,38 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { MessageCircle, Loader2 } from 'lucide-react';
-import { getPackage, allDepartureMonths, basePackages } from '@/data/packages';
-import { airports } from '@/data/airports';
-import { formatMonthKey, formatGbp } from '@/lib/format';
+import { getPackage } from '@/data/packages';
 import { whatsappUrl, type QuoteMessage } from '@/lib/whatsapp';
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/lib/cn';
 import { useQuoteDraft } from './draft';
-import { enquirySchema, enquiryDefaults, SHARING, type EnquiryValues } from './schema';
+import { enquirySchema, enquiryDefaults, type EnquiryValues } from './schema';
 
 /**
- * One form, everything visible.
+ * One form, everything visible, six fields.
  *
- * Replaces a four-step wizard. The wizard was better engineered and worse for the
- * job: every step is somewhere to abandon, and a visitor comparing three
- * operators on a phone will not walk four panels to ask a question. Nine fields
- * shown at once is less intimidating than four panels hiding nine fields.
+ * The field list matches the competitor's enquiry form exactly, on client
+ * instruction: lead passenger name, phone, email, total passengers, message,
+ * consent. See schema.ts for what that trade costs — in short, the four fields
+ * removed (airport, month, room sharing, package) were the ones that made an
+ * enquiry answerable without a reply first.
  *
  * Renders in two sizes from the same component — full width on /quote/, and
- * `compact` inline on a package page, where the package is already known and the
- * form is a sidebar rather than the page. One component means the validation,
- * the draft persistence and the WhatsApp handoff cannot drift between them.
+ * `compact` inline on a package page. One component means the validation, the
+ * draft persistence and the WhatsApp handoff cannot drift between them.
+ *
+ * Accessibility wiring worth naming, because comparing the two forms is what
+ * exposed it. Ours previously set no `required` and no `aria-required` at all —
+ * validation was Zod behind `noValidate`, so a screen reader announced every
+ * field as optional while the competitor's announced five as required. And error
+ * messages were loose <p> elements with no `id`, so a screen reader user landing
+ * on an invalid field heard nothing wrong with it. axe passes both of those,
+ * because axe cannot know a paragraph is an error message. Fixed here:
+ * `aria-required`, `aria-invalid` and `aria-describedby` on every field.
  */
 
 interface EnquiryFormProps {
-  /** Preselect a package and hide the picker — used on package detail pages. */
+  /** Preselect a package — used on package detail pages. Never rendered. */
   packageSlug?: string;
   /** Tighter spacing and a single column, for a sidebar. */
   compact?: boolean;
@@ -38,17 +45,6 @@ interface EnquiryFormProps {
 export function EnquiryForm({ packageSlug, compact = false }: EnquiryFormProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const months = useMemo(() => allDepartureMonths(), []);
-  const tierGroups = useMemo(
-    () =>
-      [5, 4, 3].map((tier) => ({
-        tier,
-        list: basePackages()
-          .filter((p) => p.tier === tier)
-          .sort((a, b) => a.price.gbp - b.price.gbp),
-      })),
-    []
-  );
 
   const [ready, setReady] = useState(false);
   const [restored, setRestored] = useState(false);
@@ -107,38 +103,20 @@ export function EnquiryForm({ packageSlug, compact = false }: EnquiryFormProps) 
 
   /*
     The outgoing WhatsApp message is the actual business artefact here — it is
-    what a consultant reads and replies to — so it is worth getting right.
-    Three faults this replaces, all visible in a real submission:
+    what a consultant reads and replies to.
 
-    - The departure airport and the email address were concatenated into the
-      free-text `notes`, so a message read "Notes: Departing from: MAN / Email:
-      ... / <what the visitor actually typed>" — three unrelated things under one
-      label. Each has its own line now: the airport beside the travellers, the
-      email beside the phone.
-    - The airport arrived as a bare IATA code. "MAN" is unambiguous to us and not
-      to everyone reading a phone at 11pm.
-    - The month and sharing basis arrived as raw form values, "april" and "quad",
-      because formatMonthKey only capitalises keys shaped like "april-2027" while
-      this <select> uses bare month names.
+    The package is still named even though there is no longer a package field,
+    because on a package page we know it from the URL. It costs the visitor
+    nothing and saves the consultant from guessing which of 195 pages prompted
+    the enquiry.
   */
-  const chosenAirport = airports.find((a) => a.code === values.airport);
-  const monthLabel = values.departureMonth
-    ? formatMonthKey(values.departureMonth).replace(/^./, (c) => c.toUpperCase())
-    : undefined;
-
   const message: QuoteMessage = {
-    packageName: chosen?.name ?? 'Not sure yet — please advise',
-    travellers: { adults: Number(values.travellers) || 0, children: 0, infants: 0 },
-    airport: chosenAirport ? `${chosenAirport.city} (${chosenAirport.code})` : undefined,
-    departureMonth: monthLabel,
-    // Capitalised, not formatSharing() — that returns "quad sharing", which under
-    // a "Room sharing:" label reads "Room sharing: quad sharing".
-    sharing: values.sharing ? values.sharing.replace(/^./, (c) => c.toUpperCase()) : undefined,
+    packageName: chosen?.name,
+    passengers: values.passengers?.trim() || undefined,
     name: values.name,
     phone: values.phone,
     email: values.email || undefined,
-    // Free text only. Everything structured now has its own line.
-    notes: values.notes?.trim() || undefined,
+    notes: values.message?.trim() || undefined,
   };
 
   function onSubmit() {
@@ -154,6 +132,13 @@ export function EnquiryForm({ packageSlug, compact = false }: EnquiryFormProps) 
     'w-full rounded-card border border-border bg-surface px-4 py-2 text-body transition-colors focus:border-green-700 [@media(min-height:1150px)]:py-2.5';
   const label = 'text-body-sm font-medium text-text';
   const errorText = 'text-body-sm text-danger';
+
+  /** Ties an input to its error message, so it is announced and not just seen. */
+  const aria = (name: keyof EnquiryValues, required: boolean) => ({
+    'aria-required': required || undefined,
+    'aria-invalid': errors[name] ? (true as const) : undefined,
+    'aria-describedby': errors[name] ? `${name}-error` : undefined,
+  });
 
   return (
     <form
@@ -173,141 +158,114 @@ export function EnquiryForm({ packageSlug, compact = false }: EnquiryFormProps) 
       <div
         className={cn(
           'grid gap-3 [@media(min-height:1150px)]:gap-4',
-          compact
-            ? 'grid-cols-1'
-            : // Two columns is the shape when there is vertical room. When there is
-              // not, trade width for height — three columns on a laptop, four on a
-              // wide monitor. These are eight short fields; the only one that
-              // suffers at 240px is a <select> whose longest option truncates.
-              'sm:grid-cols-2 [@media(max-height:1149px)]:lg:grid-cols-3 [@media(max-height:1149px)]:2xl:grid-cols-4'
+          // Four short fields. Two columns everywhere above mobile keeps them in
+          // two tidy rows; there is no longer a field list long enough to need
+          // the three- and four-column short-screen treatment.
+          compact ? 'grid-cols-1' : 'sm:grid-cols-2'
         )}
       >
         <div className="flex flex-col gap-1 [@media(min-height:1150px)]:gap-1.5">
           <label htmlFor="name" className={label}>
-            Your name
+            Lead passenger name
           </label>
-          <input id="name" {...register('name')} className={field} autoComplete="name" />
-          {errors.name && <p className={errorText}>{errors.name.message}</p>}
+          <input
+            id="name"
+            {...register('name')}
+            {...aria('name', true)}
+            className={field}
+            autoComplete="name"
+            placeholder="Muhammad Ali"
+          />
+          {errors.name && (
+            <p id="name-error" className={errorText}>
+              {errors.name.message}
+            </p>
+          )}
         </div>
 
         <div className="flex flex-col gap-1 [@media(min-height:1150px)]:gap-1.5">
           <label htmlFor="phone" className={label}>
             Phone or WhatsApp
           </label>
+          {/* type="tel", not text. The competitor uses text, which opens a full
+              QWERTY keyboard on a phone instead of a number pad. */}
           <input
             id="phone"
             type="tel"
             {...register('phone')}
+            {...aria('phone', true)}
             className={field}
             autoComplete="tel"
             placeholder="+44"
           />
-          {errors.phone && <p className={errorText}>{errors.phone.message}</p>}
+          {errors.phone && (
+            <p id="phone-error" className={errorText}>
+              {errors.phone.message}
+            </p>
+          )}
         </div>
 
         <div className="flex flex-col gap-1 [@media(min-height:1150px)]:gap-1.5">
           <label htmlFor="email" className={label}>
-            Email <span className="font-normal text-text-muted">(optional)</span>
-          </label>
-          <input id="email" type="email" {...register('email')} className={field} autoComplete="email" />
-          {errors.email && <p className={errorText}>{errors.email.message}</p>}
-        </div>
-
-        <div className="flex flex-col gap-1 [@media(min-height:1150px)]:gap-1.5">
-          <label htmlFor="travellers" className={label}>
-            How many travelling
+            Email
           </label>
           <input
-            id="travellers"
-            type="number"
-            min={1}
-            max={60}
-            {...register('travellers', { valueAsNumber: true })}
+            id="email"
+            type="email"
+            {...register('email')}
+            {...aria('email', true)}
             className={field}
+            autoComplete="email"
+            placeholder="you@example.com"
           />
-          {errors.travellers && <p className={errorText}>{errors.travellers.message}</p>}
-        </div>
-
-        {!locked && (
-          <div className="flex flex-col gap-1 [@media(min-height:1150px)]:gap-1.5">
-            <label htmlFor="packageSlug" className={label}>
-              Package <span className="font-normal text-text-muted">(optional)</span>
-            </label>
-            <select id="packageSlug" {...register('packageSlug')} className={field}>
-              {/* Short enough to survive a narrow column. The message sent to
-                  WhatsApp still says "Not sure yet — please advise", which is
-                  read by a consultant, not squeezed into a select. */}
-              <option value="">Not sure yet</option>
-              {/* Evergreen only. Offering all 195 in a <select> would be unusable;
-                  a consultant sorts the exact month from the enquiry. */}
-              {tierGroups.map(({ tier, list }) => (
-                <optgroup key={tier} label={`${tier}-star`}>
-                  {list.map((p) => (
-                    <option key={p.slug} value={p.slug}>
-                      {p.name} — {formatGbp(p.price.gbp)}
-                    </option>
-                  ))}
-                </optgroup>
-              ))}
-            </select>
-          </div>
-        )}
-
-        <div className="flex flex-col gap-1 [@media(min-height:1150px)]:gap-1.5">
-          <label htmlFor="airport" className={label}>
-            Departing from
-          </label>
-          <select id="airport" {...register('airport')} className={field}>
-            <option value="">Any UK airport</option>
-            {airports.map((a) => (
-              <option key={a.code} value={a.code}>
-                {a.city} ({a.code})
-              </option>
-            ))}
-          </select>
+          {errors.email && (
+            <p id="email-error" className={errorText}>
+              {errors.email.message}
+            </p>
+          )}
         </div>
 
         <div className="flex flex-col gap-1 [@media(min-height:1150px)]:gap-1.5">
-          <label htmlFor="departureMonth" className={label}>
-            Preferred month
+          <label htmlFor="passengers" className={label}>
+            Total passengers
           </label>
-          <select id="departureMonth" {...register('departureMonth')} className={field}>
-            <option value="">Flexible</option>
-            {months.map((m) => (
-              <option key={m} value={m}>
-                {formatMonthKey(m)}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="flex flex-col gap-1 [@media(min-height:1150px)]:gap-1.5">
-          <label htmlFor="sharing" className={label}>
-            Room sharing
-          </label>
-          <select id="sharing" {...register('sharing')} className={field}>
-            <option value="">No preference</option>
-            {SHARING.map((s) => (
-              <option key={s} value={s}>
-                {s.charAt(0).toUpperCase() + s.slice(1)}
-              </option>
-            ))}
-          </select>
+          {/* Free text, so "2 adults & 2 kids" is expressible. The old numeric
+              field could not represent children at all. */}
+          <input
+            id="passengers"
+            {...register('passengers')}
+            {...aria('passengers', true)}
+            className={field}
+            placeholder="e.g. 2 adults & 2 children"
+          />
+          {errors.passengers && (
+            <p id="passengers-error" className={errorText}>
+              {errors.passengers.message}
+            </p>
+          )}
         </div>
       </div>
 
       <div className="flex flex-col gap-1 [@media(min-height:1150px)]:gap-1.5">
-        <label htmlFor="notes" className={label}>
-          Anything we should know? <span className="font-normal text-text-muted">(optional)</span>
+        <label htmlFor="message" className={label}>
+          Message <span className="font-normal text-text-muted">(optional)</span>
         </label>
+        {/* A textarea, where the competitor uses a single-line <input>. Anything
+            longer than the box scrolls sideways in a one-line field, and this is
+            the box where someone explains a wheelchair or fixed dates. */}
         <textarea
-          id="notes"
-          rows={compact ? 2 : 2}
-          {...register('notes')}
+          id="message"
+          rows={2}
+          {...register('message')}
+          {...aria('message', false)}
           className={field}
-          placeholder="Mobility needs, travelling with children or elderly parents, fixed dates…"
+          placeholder="I'm looking for an Umrah package in…"
         />
-        {errors.notes && <p className={errorText}>{errors.notes.message}</p>}
+        {errors.message && (
+          <p id="message-error" className={errorText}>
+            {errors.message.message}
+          </p>
+        )}
       </div>
 
       <div className="flex flex-col gap-1 [@media(min-height:1150px)]:gap-1.5">
@@ -316,6 +274,7 @@ export function EnquiryForm({ packageSlug, compact = false }: EnquiryFormProps) 
             id="consent"
             type="checkbox"
             {...register('consent')}
+            {...aria('consent', true)}
             className="mt-1 size-4 shrink-0 accent-green-700"
           />
           <span>
@@ -323,7 +282,11 @@ export function EnquiryForm({ packageSlug, compact = false }: EnquiryFormProps) 
             your details or add you to a mailing list.
           </span>
         </label>
-        {errors.consent && <p className={errorText}>{errors.consent.message}</p>}
+        {errors.consent && (
+          <p id="consent-error" className={errorText}>
+            {errors.consent.message}
+          </p>
+        )}
       </div>
 
       <Button

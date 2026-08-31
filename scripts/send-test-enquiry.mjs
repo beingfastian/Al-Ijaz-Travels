@@ -32,7 +32,7 @@
  *   --url=<origin>     test a deployed site instead of the local out/ directory
  *   --route=<path>     which form to submit; default /quote/
  *                      e.g. --route=/packages/5-star/10-nights-5-star-umrah-package/
- *   --name= --phone= --email= --travellers= --airport= --month= --sharing= --notes=
+ *   --name= --phone= --email= --passengers= --message=
  *                      override any field
  *
  * FIRST RUN: a Chrome window opens on WhatsApp Web showing a QR code. Scan it
@@ -71,12 +71,9 @@ const ROUTE = opt('route', '/quote/');
 const FIELDS = {
   name: opt('name', 'Website test'),
   phone: opt('phone', '+44 7911 123456'),
-  email: opt('email', ''),
-  travellers: opt('travellers', ''),
-  airport: opt('airport', ''),
-  month: opt('month', ''),
-  sharing: opt('sharing', ''),
-  notes: opt('notes', `Test enquiry from the Al Ijaz Travel website build.`),
+  email: opt('email', 'test@example.com'),
+  passengers: opt('passengers', '2 adults'),
+  message: opt('message', `Test enquiry from the Al Ijaz Travel website build.`),
 };
 
 /**
@@ -161,11 +158,8 @@ try {
   await type('name', FIELDS.name);
   await type('phone', FIELDS.phone);
   await type('email', FIELDS.email);
-  await type('travellers', FIELDS.travellers);
-  await pick('airport', FIELDS.airport);
-  await pick('departureMonth', FIELDS.month);
-  await pick('sharing', FIELDS.sharing);
-  await type('notes', FIELDS.notes);
+  await type('passengers', FIELDS.passengers);
+  await type('message', FIELDS.message);
 
   await page.check('#consent');
   log('   consent     = ticked');
@@ -299,7 +293,7 @@ try {
       await waPage.waitForTimeout(3000);
 
       // Confirm it actually left: look for an outgoing bubble carrying our text.
-      const needle = (FIELDS.notes || FIELDS.name).slice(0, 24);
+      const needle = (FIELDS.message || FIELDS.name).slice(0, 24);
       const sent = await waPage
         .locator(`div.message-out:has-text(${JSON.stringify(needle)})`)
         .count()

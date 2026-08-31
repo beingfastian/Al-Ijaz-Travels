@@ -16,25 +16,34 @@ import { enquiryDefaults } from './schema.ts';
  */
 
 test('a half-filled draft is restored as-is — empty strings are legitimate', () => {
-  const half = { ...enquiryDefaults, travellers: 3, name: '' };
+  const half = { ...enquiryDefaults, passengers: '3 adults', name: '' };
   assert.deepEqual(sanitiseValues(half), { ...half, consent: false });
 });
 
 test('a field stored under the wrong type falls back to its default', () => {
-  const restored = sanitiseValues({ ...enquiryDefaults, travellers: 'two', name: 42 });
+  const restored = sanitiseValues({ ...enquiryDefaults, passengers: 42, name: 42 });
 
-  assert.equal(restored.travellers, enquiryDefaults.travellers);
+  assert.equal(restored.passengers, enquiryDefaults.passengers);
   assert.equal(restored.name, enquiryDefaults.name);
 });
 
-test('NaN and Infinity do not reach the form as a traveller count', () => {
-  assert.equal(sanitiseValues({ travellers: NaN }).travellers, enquiryDefaults.travellers);
-  assert.equal(sanitiseValues({ travellers: Infinity }).travellers, enquiryDefaults.travellers);
+test('a draft from the previous field set is carried across, not discarded', () => {
+  // The form was narrowed to match the competitor's six fields: `travellers`
+  // (a number) became `passengers` (free text) and `notes` became `message`.
+  // Someone who was mid-enquiry when that deployed should not lose their typing,
+  // so the old keys are read as a fallback rather than dropped on the floor.
+  const old = { name: 'Yusuf', travellers: 3, notes: 'Ground floor room please' };
+  const restored = sanitiseValues(old);
+
+  assert.equal(restored.passengers, '3');
+  assert.equal(restored.message, 'Ground floor room please');
+  assert.equal(restored.name, 'Yusuf');
 });
 
-test('an unknown sharing basis falls back instead of reaching the select', () => {
-  assert.equal(sanitiseValues({ sharing: 'penthouse' }).sharing, '');
-  assert.equal(sanitiseValues({ sharing: 'double' }).sharing, 'double');
+test('a nonsense traveller count from an old draft does not reach the form', () => {
+  for (const junk of [NaN, Infinity, null, {}]) {
+    assert.equal(sanitiseValues({ travellers: junk }).passengers, enquiryDefaults.passengers);
+  }
 });
 
 test('consent is never restored from a draft', () => {
@@ -48,7 +57,7 @@ test('garbage payloads degrade to defaults rather than throwing', () => {
   for (const junk of [null, undefined, 'a string', 42, [], true]) {
     const restored = sanitiseValues(junk);
     assert.equal(restored.name, '', `failed on ${JSON.stringify(junk)}`);
-    assert.equal(restored.travellers, enquiryDefaults.travellers);
+    assert.equal(restored.passengers, enquiryDefaults.passengers);
   }
 });
 
@@ -64,12 +73,12 @@ test('a draft written by the old four-step wizard still merges cleanly', () => {
   const restored = sanitiseValues(legacy);
 
   assert.equal(restored.name, 'Yusuf', 'fields that still exist are kept');
-  assert.equal(restored.travellers, enquiryDefaults.travellers, 'removed fields fall back');
+  assert.equal(restored.passengers, enquiryDefaults.passengers, 'removed fields fall back');
   assert.equal(sanitiseStep(3), 0, 'the step index collapses to a single-page form');
 });
 
 test('the store saves, reports a draft, and clears without a browser present', () => {
-  const draft = { ...enquiryDefaults, travellers: 4, name: 'Fatima' };
+  const draft = { ...enquiryDefaults, passengers: '4 adults', name: 'Fatima' };
 
   assert.equal(useQuoteDraft.getState().savedAt, null, 'starts with nothing to restore');
 
@@ -85,7 +94,7 @@ test('the store saves, reports a draft, and clears without a browser present', (
 });
 
 test('saving an unchanged draft does not restamp it', () => {
-  const draft = { ...enquiryDefaults, travellers: 4 };
+  const draft = { ...enquiryDefaults, passengers: '4 adults' };
 
   useQuoteDraft.getState().save(draft, 0);
   const first = useQuoteDraft.getState().savedAt;

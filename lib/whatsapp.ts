@@ -18,11 +18,14 @@ import { site } from '../data/site.ts';
 export interface QuoteMessage {
   packageName?: string;
   packageUrl?: string;
-  travellers?: { adults: number; children: number; infants: number };
-  /** Human label, e.g. "Manchester (MAN)" — not the bare IATA code. */
-  airport?: string;
-  departureMonth?: string;
-  sharing?: string;
+  /**
+   * Free text as the visitor wrote it, e.g. "2 adults & 2 kids".
+   *
+   * Was a structured {adults, children, infants} count. The form now asks a
+   * single free-text question, matching the competitor's, because a lone integer
+   * could not express children at all — the old code hard-coded zero of them.
+   */
+  passengers?: string;
   name?: string;
   phone?: string;
   email?: string;
@@ -36,17 +39,7 @@ function lines(msg: QuoteMessage): string[] {
   if (msg.packageName) out.push('', `Package: ${msg.packageName}`);
   if (msg.packageUrl) out.push(`Link: ${msg.packageUrl}`);
 
-  if (msg.travellers) {
-    const { adults, children, infants } = msg.travellers;
-    const parts = [`${adults} adult${adults === 1 ? '' : 's'}`];
-    if (children > 0) parts.push(`${children} child${children === 1 ? '' : 'ren'}`);
-    if (infants > 0) parts.push(`${infants} infant${infants === 1 ? '' : 's'}`);
-    out.push('', `Travellers: ${parts.join(', ')}`);
-  }
-
-  if (msg.airport) out.push(`Departing from: ${msg.airport}`);
-  if (msg.departureMonth) out.push(`Preferred departure: ${msg.departureMonth}`);
-  if (msg.sharing) out.push(`Room sharing: ${msg.sharing}`);
+  if (msg.passengers) out.push('', `Passengers: ${msg.passengers}`);
 
   if (msg.name) out.push('', `Name: ${msg.name}`);
   if (msg.phone) out.push(`Phone: ${msg.phone}`);
