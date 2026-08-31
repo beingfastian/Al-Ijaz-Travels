@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { Playfair_Display, Inter, Noto_Naskh_Arabic } from 'next/font/google';
 import { Navbar } from '@/components/layout/Navbar';
-import { UtilityBar } from '@/components/layout/UtilityBar';
 import { WhatsAppFab } from '@/components/layout/WhatsAppFab';
 import { Footer } from '@/components/layout/Footer';
 import { site } from '@/data/site';
@@ -86,11 +85,20 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         >
           Skip to content
         </a>
-        {/* One header landmark. Left loose, both sat outside any landmark and axe
-            flagged the page for it — moderate rather than serious, but content
-            outside landmarks is genuinely harder to navigate with a screen reader. */}
+        {/*
+          One header landmark. The Navbar's own root is a <div>, not a <header>,
+          so this wrapper is what provides the banner landmark — without it the
+          nav sits outside any landmark, which axe flags and which is genuinely
+          harder to navigate with a screen reader.
+
+          The utility bar that used to sit above the nav (ATOL and IATA numbers,
+          phone, "Get a quote") has been removed on client instruction. Nothing
+          in it was unique to that strip: both registration numbers are in the
+          footer's accreditation block, the phone is in the footer contact column
+          and the navbar's "Call Now" button, and "Get a quote" is in the footer
+          and on every package page.
+        */}
         <header>
-          <UtilityBar />
           <Navbar />
         </header>
         <main id="main">{children}</main>
