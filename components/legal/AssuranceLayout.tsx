@@ -47,7 +47,9 @@ export function AssuranceLayout({ slug }: { slug: string }) {
                   className="rule-gold inline-flex items-center gap-2 rounded-full border bg-surface px-4 py-2 text-body-sm font-medium text-green-900"
                 >
                   <ShieldCheck size={15} className="text-gold-600" aria-hidden />
-                  {a.reference}
+                  {/* The credential name. This pill used to show the number
+                      alone, which is now unset — see data/trust.ts. */}
+                  {a.name}
                 </li>
               ))}
             </ul>

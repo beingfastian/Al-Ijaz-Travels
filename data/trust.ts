@@ -10,8 +10,15 @@ import { site } from './site';
 
 export interface Accreditation {
   name: string;
-  /** Registration or licence number — shown so it can be checked, not just seen. */
-  reference: string;
+  /**
+   * Registration or licence number.
+   *
+   * Optional, and currently never set — the numbers were removed from the badges
+   * on client instruction (see buildAccreditations below). The field stays on the
+   * type because every badge surface still knows how to render one, so putting
+   * them back is a two-line change in the builder, not a component edit.
+   */
+  reference?: string;
   /** Optional badge artwork under public/brand/. */
   logo?: string;
 }
@@ -30,9 +37,10 @@ export interface Accreditation {
  * the badges appear everywhere — footer, home page, package pages — with no
  * component edits and no chance of one surface claiming cover another does not.
  *
- * An entry only exists if its number is non-empty. That is the whole safety
- * mechanism: there is no code path that renders an ATOL badge without an ATOL
- * number, because the badge *is* the number.
+ * An entry only exists if its number is non-empty, and that stays true even
+ * though the number is no longer printed. The check is the safety mechanism, not
+ * the display: holding the number is what entitles us to show the badge, so an
+ * empty `site.accreditation` still renders nothing anywhere.
  *
  * ⚠ Why this is stricter than it looks. Selling flight-inclusive packages without
  * an ATOL is a criminal offence under the Civil Aviation (ATOL) Regulations, and
@@ -50,7 +58,7 @@ function buildAccreditations(): Accreditation[] {
   if (atol !== '') {
     out.push({
       name: 'ATOL Protected',
-      reference: `ATOL ${atol}`,
+      // No `reference` — the number itself is not shown on the badge any more.
       // No `logo` until the real artwork arrives. TrustRow falls back to an icon
       // when it is absent; pointing at a file that does not exist ships a broken
       // image, which the export check caught immediately.
@@ -62,7 +70,7 @@ function buildAccreditations(): Accreditation[] {
   if (iata !== '') {
     out.push({
       name: 'IATA Accredited Agent',
-      reference: `IATA ${iata}`,
+      // No `reference` — see the ATOL entry above.
       // TODO(client): official IATA logo -> public/brand/iata.svg
 
     });

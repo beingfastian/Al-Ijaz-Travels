@@ -10,8 +10,9 @@ import { Section } from '@/components/ui/Section';
  * with credentials Al Ijaz genuinely holds. An empty strip is better than a
  * placeholder badge — and a fabricated one is a legal problem, not a design one.
  *
- * Each entry shows its registration number rather than just a logo, because a
- * number can be checked and a logo cannot.
+ * The registration numbers used to print under each name. They were removed on
+ * client instruction, so the cards now carry the credential alone. The entries
+ * are still gated on holding the numbers — see data/trust.ts.
  */
 export function TrustRow() {
   if (accreditations.length === 0) return null;
@@ -21,15 +22,20 @@ export function TrustRow() {
       id="accreditation"
       eyebrow="Accreditation"
       title="Registered and accountable"
-      description="Every registration number below can be verified with the issuing authority."
+      description="Both credentials are held with the issuing authority and can be confirmed on request."
       tone="surface"
       centered
     >
-      <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      {/* Wrapping flex rather than a fixed column grid. The list is data-driven,
+          and a four-column grid holding two entries left-flushes them under a
+          centred heading, which reads as an alignment mistake. justify-center
+          centres whatever the count happens to be; the fixed card width keeps
+          two cards from stretching to half the viewport each. */}
+      <ul className="flex flex-wrap justify-center gap-4">
         {accreditations.map((a) => (
           <li
             key={a.name}
-            className="flex flex-col gap-3 rounded-panel border border-border bg-surface p-6"
+            className="flex w-full flex-col items-center gap-3 rounded-panel border border-border bg-surface p-6 text-center sm:w-64"
           >
             {a.logo ? (
               <Image
@@ -43,7 +49,7 @@ export function TrustRow() {
               <ShieldCheck size={28} className="text-gold-text" aria-hidden />
             )}
             <span className="font-serif text-subheading text-green-900">{a.name}</span>
-            <span className="text-body-sm text-text-muted">{a.reference}</span>
+            {a.reference && <span className="text-body-sm text-text-muted">{a.reference}</span>}
           </li>
         ))}
       </ul>
