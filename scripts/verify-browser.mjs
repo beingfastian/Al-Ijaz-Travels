@@ -94,6 +94,21 @@ const IGNORED_CONSOLE = [
  */
 const IGNORED_REQUESTS = [/__next\..*__PAGE__\.txt$/];
 
+/**
+ * React Server Component payload fetches, which Next fires when it prefetches a
+ * link that scrolls into view. Under `output: export` there is no server to
+ * answer them, so every one 404s — by design, and harmlessly: the router falls
+ * back to a normal navigation and the page loads.
+ *
+ * They are excluded by the `_rsc` query parameter rather than by path, because
+ * the path IS a real page. That distinction matters: this check used to report
+ * them as "404 /city-packages/london-umrah-packages/", which reads as a broken
+ * page rather than a prefetch of a working one — and the pages exist and the
+ * links are correct. A gate that names the wrong thing sends someone hunting a
+ * bug that is not there.
+ */
+const isRscPrefetch = (url) => new URL(url).searchParams.has('_rsc');
+
 const failures = [];
 const notes = [];
 
@@ -125,7 +140,7 @@ await mkdir(SHOTS, { recursive: true });
 const server = await serveStatic({ root: OUT });
 const PORT = server.address().port;
 const browser = await chromium.launch({ channel: 'chrome', headless: true });
-const base = `http://localhost:${PORT}`;
+const base = `http://127.0.0.1:${PORT}`;
 
 console.log('\nBrowser verification');
 console.log(`  chrome ${browser.version()}\n`);
@@ -152,7 +167,10 @@ for (const { path, name } of PAGES) {
     if (res.status() < 400) return;
     const path = new URL(res.url()).pathname;
     if (IGNORED_REQUESTS.some((re) => re.test(path))) return;
-    failedRequests.push(`${res.status()} ${path}`);
+    if (isRscPrefetch(res.url())) return;
+    // The full URL, query included. Recording only the pathname is what made an
+    // RSC prefetch look like a dead page.
+    failedRequests.push(`${res.status()} ${res.url().replace(base, '')}`);
   });
 
   await page.goto(`${base}${path}`, { waitUntil: 'networkidle' });

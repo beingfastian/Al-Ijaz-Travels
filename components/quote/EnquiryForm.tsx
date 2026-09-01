@@ -158,7 +158,7 @@ export function EnquiryForm({ packageSlug, compact = false }: EnquiryFormProps) 
       onSubmit={handleSubmit(onSubmit)}
       className={cn(
         'flex flex-col',
-        compact ? 'gap-4' : 'gap-4 [@media(min-height:1150px)]:gap-6'
+        compact ? 'gap-3.5' : 'gap-3.5 [@media(min-height:1150px)]:gap-5'
       )}
       noValidate
     >
@@ -170,7 +170,7 @@ export function EnquiryForm({ packageSlug, compact = false }: EnquiryFormProps) 
 
       <div
         className={cn(
-          'grid gap-3 [@media(min-height:1150px)]:gap-4',
+          'grid gap-2.5 [@media(min-height:1150px)]:gap-3.5',
           // Four short fields. Two columns everywhere above mobile keeps them in
           // two tidy rows; there is no longer a field list long enough to need
           // the three- and four-column short-screen treatment.

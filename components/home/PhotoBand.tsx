@@ -2,6 +2,7 @@ import { Suspense } from 'react';
 import { Photo } from '@/components/ui/Photo';
 import { Reveal } from '@/components/ui/Reveal';
 import { EnquiryForm } from '@/components/quote/EnquiryForm';
+import { hotels } from '@/data/hotels';
 
 /**
  * The full-bleed photographic band.
@@ -30,6 +31,14 @@ import { EnquiryForm } from '@/components/quote/EnquiryForm';
  * the quote enough to ask for one.
  */
 export function PhotoBand() {
+  // Read from the registry rather than written into the headline. This band used
+  // to say "a hundred and twenty metres" in prose, which silently became a claim
+  // about a hotel we no longer use the moment the allocation changed — on the one
+  // page whose whole argument is that our numbers are checkable.
+  const closest = Math.min(
+    ...hotels.filter((h) => h.city === 'makkah').map((h) => h.distanceToHaramM)
+  );
+
   return (
     <section className="premium-surface relative isolate overflow-hidden">
       <Reveal variant="settle" className="absolute inset-0">
@@ -60,7 +69,7 @@ export function PhotoBand() {
 
           <Reveal index={1}>
             <h2 className="font-serif text-display text-on-premium">
-              A hundred and twenty metres
+              {closest} metres
               <span className="block text-on-premium-accent">from the gates</span>
             </h2>
           </Reveal>
@@ -89,8 +98,8 @@ export function PhotoBand() {
           up on scroll, but the one element a visitor might be arriving to use
           should not be waiting on an IntersectionObserver.
         */}
-        <div className="rounded-panel border border-border bg-ground p-5 shadow-float sm:p-6">
-          <div className="mb-4 flex flex-col gap-1">
+        <div className="rounded-panel border border-border bg-ground p-5 shadow-float">
+          <div className="mb-3 flex flex-col gap-1">
             <h2 className="font-serif text-subheading text-green-900">Get an Umrah quote</h2>
             <p className="text-body-sm text-text-muted">
               A consultant replies on WhatsApp with real availability. No deposit, no

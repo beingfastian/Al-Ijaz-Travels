@@ -76,7 +76,7 @@ const table = [];
 
 for (const { path, name } of TARGETS) {
   const result = await lighthouse(
-    `http://localhost:${PORT}${path}`,
+    `http://127.0.0.1:${PORT}${path}`,
     { port: 9222, output: 'html', logLevel: 'error' },
     undefined
   );

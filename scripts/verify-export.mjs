@@ -97,6 +97,17 @@ function extractLinks(html) {
   return links;
 }
 
+/*
+ * 127.0.0.1, not localhost.
+ *
+ * `localhost` resolves to both ::1 and 127.0.0.1, and the order is not fixed.
+ * The static server binds one stack, so a fetch that happens to try the other
+ * fails with ECONNREFUSED — which showed up as this check passing twice and
+ * failing once in three consecutive runs, with a bare "TypeError: fetch failed"
+ * and no indication that the cause was name resolution rather than a genuinely
+ * missing asset. An intermittent gate is worse than no gate: it teaches people
+ * to re-run instead of to investigate.
+ */
 const server = await serveStatic({ root: OUT });
 const PORT = server.address().port;
 
@@ -125,7 +136,7 @@ for (const page of pages) {
     // Special-case the base repo's exact failure so the message is unmistakable.
     if (ref.startsWith('/_next/image')) optimizerRefs.push({ pageUrl, ref });
 
-    const res = await fetch(`http://localhost:${PORT}${ref}`);
+    const res = await fetch(`http://127.0.0.1:${PORT}${ref}`);
     checked++;
     if (!res.ok) failures.push({ pageUrl, ref, status: res.status });
   }
@@ -175,7 +186,7 @@ const dupDescriptions = [...meta.descriptions].filter(([, urls]) => urls.length 
 
 // Each distinct destination is requested once, however many pages link to it.
 for (const [href, sources] of linkTargets) {
-  const res = await fetch(`http://localhost:${PORT}${href}`);
+  const res = await fetch(`http://127.0.0.1:${PORT}${href}`);
   linksChecked++;
   if (!res.ok) deadLinks.push({ href, status: res.status, sources: [...sources] });
 }
