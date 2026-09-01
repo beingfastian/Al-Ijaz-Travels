@@ -4,7 +4,8 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { MessageCircle, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
+import { WhatsAppIcon } from '@/components/ui/WhatsAppIcon';
 import { getPackage } from '@/data/packages';
 import { whatsappUrl, type QuoteMessage } from '@/lib/whatsapp';
 import { Button } from '@/components/ui/Button';
@@ -309,7 +310,7 @@ export function EnquiryForm({ packageSlug, compact = false }: EnquiryFormProps) 
           isSubmitting ? (
             <Loader2 size={18} className="animate-spin" aria-hidden />
           ) : (
-            <MessageCircle size={18} aria-hidden />
+            <WhatsAppIcon size={18} />
           )
         }
       >

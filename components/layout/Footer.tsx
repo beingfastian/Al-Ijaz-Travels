@@ -183,18 +183,22 @@ export function Footer() {
         The WhatsApp button is fixed to the viewport and used to cover "Payment
         Security" completely, which was first solved with 96px of bottom padding
         — correct, and visibly a strip of empty ground under the footer. Clearing
-        it sideways instead: on large screens the links stop 288px short of the
-        right edge. 224px was tried first and still clipped "Our Responsibility"
-        by about 10px, because `max-container` is 1440px wide and therefore has no
-        margin at all on a 1440px window — the arithmetic that works on a padded
-        container does not work on a flush one.
+        it sideways instead: on large screens the links stop short of the right
+        edge by enough to miss it.
+        That reserve was 288px while the button was a pill with a "Chat on
+        WhatsApp" label. The button is now a 56px circle, so 288px is a visible
+        hole in the bottom bar rather than a clearance. 56px of button plus 20px
+        of right offset is 76px; 112px (pr-28) clears it with room and closes the
+        gap. Note `max-container` is 1440px wide and therefore has no margin at
+        all on a 1440px window — the arithmetic that works on a padded container
+        does not work on a flush one, which is what makes this worth stating.
         Below lg the links are left-aligned and short enough to sit clear of the
         collapsed button. Verified by bounding-box intersection at 1440/768/390
         rather than by eye, because this is exactly the kind of fix that holds at
         one width and fails at another.
       */}
       <div className="border-t border-green-800">
-        <div className="max-container padding-container flex flex-col gap-4 py-8 lg:flex-row lg:items-center lg:justify-between lg:pr-72">
+        <div className="max-container padding-container flex flex-col gap-4 py-8 lg:flex-row lg:items-center lg:justify-between lg:pr-28">
           <p className="text-body-sm text-gold-100/80">
             © {year} {site.name}
             {site.company.legalName && ` — ${site.company.legalName}`}

@@ -2,25 +2,27 @@ import { site } from '@/data/site';
 import { cn } from '@/lib/cn';
 
 /* ============================================================================
- * THE MARK
+ * THE LOGO
  *
- * A flight path from Madinah to Makkah, drawn as an arc between two points, with
- * the eight-point khatam star at its apex.
+ * A wordmark: the name in the serif, with the Arabic beneath it in gold.
  *
- * The idea is doing three jobs at once, which is what a mark has to do to earn
- * its place: it is literally the journey being sold; the arc reads as a dome in
- * silhouette; and the khatam ties it to the geometric motif used as texture
- * throughout the site. No aeroplane, no Kaaba illustration, no mosque clipart —
- * every Umrah operator in the UK has one of those, and they all look the same
- * because they are all describing rather than suggesting.
+ * ⚠ THE GLYPH NO LONGER APPEARS BESIDE THE NAME, ON CLIENT INSTRUCTION.
  *
- * Built as inline SVG rather than a file so it inherits `currentColor` and needs
- * no separate light and dark asset. `gold` picks out the arc and star only,
- * which is what keeps it from looking like a gold sticker.
+ * `LogoMark` below used to sit in front of the wordmark in the navbar and the
+ * footer — an arc from Madinah to Makkah with the khatam star at its apex, which
+ * read as a dome in silhouette. It was removed from the lockup because the
+ * client asked for the dome gone. The component is still exported and still
+ * drawn, because it is the only compact form of the brand there is and a
+ * wordmark cannot be a favicon; do not delete it without replacing it there.
  * ========================================================================== */
 
 interface LogoProps {
-  /** `full` is the lockup with the wordmark; `mark` is the glyph alone. */
+  /**
+   * `full` is the wordmark lockup — the name and the Arabic.
+   *
+   * `mark` is the glyph alone. Note that `full` no longer contains the glyph, so
+   * the two variants are now alternatives rather than a superset and a subset.
+   */
   variant?: 'full' | 'mark';
   /** `dark` for cream grounds, `light` for premium/green grounds. */
   tone?: 'dark' | 'light';
@@ -31,30 +33,34 @@ export function Logo({ variant = 'full', tone = 'dark', className }: LogoProps) 
   const ink = tone === 'dark' ? 'text-green-900' : 'text-sand-50';
   const accent = tone === 'dark' ? 'text-gold-600' : 'text-gold-300';
 
-  return (
-    <span className={cn('inline-flex items-center gap-3', ink, className)}>
-      <LogoMark className={cn('h-9 w-9 shrink-0', accent)} />
+  if (variant === 'mark') {
+    return <LogoMark className={cn('h-9 w-9 shrink-0', accent, className)} />;
+  }
 
-      {variant === 'full' && (
-        <span className="flex flex-col leading-none">
-          <span className="font-serif text-[1.35rem] font-semibold tracking-tight">
-            {site.name}
-          </span>
-          <span
-            lang="ar"
-            className={cn('mt-0.5 font-arabic text-[0.95rem] leading-none', accent)}
-          >
-            {site.nameArabic}
-          </span>
+  return (
+    <span className={cn('inline-flex items-center', ink, className)}>
+      <span className="flex flex-col leading-none">
+        <span className="font-serif text-[1.35rem] font-semibold tracking-tight">
+          {site.name}
         </span>
-      )}
+        <span
+          lang="ar"
+          className={cn('mt-0.5 font-arabic text-[0.95rem] leading-none', accent)}
+        >
+          {site.nameArabic}
+        </span>
+      </span>
     </span>
   );
 }
 
 /**
- * The glyph on its own — favicons, app icons, tight spaces, and the loading
- * placeholder that stands in for photography we do not have yet.
+ * The glyph on its own — the favicon, app icons, and tight spaces.
+ *
+ * Kept out of the header lockup (see above) but still the mark: an arc from
+ * Madinah to Makkah with the eight-point khatam at its apex. Inline SVG rather
+ * than a file so it inherits `currentColor` and needs no separate light and dark
+ * asset.
  */
 export function LogoMark({ className }: { className?: string }) {
   return (

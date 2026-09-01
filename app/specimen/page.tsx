@@ -90,8 +90,8 @@ export default function SpecimenPage() {
       </header>
 
       <Section
-        title="The mark"
-        note="A flight path from Madinah to Makkah, with the khatam star at its apex. The arc doubles as a dome in silhouette. Inline SVG inheriting currentColor, so there is no separate light and dark asset."
+        title="The logo"
+        note="The lockup is the wordmark alone — the glyph was removed from in front of it on client instruction. The glyph is still drawn, and still shown below at size, because it is the only compact form of the brand: a flight path from Madinah to Makkah with the khatam star at its apex. Inline SVG inheriting currentColor, so there is no separate light and dark asset."
       >
         <div className="flex flex-wrap items-center gap-10">
           <div className="flex flex-col items-center gap-3 rounded-panel border border-border bg-surface p-8">
@@ -108,7 +108,7 @@ export default function SpecimenPage() {
               <LogoMark className="h-9 w-9" />
               <LogoMark className="h-6 w-6" />
             </div>
-            <span className="text-body-sm text-text-muted">mark, at size</span>
+            <span className="text-body-sm text-text-muted">mark, at size · not in the lockup</span>
           </div>
         </div>
       </Section>

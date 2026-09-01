@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { MessageCircle } from 'lucide-react';
+import { WhatsAppIcon } from '@/components/ui/WhatsAppIcon';
 import { whatsappUrl } from '@/lib/whatsapp';
 import { cn } from '@/lib/cn';
 
@@ -24,6 +24,11 @@ import { cn } from '@/lib/cn';
  *
  * With JavaScript off the class never toggles, so it renders in its final
  * position immediately. The animation is an enhancement, not a gate.
+ *
+ * It reads as a circle with the WhatsApp glyph and no label. The label was
+ * "Chat on WhatsApp" beside a lucide chat bubble, which said in words what the
+ * brand mark says on sight — and the mark is the thing people actually scan for
+ * bottom-right. The name is still on the link for anyone not looking at it.
  */
 export function WhatsAppFab() {
   const [shown, setShown] = useState(false);
@@ -45,13 +50,14 @@ export function WhatsAppFab() {
         data-fab={shown ? 'in' : 'out'}
         className={cn(
           'fixed bottom-[max(1.25rem,env(safe-area-inset-bottom))] right-5 z-40',
-          'inline-flex items-center gap-2 rounded-full bg-[#25D366] px-4 py-3.5',
-          'font-medium text-[#0b1f14] shadow-float sm:px-5'
+          'inline-flex size-14 items-center justify-center rounded-full',
+          'bg-[#25D366] text-white shadow-float'
         )}
       >
-        <MessageCircle size={22} aria-hidden />
-        <span className="hidden text-body sm:inline">Chat on WhatsApp</span>
-        <span className="sr-only sm:hidden">Chat on WhatsApp</span>
+        <WhatsAppIcon size={30} />
+        {/* The accessible name. Icon-only controls still need one, and it stays
+            the words a screen reader user would expect to hear. */}
+        <span className="sr-only">Chat on WhatsApp</span>
       </a>
     </aside>
   );
