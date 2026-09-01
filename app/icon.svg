@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+  <!--
+    Browser tab icon: the khatam, the eight-point star tiled behind every
+    section of the site, in gold on the brand green.
+
+    Why not "the logo": the logo is a wordmark now, and "Al Ijaz Travel" set in
+    Playfair is illegible in a 16px tab. Something has to stand in for it, and
+    the two candidates were this and the old arc-and-khatam glyph. The arc is
+    what read as a dome and was removed from the header on client instruction,
+    so reusing it here would put the dome straight back.
+
+    Two departures from the motif as it appears in public/brand/khatam.svg,
+    both forced by the 16px render and both checked at that size rather than
+    guessed:
+
+    1. Filled, not stroked. That file is background texture at 1.15px strokes
+       and 9 percent opacity; at 16px the strokes disappear completely.
+    2. Points at 0.58 of the outer radius, not the 0.707 that two overlapping
+       squares actually produce. True khatam geometry gives points so shallow
+       that, filled and shrunk to 16px, it resolves to a plain octagon: it read
+       as a blob, not a star. 0.58 is the shallowest that still reads.
+
+    32px viewBox because that is the size a tab renders at. Drawing it at 512
+    and letting the browser downscale is how you get mush.
+
+    app/icon.png and app/apple-icon.png are generated FROM this file by sharp.
+    Change the geometry here and re-render both; do not edit them by hand.
+  -->
+  <rect width="32" height="32" rx="7" fill="#162D23"/>
+  <path d="M 16.00 4.50 L 18.55 9.84 L 24.13 7.87 L 22.16 13.45 L 27.50 16.00 L 22.16 18.55 L 24.13 24.13 L 18.55 22.16 L 16.00 27.50 L 13.45 22.16 L 7.87 24.13 L 9.84 18.55 L 4.50 16.00 L 9.84 13.45 L 7.87 7.87 L 13.45 9.84 Z" fill="#C59F68"/>
+</svg>
