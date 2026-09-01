@@ -1,11 +1,10 @@
 import Link from 'next/link';
-import { Suspense } from 'react';
 import { Plane, FileCheck, BedDouble, Bus, ArrowRight } from 'lucide-react';
-import { EnquiryForm } from '@/components/quote/EnquiryForm';
 import { Button } from '@/components/ui/Button';
 import { Photo } from '@/components/ui/Photo';
 import { whatsappUrl } from '@/lib/whatsapp';
-import { packages, basePackages } from '@/data/packages';
+import { packages } from '@/data/packages';
+import { hotels } from '@/data/hotels';
 import { airports } from '@/data/airports';
 import { formatGbp } from '@/lib/format';
 import { tiers } from '@/data/tiers';
@@ -41,10 +40,11 @@ const INCLUDES = [
 
 export function Hero() {
   const cheapest = Math.min(...packages.map((p) => p.price.gbp));
+  // Across the whole Makkah registry, not just the pairings the packages happen
+  // to quote. "Closest hotel" has to mean the closest hotel we place pilgrims in,
+  // or this figure contradicts the one /hotels prints two clicks later.
   const closest = Math.min(
-    ...basePackages().flatMap((p) =>
-      p.hotels.filter((h) => h.city === 'makkah').map((h) => h.distanceToHaramM)
-    )
+    ...hotels.filter((h) => h.city === 'makkah').map((h) => h.distanceToHaramM)
   );
 
   return (
@@ -78,7 +78,7 @@ export function Hero() {
         className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-b from-transparent to-noir-950"
       />
 
-      <div className="max-container padding-container relative grid items-center gap-8 py-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,27rem)] lg:py-8 [@media(min-height:900px)]:lg:py-14"
+      <div className="max-container padding-container relative grid items-center gap-8 py-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] lg:py-8 [@media(min-height:900px)]:lg:py-14"
         /*
           Height is derived, not guessed. The chrome above this section is the
           utility bar, the navbar and the seasonal banner — about 10.5rem in
@@ -126,32 +126,6 @@ export function Hero() {
             ))}
           </dl>
 
-          {/*
-            The four things a package includes. These used to occupy the whole
-            right column as large pills; the form has that space now, so they are
-            a compact row here instead. They are still the clearest answer to
-            "what do I get", and still links to the four pages.
-          */}
-          {/*
-            Desktop only. Below lg the hero stacks into one column and these four
-            links are repeated verbatim by the ServicesGrid section immediately
-            beneath the hero — so on a phone they are 120px of duplication in
-            front of the form, which is the thing the visitor came to use.
-          */}
-          <ul className="hidden flex-wrap gap-2 lg:flex">
-            {INCLUDES.map(({ icon: Icon, label, href }) => (
-              <li key={label}>
-                <Link
-                  href={href}
-                  className="group inline-flex items-center gap-2 rounded-full border border-[color:var(--color-rule-premium)] bg-noir-950/70 px-3.5 py-2 text-body-sm text-on-premium backdrop-blur transition-colors hover:border-gold-400"
-                >
-                  <Icon size={15} className="shrink-0 text-gold-400" aria-hidden />
-                  {label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-
           <div className="flex flex-col gap-3 sm:flex-row">
             <Button href={whatsappUrl()} variant="gold" size="lg">
               WhatsApp us now
@@ -196,44 +170,31 @@ export function Hero() {
         </div>
 
         {/*
-          The enquiry form, over the photograph.
-
-          The competitor puts a white "Get Umrah Quote" card on their home page,
-          overlapping a photo panel — and it is the right instinct: the visitor
-          who is ready to ask should not have to find a page to ask on. Ours sits
-          in the hero itself, which is what the client asked for.
-
-          A light card on a dark photograph, rather than a dark form: form fields
-          need to look like fields, and every input style on this site is built
-          for a light surface. Inverting them for one placement would be a second
-          set of form styles to keep in step with the first.
+          What is in the package, over the image. The competitor puts these four
+          labels on the hero and it is the single clearest thing on their page —
+          a visitor knows what they are buying before scrolling. Ours link to the
+          four pages, so they are navigation as well as reassurance.
         */}
-        <div className="rounded-panel border border-border bg-ground p-5 shadow-float [@media(min-height:900px)]:p-6">
-          <div className="mb-4 flex flex-col gap-1">
-            <h2 className="font-serif text-subheading text-green-900">Get an Umrah quote</h2>
-            {/* Reassurance, not information — first thing to go when the hero has
-                to fit a 720px-tall window. */}
-            <p className="hidden text-body-sm text-text-muted [@media(min-height:780px)]:block">
-              A consultant replies on WhatsApp with real availability. No deposit, no
-              obligation.
-            </p>
-          </div>
-
-          {/*
-            EnquiryForm reads useSearchParams, which needs a Suspense boundary
-            under `output: export` or the build fails outright. The fallback is
-            sized so the hero does not jump when the form arrives.
-          */}
-          {/*
-            NOT `compact`. Compact is single-column, which stacks the four short
-            fields into four rows and pushed the hero 96px past the fold. The
-            two-column layout puts them in two rows inside a 432px card, which is
-            the difference between the hero fitting a laptop screen and not.
-          */}
-          <Suspense fallback={<div className="h-[18rem]" aria-hidden />}>
-            <EnquiryForm />
-          </Suspense>
-        </div>
+        <ul className="flex flex-col gap-3 lg:items-end">
+          {INCLUDES.map(({ icon: Icon, label, href }) => (
+            <li key={label} className="w-full lg:w-auto">
+              <Link
+                href={href}
+                className="group flex items-center gap-3 rounded-full border border-[color:var(--color-rule-premium)] bg-noir-950/75 px-5 py-3 backdrop-blur transition-colors hover:border-gold-400"
+              >
+                <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-gold-500 text-noir-950">
+                  <Icon size={18} aria-hidden />
+                </span>
+                <span className="text-body font-medium text-on-premium">{label}</span>
+                <ArrowRight
+                  size={14}
+                  className="ml-auto text-gold-400 transition-transform group-hover:translate-x-0.5 lg:ml-2"
+                  aria-hidden
+                />
+              </Link>
+            </li>
+          ))}
+        </ul>
       </div>
     </section>
   );
