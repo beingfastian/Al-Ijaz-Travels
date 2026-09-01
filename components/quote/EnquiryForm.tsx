@@ -128,8 +128,20 @@ export function EnquiryForm({ packageSlug, compact = false }: EnquiryFormProps) 
     router.push('/quote/sent/');
   }
 
+  /*
+    `text-text` and an explicit placeholder colour are load-bearing, not tidiness.
+
+    The hero carries `premium-surface`, which sets `color: var(--color-on-premium)`
+    — cream — on the whole section. An input with no colour of its own inherits
+    that, so on the home page the visitor's own typing came out cream on a white
+    field: legible only by accident. axe caught it as a contrast failure on
+    #name; the real symptom is a form you cannot read what you typed into.
+
+    Stating the colour here fixes it wherever the form is placed, rather than
+    patching the one surface that exposed it.
+  */
   const field =
-    'w-full rounded-card border border-border bg-surface px-4 py-2 text-body transition-colors focus:border-green-700 [@media(min-height:1150px)]:py-2.5';
+    'w-full rounded-card border border-border bg-surface px-4 py-2 text-body text-text placeholder:text-text-muted transition-colors focus:border-green-700 [@media(min-height:1150px)]:py-2.5';
   const label = 'text-body-sm font-medium text-text';
   const errorText = 'text-body-sm text-danger';
 
