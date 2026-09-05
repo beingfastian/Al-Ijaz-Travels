@@ -4,6 +4,7 @@ import { Footprints, Star, MapPin } from 'lucide-react';
 import type { Tier } from '@/lib/types';
 import {
   hotels,
+  hotelsInCity,
   hotelsInCityAtTier,
   distanceRange,
   hotel,
@@ -64,9 +65,30 @@ export default function HotelsPage() {
   const closest = Math.min(...makkahDistances);
   const furthest = Math.max(...makkahDistances);
 
+  /**
+   * A photograph of the city, captioned as the city — never as a property.
+   *
+   * The 42 hotels have no licensed photography yet, and the honest options were a
+   * bare page or a stock room under a named hotel. This is the third: an image of
+   * the place, labelled as the place, above the list of hotels in it. It says
+   * nothing about any individual property, which is exactly why it is safe to
+   * show while per-hotel photography is still being licensed.
+   */
   const cities = [
-    { key: 'makkah' as const, city: 'Makkah', landmark: 'the Haram' },
-    { key: 'madinah' as const, city: 'Madinah', landmark: 'Masjid an-Nabawi' },
+    {
+      key: 'makkah' as const,
+      city: 'Makkah',
+      landmark: 'the Haram',
+      image: 'makkah-skyline-night' as const,
+      imageAlt: 'Makkah at night, the Haram and the clock tower above the surrounding city',
+    },
+    {
+      key: 'madinah' as const,
+      city: 'Madinah',
+      landmark: 'Masjid an-Nabawi',
+      image: 'nabawi-twilight' as const,
+      imageAlt: 'Masjid an-Nabawi in Madinah at twilight, its minarets lit against a pink sky',
+    },
   ];
 
   return (
@@ -101,18 +123,48 @@ export default function HotelsPage() {
       </section>
 
       <div className="max-container padding-container flex flex-col gap-16 py-12 lg:py-16">
-        {cities.map(({ key, city, landmark }) => (
+        {cities.map(({ key, city, landmark, image, imageAlt }) => (
           <section key={city} aria-labelledby={`hotels-${key}`} className="flex flex-col gap-8">
-            <div className="section-header-centered">
-              <h2 id={`hotels-${key}`} className="text-heading">
-                {city}
-              </h2>
-              <p className="text-body-lg text-text-muted">
-                Grouped by star band, and within each band sorted by walking distance to{' '}
-                {landmark} — closest first, because that is the order the decision is
-                actually made in.
-              </p>
-            </div>
+            {/*
+              Wide and short — a band, not a hero. It orients the reader at the top
+              of a long list without competing with the distances, which are what
+              the page is actually for.
+            */}
+            <figure className="relative isolate overflow-hidden rounded-panel">
+              <div className="relative aspect-[21/9] w-full sm:aspect-[3/1]">
+                <Photo
+                  image={image}
+                  alt={imageAlt}
+                  sizes="(max-width: 1280px) 100vw, 1200px"
+                  className="absolute inset-0 h-full w-full object-cover"
+                />
+                <div
+                  aria-hidden="true"
+                  className="absolute inset-0 bg-gradient-to-t from-noir-950/85 via-noir-950/30 to-transparent"
+                />
+              </div>
+              {/*
+                The city name lives here rather than in a heading below, so the
+                photograph is captioned as the city and not left to read as an
+                image of whichever hotel happens to be listed first beneath it.
+                That distinction is the whole reason this image is safe to show
+                while per-property photography is still unlicensed.
+              */}
+              <figcaption className="absolute inset-x-0 bottom-0 flex flex-wrap items-baseline gap-x-3 gap-y-1 p-5 sm:p-6">
+                <h2 id={`hotels-${key}`} className="font-serif text-heading text-on-premium">
+                  {city}
+                </h2>
+                <span className="text-body-sm text-on-premium-muted">
+                  {hotelsInCity(key).length} hotels we use, by distance to {landmark}
+                </span>
+              </figcaption>
+            </figure>
+
+            <p className="prose-column text-body-lg text-text-muted">
+              Grouped by star band, and within each band sorted by walking distance to{' '}
+              {landmark} — closest first, because that is the order the decision is
+              actually made in.
+            </p>
 
             <div className="grid gap-6 lg:grid-cols-3">
               {BANDS.map((band, i) => {
