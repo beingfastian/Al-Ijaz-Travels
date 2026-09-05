@@ -21,9 +21,14 @@ export const faqs = [
       'Yes. Visa processing is included in every package. We will tell you exactly which documents are needed once you confirm.',
   },
   {
+    question: 'Which hotel will I actually get?',
+    answer:
+      'Each star band has seven Makkah hotels, each paired with one in Madinah, and all fourteen are named on the hotels page with their walking distances. Your quote is built on the first pairing in that band, and the specific pairing is confirmed in writing before you pay. If it is full you are offered one of the other six — same band, and if it is further from the Haram we tell you the new figure and ask first.',
+  },
+  {
     question: 'Can I customise a package?',
     answer:
-      'Yes — hotel, sharing basis and dates can all be adjusted. Request a quote and tell us what you need in the notes.',
+      'Yes — the hotel pairing, sharing basis and dates can all be adjusted. If you want a specific property from the list, ask for it by name. Request a quote and tell us what you need in the notes.',
   },
   {
     question: 'What is not included?',

@@ -43,6 +43,15 @@ export interface Hotel {
    * so it can be sorted, filtered, and rendered as a badge.
    */
   distanceToHaramM: number;
+  /**
+   * A photograph of this specific property, when one has been licensed.
+   *
+   * Optional on purpose, and resolved by filename convention in data/hotels.ts
+   * rather than written per hotel. Absent is a supported state that every surface
+   * lays out correctly — a generic stock hotel room under a named property would
+   * be a lie by implication, so no photograph is the better failure.
+   */
+  photo?: PackageImage;
 }
 
 export interface ItineraryDay {

@@ -48,6 +48,24 @@ export function formatDistance(metres: number): string {
   return `${(metres / 1000).toFixed(1)} km`;
 }
 
+/**
+ * The spread across a set of hotels — "100 m – 700 m", "300 m – 1.4 km".
+ *
+ * A star band now covers seven properties rather than one, and collapsing that
+ * to a single flattering figure is the dishonesty this site is positioned
+ * against. Publishing both ends says plainly that the near end is a walk and the
+ * far end is a shuttle, which is the thing the traveller needs to know before
+ * they choose a band.
+ *
+ * Collapses to one figure when both ends round to the same string, so a band
+ * whose hotels are all equidistant does not read as "300 m – 300 m".
+ */
+export function formatDistanceRange(range: { min: number; max: number }): string {
+  const min = formatDistance(range.min);
+  const max = formatDistance(range.max);
+  return min === max ? min : `${min} – ${max}`;
+}
+
 const SHARING_LABEL: Record<Sharing, string> = {
   quad: 'quad sharing',
   triple: 'triple sharing',

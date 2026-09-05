@@ -41,7 +41,7 @@ export const services: Service[] = [
     href: '/hotels/',
     icon: BedDouble,
     summary: 'Named hotels with their real walking distance to the Haram, in metres.',
-    detail: 'Every property we use is listed with its actual distance — 120 m, 300 m, 1.4 km. Not “close to the Haram”, which means nothing until you are carrying a suitcase at midnight.',
+    detail: 'Every property we use is listed with its actual distance — 100 m, 450 m, 1.5 km. Not “close to the Haram”, which means nothing until you are carrying a suitcase at midnight.',
   },
   {
     id: 'visa',

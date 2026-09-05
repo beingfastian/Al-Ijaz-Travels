@@ -126,7 +126,7 @@ export const assurancePages: AssurancePage[] = [
         ],
         bullets: [
           'That the flights, hotels, transfers and visa processing you paid for are delivered as described',
-          'That the hotel is the one named, or a same-tier alternative at no less than the stated distance from the Haram if it genuinely cannot be honoured',
+          'That the hotel is the one named, or one of the same-tier alternatives published on the hotels page — and that if the replacement is further from the Haram than the one you booked, you are told and asked before it is confirmed',
           'That you are told about a significant change before you travel, not on arrival',
           'That a group leader is reachable while you are in Saudi Arabia',
           'That your money is ATOL protected',
@@ -149,7 +149,8 @@ export const assurancePages: AssurancePage[] = [
       {
         heading: 'If something changes',
         paragraphs: [
-          'Hotels change occasionally and flight schedules change more often. Where a change is significant we tell you what it is and what your options are, in writing. Where a hotel has to be substituted, the replacement is the same tier and no further from the Haram than the one you booked — and if we cannot do that, you are told rather than moved quietly.',
+          'Hotels change occasionally and flight schedules change more often. Where a change is significant we tell you what it is and what your options are, in writing. Where a hotel has to be substituted, the replacement comes from the seven pairings published for that star band on the hotels page — never from outside it, and never a property you have not already been able to look up. That set is deliberately public: a substitution should be a name you have already seen with a distance you have already read, not a surprise on arrival.',
+          'The distances within a band are not identical, and we will not pretend otherwise. If the replacement is further from the Haram than the one you booked, you are told the new figure and asked before it is confirmed — and you can decline it. What we will not do is move you quietly and let you find out at the door.',
           'Umrah visa availability around the Hajj season is the one thing genuinely outside anyone’s control. We flag restricted months on the site before you book, which is why May and June carry a warning rather than a price alone.',
         ],
       },

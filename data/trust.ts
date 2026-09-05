@@ -99,7 +99,7 @@ export const comparison: ComparisonRow[] = [
   {
     point: 'Hotel distance',
     typical: '“Close to Haram”, “walking distance”, or a shuttle you discover on arrival',
-    ours: 'Exact walking distance in metres, on every package and every hotel card',
+    ours: 'Exact walking distance in metres, on every package and on all 42 hotels we use',
   },
   {
     point: 'Pricing',

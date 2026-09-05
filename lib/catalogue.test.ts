@@ -2,7 +2,8 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
 import { buildCatalogue, baseCatalogue, monthCatalogue, priceFor, slugFor } from './catalogue.ts';
-import { tiers, getTier } from '../data/tiers.ts';
+import { tiers, getTier, leadPairing } from '../data/tiers.ts';
+import { hotel, hotels } from '../data/hotels.ts';
 import { baseDurations, monthDurations } from '../data/durations.ts';
 import { months, getMonth } from '../data/months.ts';
 import { totalNights } from './types.ts';
@@ -116,6 +117,106 @@ test('hotel star rating never contradicts the tier it is sold under', () => {
     for (const h of pkg.hotels) {
       assert.equal(h.stars, pkg.tier, `${pkg.slug}: ${h.name} is ${h.stars}-star`);
     }
+  }
+});
+
+/* ---------------------------------------------------------------- pairings */
+
+test('every tier carries the full seven pairings the allocation promises', () => {
+  for (const tier of tiers) {
+    assert.equal(
+      tier.pairings.length,
+      7,
+      `${tier.slug}: the hotels page prints "7 pairings" from this length`
+    );
+  }
+});
+
+test('both hotels in every pairing are in the right city', () => {
+  for (const tier of tiers) {
+    for (const [i, pair] of tier.pairings.entries()) {
+      assert.equal(hotel(pair.makkah).city, 'makkah', `${tier.slug} pairing ${i + 1}`);
+      assert.equal(hotel(pair.madinah).city, 'madinah', `${tier.slug} pairing ${i + 1}`);
+    }
+  }
+});
+
+test('no pairing quietly mixes star bands', () => {
+  // The lead pairing is covered by the package-level check above, but the other
+  // six are never generated into a package, so nothing else would catch a 4-star
+  // property sitting on a 5-star pairing — which is the substitution complaint
+  // this whole model exists to prevent.
+  for (const tier of tiers) {
+    for (const [i, pair] of tier.pairings.entries()) {
+      for (const id of [pair.makkah, pair.madinah] as const) {
+        assert.equal(
+          hotel(id).stars,
+          tier.tier,
+          `${tier.slug} pairing ${i + 1}: ${hotel(id).name} is ${hotel(id).stars}-star`
+        );
+      }
+    }
+  }
+});
+
+test('every hotel is used exactly once, and every pairing slot is filled', () => {
+  // Both directions matter. A hotel used twice means one pairing is a duplicate
+  // of another under a different number; a hotel used never means it is listed on
+  // the hotels page but unreachable from any package or quote.
+  const used = tiers.flatMap((t) => t.pairings.flatMap((p) => [p.makkah, p.madinah]));
+
+  assert.equal(used.length, hotels.length, 'pairing slots should account for every hotel');
+  assert.equal(new Set(used).size, used.length, 'a hotel appears in more than one pairing');
+
+  const unused = hotels.filter((h) => !used.includes(h.id as (typeof used)[number]));
+  assert.deepEqual(
+    unused.map((h) => h.id),
+    [],
+    'these hotels are in the registry but on no pairing'
+  );
+});
+
+test('the lead pairing is the one the packages actually name', () => {
+  for (const tier of tiers) {
+    const lead = leadPairing(tier);
+    assert.deepEqual(lead, tier.pairings[0]);
+
+    const pkg = buildCatalogue().find((p) => p.tier === tier.tier);
+    assert.ok(pkg, `no package generated for ${tier.slug}`);
+    assert.deepEqual(
+      pkg.hotels.map((h) => h.name).sort(),
+      [hotel(lead.makkah).name, hotel(lead.madinah).name].sort(),
+      `${tier.slug}: packages must quote the lead pairing`
+    );
+  }
+});
+
+test('every hotel distance is a real number of metres, not a placeholder', () => {
+  for (const h of hotels) {
+    assert.ok(
+      Number.isInteger(h.distanceToHaramM) && h.distanceToHaramM > 0,
+      `${h.name}: ${h.distanceToHaramM} is not a usable walking distance`
+    );
+    assert.ok(
+      h.distanceToHaramM < 10000,
+      `${h.name}: ${h.distanceToHaramM} m is not a property we would call walkable`
+    );
+  }
+});
+
+test('a hotel photograph is matched to the right property, or absent', () => {
+  // The whole photo mechanism is a filename convention, so the thing that can
+  // break it silently is a photo resolving onto the wrong hotel. Absent is fine
+  // and expected — 42 licensed images do not exist yet. Present-but-mismatched is
+  // the failure that would put one tower's photograph under another's name.
+  for (const h of hotels) {
+    if (!h.photo) continue;
+    assert.equal(h.photo.key, h.id, `${h.name} is showing the photo keyed ${h.photo.key}`);
+    assert.ok(h.photo.alt.trim().length > 0, `${h.name} has a photo with empty alt text`);
+    assert.ok(
+      h.photo.alt.includes(h.name),
+      `${h.name}: alt text "${h.photo.alt}" does not name the property it depicts`
+    );
   }
 });
 

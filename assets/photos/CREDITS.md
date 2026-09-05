@@ -36,9 +36,12 @@ shipping none.
 
 ## Still wanted
 
-- **Hotel interiors** — rooms and lobbies for the properties in `data/hotels.ts`.
+- **The 42 hotels** in `data/hotels.ts` — exteriors and lobbies, one per property.
   Generic stock hotel rooms would be a lie by implication, since the card names a
-  specific property. Best sourced from the hotels themselves.
+  specific property. The site is already wired for these: drop
+  `<hotel id>.jpg` in this directory and run `npm run images`, and no code changes.
+  **See [HOTEL-PHOTOS.md](HOTEL-PHOTOS.md)** for the per-property sourcing routes
+  and why the hotels' own website photography is not usable without permission.
 - **UK departure** — an airport image for the city landing pages.
 - **Client-supplied photography** of actual groups, if it exists. Real pilgrims
   the agency has travelled with beats any stock image on this page for trust,

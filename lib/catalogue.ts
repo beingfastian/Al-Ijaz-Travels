@@ -1,6 +1,6 @@
 import type { AirportCode, MonthKey, Package, Tier } from './types.ts';
 import type { ImageKey } from '../data/images.generated.ts';
-import { tiers, type TierDefinition } from '../data/tiers.ts';
+import { tiers, leadPairing, type TierDefinition } from '../data/tiers.ts';
 import { baseDurations, monthDurations, type Duration } from '../data/durations.ts';
 import { months, type MonthDefinition } from '../data/months.ts';
 import { hotel } from '../data/hotels.ts';
@@ -51,7 +51,7 @@ function departuresFor(nights: number): AirportCode[] {
  *
  * The pairing is deliberate rather than decorative: the tier a visitor is
  * looking at should show them the view that tier actually buys. Five-star is
- * the night Haram seen from the arcade — which is what 120 m from the gates
+ * the night Haram seen from the arcade — which is what 100 m from the gates
  * looks like at Isha. Three-star is the courtyard from further out.
  */
 const TIER_IMAGE: Record<Tier, { key: ImageKey; alt: string }> = {
@@ -94,7 +94,7 @@ function summaryFor(
   duration: Duration,
   month?: MonthDefinition
 ): string {
-  const makkahHotel = hotel(tierDef.hotels.makkah);
+  const makkahHotel = hotel(leadPairing(tierDef).makkah);
   const when = month ? `Departing ${month.name}. ` : '';
   return (
     `${when}${duration.nights} nights — ${duration.makkah} in Makkah, ${duration.madinah} in Madinah. ` +
@@ -170,8 +170,8 @@ function buildPackage(
   duration: Duration,
   month?: MonthDefinition
 ): Package {
-  const makkahHotel = hotel(tierDef.hotels.makkah);
-  const madinahHotel = hotel(tierDef.hotels.madinah);
+  const makkahHotel = hotel(leadPairing(tierDef).makkah);
+  const madinahHotel = hotel(leadPairing(tierDef).madinah);
 
   return {
     slug: slugFor(tierDef.tier, duration, month?.key),
