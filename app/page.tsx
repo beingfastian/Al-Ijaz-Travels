@@ -3,6 +3,7 @@ import { SeasonalBanner } from '@/components/home/SeasonalBanner';
 import { Hero } from '@/components/home/Hero';
 import { ServicesGrid } from '@/components/home/ServicesGrid';
 import { PhotoBand } from '@/components/home/PhotoBand';
+import { AirlineStrip } from '@/components/home/AirlineStrip';
 import { AirportPicker } from '@/components/home/AirportPicker';
 import { FeaturedPackages } from '@/components/home/FeaturedPackages';
 import { ComparisonTable } from '@/components/home/ComparisonTable';
@@ -35,6 +36,7 @@ export default function HomePage() {
       <ServicesGrid />
       <PhotoBand />
       <AirportPicker />
+      <AirlineStrip />
       <FeaturedPackages />
       <ComparisonTable />
       <TrustRow />
