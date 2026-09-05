@@ -16,6 +16,18 @@ import { IMAGES, type GeneratedImage, type ImageKey } from '@/data/images.genera
  * at each call site.
  */
 
+/**
+ * Whether the pipeline has actually produced this key.
+ *
+ * Narrows a plain string to an ImageKey, for the case where the key is computed
+ * rather than written — an airline mark named for its IATA code, a hotel photo
+ * named for its id. Lets a caller choose a real fallback instead of rendering a
+ * Photo that silently returns null and leaves a hole in the layout.
+ */
+export function hasImage(key: string): key is ImageKey {
+  return key in IMAGES;
+}
+
 interface PhotoProps {
   /** A key from the generated manifest — an unprocessed photo will not compile. */
   image: ImageKey;

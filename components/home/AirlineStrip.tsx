@@ -1,97 +1,130 @@
-import Link from 'next/link';
-import { Plane, ArrowRight } from 'lucide-react';
-import { airlinesByDirectness } from '@/data/airlines';
-import { Reveal } from '@/components/ui/Reveal';
+'use client';
+
+import { useRef } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { airlines } from '@/data/airlines';
+import { Photo, hasImage } from '@/components/ui/Photo';
 
 /**
- * Who you actually fly with.
+ * "We proudly cooperate with" — the airline strip, matching Al Noor's layout.
  *
- * Al Noor runs a carousel of airline logos headed "We proudly cooperate with".
- * This is the same idea — answer "whose plane am I on" before anyone has to ask
- * — with two deliberate differences.
+ * Photograph behind, heading over it, and a row of white cards holding the
+ * carrier marks, with a chevron either side to page through them.
  *
- * It is not a carousel. Five carriers fit on one row, and a carousel that hides
- * three of five behind arrows makes a visitor work for information we could
- * simply show. Auto-advancing strips also move content under the cursor and are
- * a well-known accessibility problem; there is nothing here worth that cost.
+ * Scroll-snap rather than a JS slideshow. The arrows nudge the rail by one card
+ * and the row is a native horizontal scroller, so a trackpad swipe, a touch
+ * drag, and the buttons all do the same thing, and it degrades to a plain
+ * scrollable row with no JavaScript. Nothing auto-advances: content that moves
+ * on its own under a reader is the one carousel behaviour that reliably fails an
+ * accessibility audit, and this row has nothing to gain from it.
  *
- * And the heading is factual rather than promotional. "We proudly cooperate
- * with" asserts a commercial relationship with each carrier named, which is a
- * claim an airline can test and would need evidencing one by one. What is true,
- * and what data/airports.ts already says, is that these carriers fly these
- * routes — so that is what this says. Each card carries the routing, which is
- * the part a pilgrim comparing two packages actually needs.
+ * ⚠ THE LOGO FILES. Each card shows `airline-<iata code>` from the image
+ * pipeline — `airline-sv`, `airline-qr` — and falls back to the carrier's name
+ * set in our own type until that file exists. Airline marks are registered
+ * trademarks: naming a carrier is fine, reproducing its mark needs permission,
+ * which for an IATA-accredited agent normally comes through the carrier's trade
+ * or brand portal. Drop the licensed files into assets/photos/ with those names,
+ * run `npm run images`, and the marks appear with no code change.
  */
 export function AirlineStrip() {
+  const rail = useRef<HTMLUListElement>(null);
+
+  const page = (direction: -1 | 1) => {
+    const el = rail.current;
+    if (!el) return;
+    // One card plus its gap, so a press lands cleanly on the next snap point
+    // rather than drifting out of alignment over several presses.
+    const card = el.querySelector('li');
+    const step = card ? card.getBoundingClientRect().width + 16 : el.clientWidth * 0.8;
+    el.scrollBy({ left: step * direction, behavior: 'smooth' });
+  };
+
   return (
-    <section aria-labelledby="airlines" className="border-y border-border bg-surface-sunk">
-      <div className="max-container padding-container flex flex-col gap-10 py-14 lg:py-16">
-        <Reveal className="section-header-centered">
-          <p className="eyebrow">Who you fly with</p>
-          <h2 id="airlines" className="text-heading">
-            Airlines on <span className="text-gold-text">these routes</span>
-          </h2>
-          <p className="text-body-lg text-text-muted">
-            Two carriers fly direct to Jeddah from Heathrow; the rest connect once,
-            through Doha, Dubai or Istanbul. Your ticket names the airline before you
-            pay — we do not sell "a flight" and tell you whose later.
-          </p>
-        </Reveal>
+    <section aria-labelledby="airlines" className="max-container padding-container py-12 lg:py-16">
+      <div className="premium-surface relative isolate overflow-hidden rounded-panel">
+        <Photo
+          image="flight-approach"
+          alt=""
+          sizes="(max-width: 1280px) 100vw, 1200px"
+          className="absolute inset-0 h-full w-full object-cover opacity-45"
+        />
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 bg-gradient-to-b from-noir-950/85 via-noir-950/70 to-noir-950/90"
+        />
 
-        <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-          {airlinesByDirectness.map(({ code, name, hub, note }, i) => (
-            <Reveal
-              key={code}
-              as="li"
-              variant="scale"
-              index={i}
-              className="flex flex-col gap-3 rounded-panel border border-border bg-surface p-5 shadow-card"
-            >
-              {/*
-                The carrier set in our own type, not its logo. Airline marks are
-                registered trademarks and the artwork is copyrighted — naming a
-                carrier factually is fine, reproducing its mark needs permission.
-                When those files are licensed they drop in here by IATA code.
-              */}
-              <span className="flex items-center justify-between gap-2">
-                <span className="font-serif text-subheading text-green-900">{name}</span>
-                <span
-                  className="rounded bg-surface-sunk px-1.5 py-0.5 text-body-sm font-medium tracking-wide text-text-muted"
-                  aria-hidden
-                >
-                  {code}
-                </span>
-              </span>
-
-              <span
-                className={
-                  hub === null
-                    ? 'inline-flex w-fit items-center gap-1.5 rounded-full bg-green-900 px-2.5 py-1 text-body-sm font-medium text-on-premium'
-                    : 'inline-flex w-fit items-center gap-1.5 rounded-full border border-border px-2.5 py-1 text-body-sm text-text-muted'
-                }
-              >
-                <Plane size={13} aria-hidden />
-                {hub === null ? 'Direct to Jeddah' : `via ${hub}`}
-              </span>
-
-              <span className="text-body-sm text-text-muted">{note}</span>
-            </Reveal>
-          ))}
-        </ul>
-
-        <Reveal className="flex justify-center">
-          <Link
-            href="/flights/"
-            className="group inline-flex items-center gap-1.5 rounded-full border border-green-200 bg-surface px-5 py-2.5 text-body-sm font-medium text-green-900 transition-colors hover:border-gold-500 hover:bg-gold-200/40"
+        <div className="relative flex flex-col gap-8 px-4 py-12 sm:px-8 lg:py-14">
+          <h2
+            id="airlines"
+            className="text-center font-serif text-display text-on-premium"
           >
-            How the routes and baggage work
-            <ArrowRight
-              size={14}
-              className="transition-transform group-hover:translate-x-0.5"
-              aria-hidden
-            />
-          </Link>
-        </Reveal>
+            We proudly cooperate with
+          </h2>
+
+          <div className="relative">
+            {/*
+              tabIndex and a label because the row scrolls. A horizontally
+              scrollable region that cannot be focused is unreachable by keyboard
+              — the arrows are pointer-only, so without this the last carriers in
+              the rail exist for mouse users and nobody else. axe catches it as
+              scrollable-region-focusable, and it is right to.
+            */}
+            <ul
+              ref={rail}
+              tabIndex={0}
+              aria-label="Airlines we book, scrollable"
+              className="flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth px-1 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            >
+              {airlines.map(({ code, name }) => {
+                const logo = `airline-${code.toLowerCase()}`;
+                return (
+                <li
+                  key={code}
+                  className="flex min-w-[13rem] flex-1 snap-start items-center justify-center rounded-panel bg-ground px-6 py-10 shadow-float sm:min-w-[15rem]"
+                >
+                  {/*
+                    The licensed mark where one exists, the carrier's name where
+                    it does not. Both carry the same information to a reader; only
+                    one of them needs permission to display.
+                  */}
+                  {hasImage(logo) ? (
+                    <Photo
+                      image={logo}
+                      alt={name}
+                      sizes="200px"
+                      className="max-h-12 w-auto object-contain"
+                    />
+                  ) : (
+                    <span className="font-serif text-subheading text-green-900">{name}</span>
+                  )}
+                </li>
+                );
+              })}
+            </ul>
+
+            {/* Positioned over the rail ends, as theirs are. Hidden from assistive
+                tech: the list is already reachable by keyboard and scroll, so
+                these are a pointer convenience, not a second way in. */}
+            <button
+              type="button"
+              onClick={() => page(-1)}
+              aria-hidden="true"
+              tabIndex={-1}
+              className="absolute left-0 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 rounded-md bg-noir-950/70 p-2 text-on-premium backdrop-blur transition-colors hover:bg-noir-950 sm:block"
+            >
+              <ChevronLeft size={22} />
+            </button>
+            <button
+              type="button"
+              onClick={() => page(1)}
+              aria-hidden="true"
+              tabIndex={-1}
+              className="absolute right-0 top-1/2 hidden translate-x-1/2 -translate-y-1/2 rounded-md bg-noir-950/70 p-2 text-on-premium backdrop-blur transition-colors hover:bg-noir-950 sm:block"
+            >
+              <ChevronRight size={22} />
+            </button>
+          </div>
+        </div>
       </div>
     </section>
   );

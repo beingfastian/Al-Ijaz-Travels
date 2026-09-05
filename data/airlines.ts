@@ -58,6 +58,18 @@ export const airlines: Airline[] = [
     note: 'One connection through Dubai, and the routing with the widest choice of departure times.',
   },
   {
+    code: 'EY',
+    hub: 'Abu Dhabi',
+    name: 'Etihad Airways',
+    note: 'One connection through Abu Dhabi.',
+  },
+  {
+    code: 'GF',
+    name: 'Gulf Air',
+    hub: 'Bahrain',
+    note: 'One connection through Bahrain, and often the shortest layover of the Gulf routings.',
+  },
+  {
     code: 'TK',
     name: 'Turkish Airlines',
     hub: 'Istanbul',

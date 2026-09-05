@@ -20,6 +20,23 @@ export interface GeneratedImage {
 }
 
 export const IMAGES = {
+  'flight-approach': {
+    width: 1600,
+    height: 711,
+    avif: [
+      '/img/flight-approach-400.avif 400w',
+      '/img/flight-approach-800.avif 800w',
+      '/img/flight-approach-1200.avif 1200w',
+      '/img/flight-approach-1600.avif 1600w',
+    ],
+    webp: [
+      '/img/flight-approach-400.webp 400w',
+      '/img/flight-approach-800.webp 800w',
+      '/img/flight-approach-1200.webp 1200w',
+      '/img/flight-approach-1600.webp 1600w',
+    ],
+    fallback: '/img/flight-approach-800.jpg',
+  },
   'haram-courtyard': {
     width: 1600,
     height: 1200,

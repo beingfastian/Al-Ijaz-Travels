@@ -8,7 +8,7 @@ Attribution is recorded here anyway. Not because the licence demands it, but
 because "where did this come from" is a question that gets asked eighteen months
 later when nobody remembers, and the honest answer needs to exist somewhere.
 
-**Sourced 20 August 2026.**
+**Sourced 20 August 2026**, except `flight-approach` (6 September 2026).
 
 | Key | Subject | Pexels ID | Source |
 |---|---|---|---|
@@ -20,6 +20,7 @@ later when nobody remembers, and the honest answer needs to exist somewhere.
 | `nabawi-green-dome` | The Green Dome and minaret, Masjid an-Nabawi | 34642005 | [pexels.com/photo/34642005](https://www.pexels.com/photo/green-dome-and-minaret-of-prophet-s-mosque-in-medina-34642005/) |
 | `nabawi-twilight` | Masjid an-Nabawi at twilight | 34246953 | [pexels.com/photo/34246953](https://www.pexels.com/photo/twilight-view-of-al-masjid-an-nabawi-in-medina-34246953/) |
 | `makkah-skyline-night` | Makkah at night, Haram and the clock tower | 3742589 | [pexels.com/photo/3742589](https://www.pexels.com/photo/crowd-in-mecca-at-night-3742589/) |
+| `flight-approach` | An airliner on final approach against a flat grey sky, no livery visible | 358319 | [pexels.com/photo/358319](https://www.pexels.com/photo/white-airplane-358319/) |
 | `tawaf-crowd` | Tawaf, dense crowd circling the Kaaba | 4118058 | [pexels.com/photo/4118058](https://www.pexels.com/photo/crowd-of-people-gathering-around-kaaba-site-4118058/) |
 
 ## Two things that were deliberate
