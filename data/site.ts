@@ -152,6 +152,12 @@ export const allNavLinks = [
   { href: '/monthly-packages/', label: 'Monthly Packages', ready: true },
   { href: '/city-packages/', label: 'City Packages', ready: true },
   { href: '/ramadan-umrah-packages/', label: 'Ramadan Packages', ready: true },
+  // Promoted out of the secondary list. Neither Al Habib nor Al Noor has a hotels
+  // page at all — theirs are names inside package cards — so this is the one
+  // page on the site with no competitor equivalent, and it was reachable only
+  // from the footer. Burying the strongest differentiator below the fold is the
+  // opposite of what the information architecture should do.
+  { href: '/hotels/', label: 'Hotels', ready: true },
   { href: '/visa/', label: 'Visas', ready: true },
 ] as const;
 
@@ -160,7 +166,6 @@ export const navLinks = allNavLinks.filter((l) => l.ready);
 /** Secondary nav — present in the footer and the mobile drawer, not the top bar. */
 export const allSecondaryNavLinks = [
   { href: '/flights/', label: 'Flights', ready: true },
-  { href: '/hotels/', label: 'Hotels', ready: true },
   { href: '/transport/', label: 'Transport', ready: true },
   { href: '/about/', label: 'About Us', ready: true },
   { href: '/blog/', label: 'Blog', ready: true },

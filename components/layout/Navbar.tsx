@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
-import { navLinks, site } from '@/data/site';
+import { navLinks, secondaryNavLinks, site } from '@/data/site';
 import { Logo } from '@/components/brand/Logo';
 import { cn } from '@/lib/cn';
 
@@ -117,6 +117,28 @@ export function Navbar() {
               </li>
             ))}
           </ul>
+
+          {/*
+            The secondary links were documented as living "in the footer and the
+            mobile drawer" and were only ever rendered in the footer. On a phone
+            that put Flights, Transport, About, Blog, FAQ and Contact behind a
+            full-page scroll, which is the whole site's supporting content
+            unreachable from the menu that exists to reach it.
+          */}
+          <ul className="padding-container flex flex-wrap gap-x-5 gap-y-2 pb-2">
+            {secondaryNavLinks.map((link) => (
+              <li key={link.href}>
+                <Link
+                  href={link.href}
+                  onClick={() => setOpen(false)}
+                  className="block py-1 text-body text-text-muted"
+                >
+                  {link.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+
           <div className="padding-container pb-6 pt-2">
             <Button href={`tel:${site.contact.phone.replace(/\s/g, '')}`} variant="primary" full>
               Call Now
