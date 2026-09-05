@@ -123,6 +123,13 @@ async function processImage(name) {
     await image
       .clone()
       .resize({ width: fallbackWidth, withoutEnlargement: true })
+      // JPEG has no alpha channel, and sharp composites a transparent source
+      // onto black by default. That is invisible for photography — none of it has
+      // an alpha channel — but a transparent PNG logo came out as a black block
+      // in the fallback, which is exactly what an older browser would render on a
+      // white card. AVIF and WebP keep the alpha; only this branch needs it.
+      // A no-op for any source that is already opaque.
+      .flatten({ background: '#ffffff' })
       .jpeg({ quality: 82, progressive: true })
       .toFile(fallback);
     encoded++;
