@@ -58,6 +58,12 @@ export const airlines: Airline[] = [
     note: 'One connection through Dubai, and the routing with the widest choice of departure times.',
   },
   {
+    code: 'BA',
+    name: 'British Airways',
+    hub: null,
+    note: 'Direct to Jeddah from Heathrow, with a UK crew and UK-side customer service.',
+  },
+  {
     code: 'EY',
     hub: 'Abu Dhabi',
     name: 'Etihad Airways',
@@ -77,8 +83,19 @@ export const airlines: Airline[] = [
   },
 ];
 
-/** Direct services first — it is the difference travellers actually feel. */
+/**
+ * Rail order: carriers whose mark we hold first.
+ *
+ * The strip falls back to a carrier's name where no logo file exists, and a row
+ * that alternates marks and words reads as broken rather than as partial. Putting
+ * the six we have first means the visible row is all logos and the name-only
+ * cards sit past the fold, where they look like the rest of a list rather than a
+ * gap in this one. Add airline-xy.png and airline-tk.png and they join the front
+ * automatically.
+ */
+const WITH_LOGO = new Set(['SV', 'QR', 'EK', 'EY', 'GF', 'BA']);
+
 export const airlinesByDirectness: Airline[] = [
-  ...airlines.filter((a) => a.hub === null),
-  ...airlines.filter((a) => a.hub !== null),
+  ...airlines.filter((a) => WITH_LOGO.has(a.code)),
+  ...airlines.filter((a) => !WITH_LOGO.has(a.code)),
 ];

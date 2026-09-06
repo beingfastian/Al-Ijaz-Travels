@@ -20,6 +20,84 @@ export interface GeneratedImage {
 }
 
 export const IMAGES = {
+  'airline-ba': {
+    width: 800,
+    height: 324,
+    avif: [
+      '/img/airline-ba-400.avif 400w',
+      '/img/airline-ba-800.avif 800w',
+    ],
+    webp: [
+      '/img/airline-ba-400.webp 400w',
+      '/img/airline-ba-800.webp 800w',
+    ],
+    fallback: '/img/airline-ba-800.jpg',
+  },
+  'airline-ek': {
+    width: 800,
+    height: 800,
+    avif: [
+      '/img/airline-ek-400.avif 400w',
+      '/img/airline-ek-800.avif 800w',
+    ],
+    webp: [
+      '/img/airline-ek-400.webp 400w',
+      '/img/airline-ek-800.webp 800w',
+    ],
+    fallback: '/img/airline-ek-800.jpg',
+  },
+  'airline-ey': {
+    width: 800,
+    height: 284,
+    avif: [
+      '/img/airline-ey-400.avif 400w',
+      '/img/airline-ey-800.avif 800w',
+    ],
+    webp: [
+      '/img/airline-ey-400.webp 400w',
+      '/img/airline-ey-800.webp 800w',
+    ],
+    fallback: '/img/airline-ey-800.jpg',
+  },
+  'airline-gf': {
+    width: 800,
+    height: 290,
+    avif: [
+      '/img/airline-gf-400.avif 400w',
+      '/img/airline-gf-800.avif 800w',
+    ],
+    webp: [
+      '/img/airline-gf-400.webp 400w',
+      '/img/airline-gf-800.webp 800w',
+    ],
+    fallback: '/img/airline-gf-800.jpg',
+  },
+  'airline-qr': {
+    width: 800,
+    height: 226,
+    avif: [
+      '/img/airline-qr-400.avif 400w',
+      '/img/airline-qr-800.avif 800w',
+    ],
+    webp: [
+      '/img/airline-qr-400.webp 400w',
+      '/img/airline-qr-800.webp 800w',
+    ],
+    fallback: '/img/airline-qr-800.jpg',
+  },
+  'airline-sv': {
+    width: 800,
+    height: 800,
+    avif: [
+      '/img/airline-sv-400.avif 400w',
+      '/img/airline-sv-800.avif 800w',
+    ],
+    webp: [
+      '/img/airline-sv-400.webp 400w',
+      '/img/airline-sv-800.webp 800w',
+    ],
+    fallback: '/img/airline-sv-800.jpg',
+  },
   'flight-approach': {
     width: 1600,
     height: 711,

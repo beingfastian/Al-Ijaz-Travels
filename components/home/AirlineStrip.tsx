@@ -2,7 +2,7 @@
 
 import { useRef } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { airlines } from '@/data/airlines';
+import { airlinesByDirectness as airlines } from '@/data/airlines';
 import { Photo, hasImage } from '@/components/ui/Photo';
 
 /**
