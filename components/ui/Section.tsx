@@ -6,6 +6,18 @@ import { cn } from '@/lib/cn';
  * used throughout the site, so spacing is decided once rather than re-guessed
  * per section. The base repo repeats `py-24 max-container padding-container` by
  * hand in every component, which is why its sections drift out of alignment.
+ *
+ * THE RHYTHM IS py-12 lg:py-16, NOT py-16 lg:py-24
+ *
+ * Padding here is symmetric, so it doubles wherever two sections meet: at the
+ * old value that was 96px of bottom padding against 96px of top, and where both
+ * sections shared a background — the comparison table into the accreditation
+ * row, for instance — the result was 192px of blank page with no edge to
+ * explain it. It read as a rendering fault rather than as breathing room, and
+ * the home page carries six of these.
+ *
+ * Anything raising this back up should check the same pair, because the cost is
+ * paid at every seam and not just the one being looked at.
  */
 
 type Tone = 'ground' | 'surface' | 'dark';
@@ -22,6 +34,7 @@ export function Section({
   description,
   action,
   centered = false,
+  flushTop = false,
   tone = 'ground',
   pattern = false,
   children,
@@ -42,6 +55,19 @@ export function Section({
    * inherently a left/right split — so `action` wins and centring is ignored.
    */
   centered?: boolean;
+  /**
+   * Drop the top padding, for a section sitting directly beneath another of the
+   * same tone.
+   *
+   * Padding is symmetric, so a seam between two same-toned sections stacks both
+   * — and with no change of background there is no edge to explain the space, so
+   * it reads as a rendering fault rather than as separation. The section above
+   * has already paid for the gap; this stops it being paid twice.
+   *
+   * Only for genuinely same-tone neighbours. Using it where the background does
+   * change makes the two look welded together.
+   */
+  flushTop?: boolean;
   tone?: Tone;
   /** Tile the khatam motif behind the section. */
   pattern?: boolean;
@@ -53,7 +79,13 @@ export function Section({
   const headingId = id ? `${id}-heading` : undefined;
 
   const body = (
-    <div className={cn('max-container padding-container py-16 lg:py-24', className)}>
+    <div
+      className={cn(
+        'max-container padding-container py-12 lg:py-16',
+        flushTop && 'pt-0 lg:pt-0',
+        className
+      )}
+    >
       {(eyebrow || title || description || action) && (
         <div
           className={cn(
@@ -100,7 +132,7 @@ export function Section({
           {action}
         </div>
       )}
-      {children && <div className={cn(title && 'mt-10')}>{children}</div>}
+      {children && <div className={cn(title && 'mt-8')}>{children}</div>}
     </div>
   );
 

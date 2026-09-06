@@ -33,7 +33,7 @@ export function ServicesGrid() {
       aria-labelledby="whats-included"
       className="border-y border-border bg-surface-sunk"
     >
-      <div className="max-container padding-container flex flex-col gap-12 py-16 lg:py-20">
+      <div className="max-container padding-container flex flex-col gap-10 py-12 lg:py-16">
         <Reveal className="section-header-centered">
           <p className="eyebrow">What is included</p>
           <h2 id="whats-included" className="text-heading">

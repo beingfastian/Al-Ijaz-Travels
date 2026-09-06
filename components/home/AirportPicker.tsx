@@ -34,7 +34,7 @@ export function AirportPicker() {
 
   return (
     <section className="border-y border-border bg-surface-sunk">
-      <div className="max-container padding-container flex flex-col gap-8 py-16 lg:py-20">
+      <div className="max-container padding-container flex flex-col gap-8 py-12 lg:py-16">
         <Reveal className="section-header-centered">
           <p className="eyebrow">Departures</p>
           <h2 className="text-heading">Flying from where?</h2>

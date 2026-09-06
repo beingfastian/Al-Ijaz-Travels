@@ -61,7 +61,7 @@ export function PhotoBand() {
         className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-b from-transparent to-noir-950"
       />
 
-      <div className="max-container padding-container relative grid items-center gap-10 py-16 lg:grid-cols-[minmax(0,1fr)_27rem] lg:py-24">
+      <div className="max-container padding-container relative grid items-center gap-10 py-14 lg:grid-cols-[minmax(0,1fr)_27rem] lg:py-20">
         <div className="flex max-w-xl flex-col items-start gap-6">
           <Reveal>
             <p className="eyebrow-premium">Where you are actually going</p>

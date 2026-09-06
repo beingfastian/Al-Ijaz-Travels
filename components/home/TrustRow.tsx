@@ -19,6 +19,7 @@ export function TrustRow() {
 
   return (
     <Section
+      flushTop
       id="accreditation"
       eyebrow="Accreditation"
       title="Registered and accountable"
