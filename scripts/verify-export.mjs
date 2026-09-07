@@ -174,8 +174,15 @@ const meta = { titles: new Map(), descriptions: new Map(), missingCanonical: [] 
  * ~250 pages at once and sees no error anywhere.
  */
 const schema = { unparseable: [], danglingRefs: [], refCount: 0 };
-/** Pages whose og:image is missing or does not exist in out/. */
-const shareImages = { missing: [], broken: [] };
+/**
+ * Pages whose share card is missing, broken, or missing an inherited field.
+ *
+ * `noLocale` exists because the og:image check alone was not enough. Both are
+ * set once in the root layout and both are silently dropped by any page that
+ * declares its own `openGraph` — so they fail together, and checking only one
+ * let the second ship. See inheritedOpenGraph() in lib/seo.ts.
+ */
+const shareImages = { missing: [], broken: [], noLocale: [] };
 
 /** Every `@id` a node defines, and every `@id` a node merely points at. */
 function collectIds(node, defined, referenced) {
@@ -235,6 +242,8 @@ for (const page of pages) {
 
   // --- the share card. Absolute, so it cannot be fetched from the local server
   // like every other asset; checked against out/ on disk instead.
+  if (!/<meta property="og:locale" content=/.test(html)) shareImages.noLocale.push(pageUrl);
+
   const og = (html.match(/<meta property="og:image" content="([^"]*)"/) ?? [])[1];
   if (!og) {
     shareImages.missing.push(pageUrl);
@@ -296,13 +305,18 @@ if (schemaProblems > 0) {
   process.exit(1);
 }
 
-if (shareImages.missing.length > 0 || shareImages.broken.length > 0) {
+if (shareImages.missing.length > 0 || shareImages.broken.length > 0 || shareImages.noLocale.length > 0) {
   console.error(`
   SHARE CARD problems — links to these unfurl as a blank box:
 `);
   if (shareImages.missing.length > 0) {
     console.error(`    ${shareImages.missing.length} page(s) with no og:image`);
     console.error(`      e.g. ${shareImages.missing.slice(0, 3).join(', ')}`);
+  }
+  if (shareImages.noLocale.length > 0) {
+    console.error(`    ${shareImages.noLocale.length} page(s) with no og:locale`);
+    console.error(`      e.g. ${shareImages.noLocale.slice(0, 3).join(', ')}`);
+    console.error(`      a page declaring its own openGraph must spread inheritedOpenGraph()`);
   }
   for (const b of shareImages.broken.slice(0, 3)) {
     console.error(`    og:image does not exist in out/: ${b.og}

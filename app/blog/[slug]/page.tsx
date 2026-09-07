@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { Clock, CalendarDays } from 'lucide-react';
 import { articles, getArticle, relatedArticles, readingMinutes } from '@/data/blog';
 import { JsonLd } from '@/components/seo/JsonLd';
-import { ORGANISATION_ID, absoluteUrl, breadcrumbNode, shareImages } from '@/lib/seo';
+import { ORGANISATION_ID, absoluteUrl, breadcrumbNode, inheritedOpenGraph } from '@/lib/seo';
 import { Blocks } from '@/components/blog/Blocks';
 import { Reveal } from '@/components/ui/Reveal';
 import { Button } from '@/components/ui/Button';
@@ -40,14 +40,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description: article.description,
     alternates: { canonical: `/blog/${article.slug}/` },
     openGraph: {
+      // Declaring openGraph here replaces the layout's wholesale — see
+      // inheritedOpenGraph() in lib/seo.ts.
+      ...inheritedOpenGraph(),
       title: article.title,
       description: article.description,
       type: 'article',
       publishedTime: article.published,
       modifiedTime: article.updated ?? article.published,
-      // Declaring openGraph here replaces the layout's, image included — see
-      // shareImages() in lib/seo.ts.
-      images: shareImages(),
     },
   };
 }
