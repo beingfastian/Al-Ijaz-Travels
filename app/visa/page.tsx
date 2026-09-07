@@ -9,7 +9,7 @@ import { JsonLd } from '@/components/seo/JsonLd';
 export const metadata: Metadata = {
   title: 'Umrah, ETA and Tourist Visas Explained',
   description:
-    'Which Saudi visa you actually need for Umrah from the UK. Umrah visa, Electronic Travel Authorisation and tourist eVisa compared — validity, stay limits and what each does not cover. Every claim dated and sourced.',
+    'Which Saudi visa you actually need for Umrah from the UK: Umrah visa, Electronic Travel Authorisation or tourist eVisa — validity, stay limits and cover.',
   alternates: { canonical: '/visa/' },
 };
 

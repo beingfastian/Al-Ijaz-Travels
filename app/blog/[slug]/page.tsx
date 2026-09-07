@@ -22,7 +22,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!article) return {};
 
   return {
-    title: article.title,
+    /**
+     * `absolute` opts this page out of the root layout's `%s · Al Ijaz Travel`
+     * template.
+     *
+     * Article headlines are already long — they are written as questions a
+     * reader types — and the 17-character brand suffix pushed all five of the
+     * longest past the ~60 characters Google will render, so results ended
+     * "…and What It Costs · Al Ijaz T". Dropping the suffix brings every
+     * article title back inside the budget intact. The brand is not lost: it is
+     * on the same result line as the site name and in the breadcrumb above it.
+     *
+     * Deliberately only here. Commercial pages keep the suffix, where the brand
+     * beside "Umrah Packages" is worth the characters it costs.
+     */
+    title: { absolute: article.title },
     description: article.description,
     alternates: { canonical: `/blog/${article.slug}/` },
     openGraph: {
