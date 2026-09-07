@@ -20,7 +20,7 @@ import {
   absoluteUrl,
   breadcrumbNode,
   imageUrl,
-  shareImages,
+  inheritedOpenGraph,
 } from '@/lib/seo';
 import { Photo } from '@/components/ui/Photo';
 
@@ -48,12 +48,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description: pkg.summary,
     alternates: { canonical: packageHref(pkg) },
     openGraph: {
+      // Replaces the layout's openGraph rather than extending it, so everything
+      // inherited has to be restated — see inheritedOpenGraph() in lib/seo.ts.
+      ...inheritedOpenGraph(),
       title: pkg.name,
       description: pkg.summary,
       type: 'article',
-      // Replaces the layout's openGraph rather than extending it, so the image
-      // has to be restated — see shareImages() in lib/seo.ts.
-      images: shareImages(),
     },
   };
 }

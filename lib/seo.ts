@@ -183,18 +183,9 @@ export const SHARE_IMAGE_WIDTH = 1200;
 export const SHARE_IMAGE_HEIGHT = 630;
 
 /**
- * The `openGraph.images` value, for any page that declares its own `openGraph`.
- *
- * ⚠ Not optional, and not redundant with the root layout. Next merges metadata
- * shallowly: a page that sets `openGraph: { title, description, type }` replaces
- * the parent's whole `openGraph` object rather than extending it, so the layout's
- * image is dropped. That silently cost the share card on all 195 package pages
- * and all 12 articles — every page that had bothered to write a better og:title
- * was exactly the page that lost its image.
- *
- * Spread this into any page-level `openGraph`. scripts/verify-export.mjs fails
- * the build if an indexable page ends up with no og:image, which is what caught
- * this in the first place.
+ * The image half of what a page-level `openGraph` must restate. Prefer
+ * `inheritedOpenGraph()`, which carries every such field and so cannot be
+ * half-applied — see the note there.
  */
 export function shareImages() {
   return [
@@ -205,6 +196,29 @@ export function shareImages() {
       alt: `${site.name} — ${site.tagline}`,
     },
   ];
+}
+
+/**
+ * Every field a page-level `openGraph` must restate, ready to spread.
+ *
+ * ⚠ The trap this exists to close. Next merges metadata shallowly, so a page
+ * that writes `openGraph: { title, description, type }` replaces the parent's
+ * whole object rather than extending it — silently, with no build warning. Any
+ * field the root layout set and the page did not is simply gone.
+ *
+ * That has now bitten twice, on the same 207 pages, for the same reason. First
+ * `images`, so every package and article page lost its share card. Then
+ * `locale`, which the fix for `images` did not think to bring along, so those
+ * same pages shipped with no og:locale at all. Both times the pages affected
+ * were exactly the ones that had bothered to write a better og:title.
+ *
+ * Hence an object rather than a field: spread this and a page cannot inherit
+ * half of what it needs. Adding a field to the layout's `openGraph` means
+ * adding it here too — that is the one rule this file asks of a future editor,
+ * and scripts/verify-export.mjs fails the build when it is broken.
+ */
+export function inheritedOpenGraph() {
+  return { locale: OG_LOCALE, images: shareImages() };
 }
 
 /**
