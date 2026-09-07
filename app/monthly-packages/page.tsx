@@ -11,7 +11,7 @@ import { monthHref } from '@/lib/routes';
 export const metadata: Metadata = {
   title: 'Umrah Packages by Month',
   description:
-    'Umrah prices move more by month than by tier. Compare all twelve — Ramadan, Hajj-season restrictions, UK school holidays and Makkah temperatures, with the cheapest package for each.',
+    'Umrah prices move more by month than by tier. Compare all twelve — Ramadan, Hajj-season closures, UK school holidays and Makkah temperatures, with prices.',
   alternates: { canonical: '/monthly-packages/' },
 };
 

@@ -8,7 +8,7 @@ import { Photo } from '@/components/ui/Photo';
 export const metadata: Metadata = {
   title: 'Transport and Transfers',
   description:
-    'Every transfer included in an Umrah package — Jeddah airport to Makkah, Makkah to Madinah by road or Haramain train, and back. Vehicles, journey times and what is arranged for you.',
+    'Every transfer included in an Umrah package — Jeddah airport to Makkah, Makkah to Madinah by road or Haramain train, and back. Vehicles and journey times.',
   alternates: { canonical: '/transport/' },
 };
 

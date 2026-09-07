@@ -40,7 +40,7 @@ export const metadata: Metadata = {
     template: `%s · ${site.name}`,
   },
   description:
-    'Umrah packages with hotels rated by their actual walking distance to the Haram. Per-person pricing, stated inclusions and exclusions, and a consultant before you commit.',
+    'Umrah packages with hotels rated by their real walking distance to the Haram. Per-person pricing, stated inclusions and exclusions, and a consultant first.',
   /**
    * Absolute-URL base for canonicals, og:url and the share image. Read at build
    * time from data/site.ts — see the TODO there: until NEXT_PUBLIC_SITE_URL is

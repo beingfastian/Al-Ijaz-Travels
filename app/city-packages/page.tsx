@@ -10,7 +10,7 @@ import { cityHref } from '@/lib/routes';
 export const metadata: Metadata = {
   title: 'Umrah Packages by UK City',
   description:
-    'Umrah packages departing London, Manchester, Birmingham, Newcastle, Glasgow and Edinburgh. Each page names its airport, says whether the flight is direct, and shows only what genuinely departs from there.',
+    'Umrah packages from London, Manchester, Birmingham, Newcastle, Glasgow and Edinburgh — each naming its airport and whether the flight is direct.',
   alternates: { canonical: '/city-packages/' },
 };
 
