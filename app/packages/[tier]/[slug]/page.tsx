@@ -10,10 +10,18 @@ import { EnquiryForm } from '@/components/quote/EnquiryForm';
 import { HotelCard } from '@/components/package/HotelCard';
 import { Itinerary } from '@/components/package/Itinerary';
 import { PriceRail } from '@/components/package/PriceRail';
-import { site } from '@/data/site';
 import { getMonth } from '@/data/months';
 import { getAirport } from '@/data/airports';
-import { packageHref } from '@/lib/routes';
+import { packageHref, tierHref } from '@/lib/routes';
+import { getTier } from '@/data/tiers';
+import { JsonLd } from '@/components/seo/JsonLd';
+import {
+  ORGANISATION_ID,
+  absoluteUrl,
+  breadcrumbNode,
+  imageUrl,
+  shareImages,
+} from '@/lib/seo';
 import { Photo } from '@/components/ui/Photo';
 
 /**
@@ -39,7 +47,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: pkg.name,
     description: pkg.summary,
     alternates: { canonical: packageHref(pkg) },
-    openGraph: { title: pkg.name, description: pkg.summary, type: 'article' },
+    openGraph: {
+      title: pkg.name,
+      description: pkg.summary,
+      type: 'article',
+      // Replaces the layout's openGraph rather than extending it, so the image
+      // has to be restated — see shareImages() in lib/seo.ts.
+      images: shareImages(),
+    },
   };
 }
 
@@ -51,16 +66,20 @@ export default async function PackageDetailPage({ params }: Props) {
   const month = pkg.month ? getMonth(pkg.month) : undefined;
   const hero = pkg.images[0];
 
+  const tierDef = getTier(pkg.tier);
+
   /**
    * JSON-LD so package pages can earn rich results. Competitors in this space
    * generally do not bother, which makes it cheap advantage.
    */
-  const jsonLd = {
-    '@context': 'https://schema.org',
+  const trip = {
     '@type': 'TouristTrip',
+    '@id': absoluteUrl(packageHref(pkg)),
     name: pkg.name,
     description: pkg.summary,
+    url: absoluteUrl(packageHref(pkg)),
     touristType: 'Pilgrimage',
+    image: hero ? imageUrl(hero.key) : undefined,
     itinerary: {
       '@type': 'ItemList',
       itemListElement: pkg.itinerary.map((d, i) => ({
@@ -75,16 +94,37 @@ export default async function PackageDetailPage({ params }: Props) {
       price: pkg.price.gbp,
       priceCurrency: 'GBP',
       availability: 'https://schema.org/InStock',
+      url: absoluteUrl(packageHref(pkg)),
+      /**
+       * Google drops an Offer with no validity window from price-eligible rich
+       * results, and treats a stale one as a reason to distrust the price. A
+       * year out is the honest span for a catalogue priced per season: long
+       * enough not to expire between rebuilds, short enough that a price which
+       * has quietly gone stale stops being advertised.
+       */
+      priceValidUntil: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)
+        .toISOString()
+        .slice(0, 10),
+      /** The business, by reference — described once in the root layout. */
+      seller: { '@id': ORGANISATION_ID },
     },
-    provider: { '@type': 'TravelAgency', name: site.name },
+    provider: { '@id': ORGANISATION_ID },
   };
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        // Authored in this repo, not user input.
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      <JsonLd
+        nodes={[
+          trip,
+          // Three segments deep, so this is the page that gains most from a
+          // breadcrumb: the result reads "Umrah Packages › 5-Star › 10 Nights"
+          // instead of the raw URL.
+          breadcrumbNode([
+            { name: 'Umrah Packages', path: '/packages/' },
+            { name: tierDef.name, path: tierHref(pkg.tier) },
+            { name: pkg.name, path: packageHref(pkg) },
+          ]),
+        ]}
       />
 
       <section className="premium-surface relative isolate overflow-hidden border-b border-border">

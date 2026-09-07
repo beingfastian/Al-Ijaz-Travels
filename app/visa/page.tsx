@@ -4,6 +4,7 @@ import { visaRoutes, universalRequirements, visaFaqs } from '@/data/visa';
 import { Reveal } from '@/components/ui/Reveal';
 import { Button } from '@/components/ui/Button';
 import { CalloutCta } from '@/components/ui/CalloutCta';
+import { JsonLd } from '@/components/seo/JsonLd';
 
 export const metadata: Metadata = {
   title: 'Umrah, ETA and Tourist Visas Explained',
@@ -32,7 +33,6 @@ export const metadata: Metadata = {
  */
 export default function VisaPage() {
   const jsonLd = {
-    '@context': 'https://schema.org',
     '@type': 'FAQPage',
     mainEntity: visaFaqs.map((f) => ({
       '@type': 'Question',
@@ -43,11 +43,7 @@ export default function VisaPage() {
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        // Authored in this repo, not user input.
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      <JsonLd nodes={[jsonLd]} />
 
       <section className="border-b border-border khatam-field">
         <div className="max-container padding-container flex flex-col gap-4 py-14">

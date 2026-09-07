@@ -11,6 +11,8 @@ import { Reveal } from '@/components/ui/Reveal';
 import { Button } from '@/components/ui/Button';
 import { CalloutCta } from '@/components/ui/CalloutCta';
 import { monthHref, monthFromSegment, listingHref } from '@/lib/routes';
+import { JsonLd } from '@/components/seo/JsonLd';
+import { breadcrumbNode } from '@/lib/seo';
 
 /**
  * A month landing page — /monthly-packages/january-umrah-packages/.
@@ -76,6 +78,15 @@ export default async function MonthPage({ params }: Props) {
 
   return (
     <>
+      <JsonLd
+        nodes={[
+          breadcrumbNode([
+            { name: 'Monthly Packages', path: '/monthly-packages/' },
+            { name: `${def.name} Umrah Packages`, path: monthHref(def.key) },
+          ]),
+        ]}
+      />
+
       <section className="border-b border-border khatam-field">
         <div className="max-container padding-container flex flex-col gap-4 py-14">
           <p className="eyebrow">Departing {def.name}</p>
