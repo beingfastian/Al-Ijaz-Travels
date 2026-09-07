@@ -8,6 +8,7 @@
     "build": "next build",
     "palette": "node scripts/palette.mjs",
     "images": "node scripts/images.mjs",
+    "og": "node scripts/og.mjs",
     "photos:audit": "node scripts/hotel-photos.mjs audit",
     "photos:match": "node scripts/hotel-photos.mjs match",
     "photos:fetch": "node scripts/hotel-photos.mjs fetch",
@@ -18,7 +19,7 @@
     "send-test": "node scripts/send-test-enquiry.mjs",
     "verify:browser": "node scripts/verify-browser.mjs",
     "verify:lighthouse": "node scripts/verify-lighthouse.mjs",
-    "verify": "npm run images && npm run palette && npm run build && npm run test && npm run verify:export && npm run verify:browser"
+    "verify": "npm run images && npm run og && npm run palette && npm run build && npm run test && npm run verify:export && npm run verify:browser"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",

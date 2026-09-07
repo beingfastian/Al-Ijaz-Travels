@@ -16,6 +16,7 @@
  */
 
 import { readFile, readdir } from 'node:fs/promises';
+import { existsSync } from 'node:fs';
 import { join, relative, posix } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { serveStatic } from './static-server.mjs';
@@ -158,6 +159,45 @@ const EXEMPT_FROM_METADATA = [/^\/404\/?$/, /^\/_not-found\//];
 
 const meta = { titles: new Map(), descriptions: new Map(), missingCanonical: [] };
 
+/**
+ * Structured-data faults, which no other check here can see.
+ *
+ * Two failure modes, both silent. A JSON-LD block that does not parse is ignored
+ * wholesale by Google — the page simply has no markup, and nothing in the build
+ * or in this gate would say so. And a `{ "@id": … }` reference that names a node
+ * no longer present on the page resolves to nothing, which is worse than absence:
+ * the site's packages are attributed to a seller that does not exist.
+ *
+ * The second is the live risk on this site specifically. Every package, article
+ * and offer points at the organisation node emitted once in the root layout
+ * (lib/seo.ts). Anyone who moves or removes that block breaks the attribution on
+ * ~250 pages at once and sees no error anywhere.
+ */
+const schema = { unparseable: [], danglingRefs: [], refCount: 0 };
+/** Pages whose og:image is missing or does not exist in out/. */
+const shareImages = { missing: [], broken: [] };
+
+/** Every `@id` a node defines, and every `@id` a node merely points at. */
+function collectIds(node, defined, referenced) {
+  if (Array.isArray(node)) {
+    for (const item of node) collectIds(item, defined, referenced);
+    return;
+  }
+  if (!node || typeof node !== 'object') return;
+
+  // A bare `{"@id": "…"}` with no other meaningful key is a pointer; anything
+  // carrying a @type alongside is a definition. That is exactly the distinction
+  // Google draws when it resolves a graph.
+  const id = node['@id'];
+  if (typeof id === 'string') {
+    if (node['@type']) defined.add(id);
+    else referenced.add(id);
+  }
+  for (const [key, value] of Object.entries(node)) {
+    if (key !== '@id') collectIds(value, defined, referenced);
+  }
+}
+
 for (const page of pages) {
   const rel = relative(OUT, page).split('\\').join('/');
   const pageUrl = '/' + rel.replace(/index\.html$/, '');
@@ -175,6 +215,33 @@ for (const page of pages) {
   const description = (html.match(/<meta name="description" content="([^"]*)"/) ?? [])[1] ?? '';
 
   if (!/<link rel="canonical"/.test(html)) meta.missingCanonical.push(pageUrl);
+
+  // --- structured data on this page, across every ld+json block it carries.
+  const defined = new Set();
+  const referenced = new Set();
+  for (const [, raw] of html.matchAll(
+    /<script type="application\/ld\+json">(.*?)<\/script>/gs
+  )) {
+    try {
+      collectIds(JSON.parse(raw), defined, referenced);
+    } catch (error) {
+      schema.unparseable.push({ pageUrl, message: error.message });
+    }
+  }
+  schema.refCount += referenced.size;
+  for (const id of referenced) {
+    if (!defined.has(id)) schema.danglingRefs.push({ pageUrl, id });
+  }
+
+  // --- the share card. Absolute, so it cannot be fetched from the local server
+  // like every other asset; checked against out/ on disk instead.
+  const og = (html.match(/<meta property="og:image" content="([^"]*)"/) ?? [])[1];
+  if (!og) {
+    shareImages.missing.push(pageUrl);
+  } else {
+    const path = og.replace(/^https?:\/\/[^/]+/, '');
+    if (!existsSync(join(OUT, path))) shareImages.broken.push({ pageUrl, og });
+  }
   if (!meta.titles.has(title)) meta.titles.set(title, []);
   meta.titles.get(title).push(pageUrl);
   if (!meta.descriptions.has(description)) meta.descriptions.set(description, []);
@@ -197,12 +264,53 @@ console.log(`\nStatic export check`);
 console.log(`  pages:            ${pages.length}`);
 console.log(`  asset references: ${checked}`);
 console.log(`  internal links:   ${linksChecked} distinct destinations`);
+console.log(`  structured data:  ${schema.refCount} @id references, all resolved`);
 
 if (optimizerRefs.length > 0) {
   console.error(
     `\n  ${optimizerRefs.length} reference(s) point at the image optimizer (/_next/image).`
   );
   console.error(`  There is no optimizer on a static host. Set images.unoptimized in next.config.`);
+}
+
+const schemaProblems = schema.unparseable.length + schema.danglingRefs.length;
+if (schemaProblems > 0) {
+  console.error(`
+  STRUCTURED DATA problems — silently ignored by search engines:
+`);
+  for (const u of schema.unparseable.slice(0, 6)) {
+    console.error(`    unparseable JSON-LD on ${u.pageUrl}
+          ${u.message}`);
+  }
+  // Grouped by id: one removed node produces the same dangling ref on every page.
+  const byId = new Map();
+  for (const d of schema.danglingRefs) {
+    if (!byId.has(d.id)) byId.set(d.id, []);
+    byId.get(d.id).push(d.pageUrl);
+  }
+  for (const [id, urls] of [...byId].slice(0, 6)) {
+    console.error(`    @id "${id}" is referenced but never defined — on ${urls.length} page(s)`);
+    console.error(`      e.g. ${urls.slice(0, 3).join(', ')}`);
+  }
+  console.error('');
+  process.exit(1);
+}
+
+if (shareImages.missing.length > 0 || shareImages.broken.length > 0) {
+  console.error(`
+  SHARE CARD problems — links to these unfurl as a blank box:
+`);
+  if (shareImages.missing.length > 0) {
+    console.error(`    ${shareImages.missing.length} page(s) with no og:image`);
+    console.error(`      e.g. ${shareImages.missing.slice(0, 3).join(', ')}`);
+  }
+  for (const b of shareImages.broken.slice(0, 3)) {
+    console.error(`    og:image does not exist in out/: ${b.og}
+          on ${b.pageUrl}`);
+    console.error(`      run \`npm run og\` to regenerate it`);
+  }
+  console.error('');
+  process.exit(1);
 }
 
 const metaProblems = dupTitles.length + dupDescriptions.length + meta.missingCanonical.length;

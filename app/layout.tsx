@@ -4,6 +4,8 @@ import { Navbar } from '@/components/layout/Navbar';
 import { WhatsAppFab } from '@/components/layout/WhatsAppFab';
 import { Footer } from '@/components/layout/Footer';
 import { site } from '@/data/site';
+import { JsonLd } from '@/components/seo/JsonLd';
+import { OG_LOCALE, organisationNode, shareImages, websiteNode } from '@/lib/seo';
 import './globals.css';
 
 /**
@@ -39,11 +41,47 @@ export const metadata: Metadata = {
   },
   description:
     'Umrah packages with hotels rated by their actual walking distance to the Haram. Per-person pricing, stated inclusions and exclusions, and a consultant before you commit.',
+  /**
+   * Absolute-URL base for canonicals, og:url and the share image. Read at build
+   * time from data/site.ts — see the TODO there: until NEXT_PUBLIC_SITE_URL is
+   * set to the real domain, every URL emitted below is a placeholder.
+   */
   metadataBase: new URL(site.url),
   openGraph: {
     type: 'website',
     siteName: site.name,
-    locale: 'en_PK',
+    /**
+     * Was hardcoded `en_PK`, on a site whose html lang, currency, date formatting
+     * and entire market are British — it told every social platform and crawler
+     * this was a Pakistani page. Now derived from site.locale, so the two cannot
+     * drift apart again.
+     */
+    locale: OG_LOCALE,
+    images: shareImages(),
+  },
+  /**
+   * Without an image Twitter and X fall back to `summary`, a small square card.
+   * The same og:image at `summary_large_image` is the wide card, which is also
+   * what LinkedIn and Slack unfurl to. WhatsApp reads og:image directly and is
+   * where most of this audience actually shares a link.
+   */
+  twitter: { card: 'summary_large_image' },
+  /**
+   * Inherited by every page, so a page only overrides it to say something
+   * different — /quote/sent/ and /specimen/ both do.
+   */
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      // Lets Google show full-length text snippets, large image previews and
+      // full video previews rather than its conservative defaults.
+      'max-snippet': -1,
+      'max-image-preview': 'large',
+      'max-video-preview': -1,
+    },
   },
 };
 
@@ -61,6 +99,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en-GB" className={`${playfair.variable} ${inter.variable} ${naskh.variable}`}>
       <head>
+        {/*
+          The business and the site itself, described once for the whole site at
+          a stable @id. Every page-level node — a package's provider, an
+          article's publisher — points at that id rather than restating it, so
+          the whole site resolves to one organisation. See lib/seo.ts.
+
+          In <head> rather than in <body> because it belongs to the document, not
+          to the page content; Google reads it from either, but this keeps it out
+          of the reading order for anything that walks the body.
+        */}
+        <JsonLd nodes={[organisationNode(), websiteNode()]} />
         {/*
           Sets `.js` before first paint, which is what scopes every scroll-reveal
           starting state. Done here rather than in an effect because effects run

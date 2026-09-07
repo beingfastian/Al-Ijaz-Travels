@@ -12,6 +12,8 @@ import { Reveal } from '@/components/ui/Reveal';
 import { Button } from '@/components/ui/Button';
 import { CalloutCta } from '@/components/ui/CalloutCta';
 import { cityHref, cityFromSegment, listingHref } from '@/lib/routes';
+import { JsonLd } from '@/components/seo/JsonLd';
+import { breadcrumbNode } from '@/lib/seo';
 
 /**
  * A city landing page — /city-packages/manchester-umrah-packages/.
@@ -70,6 +72,15 @@ export default async function CityPage({ params }: Props) {
 
   return (
     <>
+      <JsonLd
+        nodes={[
+          breadcrumbNode([
+            { name: 'City Packages', path: '/city-packages/' },
+            { name: `Umrah Packages from ${airport.city}`, path: cityHref(airport.slug) },
+          ]),
+        ]}
+      />
+
       <section className="border-b border-border khatam-field">
         <div className="max-container padding-container flex flex-col gap-4 py-14">
           <p className="eyebrow">{airport.region}</p>

@@ -12,6 +12,8 @@ import { Button } from '@/components/ui/Button';
 import { Reveal } from '@/components/ui/Reveal';
 import { Photo } from '@/components/ui/Photo';
 import { listingHref, tierHref } from '@/lib/routes';
+import { JsonLd } from '@/components/seo/JsonLd';
+import { breadcrumbNode } from '@/lib/seo';
 
 /**
  * Tier hubs — /packages/5-star/ and its two siblings.
@@ -42,7 +44,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   return {
     title: def.name,
-    description: `${def.summary} ${def.pairings.length} named hotel pairings, from ${makkah.name} at ${makkah.distanceToHaramM} m from the Haram. From ${formatGbp(cheapest)} per person, ${formatSharing(def.sharing)}.`,
+    /**
+     * Price first, then distance.
+     *
+     * Google shows roughly 160 characters. This description used to open with
+     * `def.summary` — a good sentence, but a qualitative one — which pushed
+     * "From £780 per person" past the cut on every tier hub. The three pages
+     * carrying the queries with the most commercial intent were advertising
+     * everything except the number someone is searching for.
+     *
+     * The order now matches the city pages, which were already right: the two
+     * facts this site competes on — a real price and a real walking distance —
+     * inside the visible budget, and the summary left to the page itself, where
+     * it opens the hub under the h1 and is not truncated by anyone.
+     */
+    description: `From ${formatGbp(cheapest)} per person, ${formatSharing(def.sharing)}. ${def.pairings.length} named hotel pairings — the closest is ${makkah.name}, ${makkah.distanceToHaramM} m from the Haram.`,
     alternates: { canonical: tierHref(def.tier) },
   };
 }
@@ -71,6 +87,17 @@ export default async function TierHubPage({ params }: Props) {
 
   return (
     <>
+      {/* /packages/ › 5-Star Umrah Packages. Without this Google prints the raw
+          path in the result; with it the hierarchy reads as words. */}
+      <JsonLd
+        nodes={[
+          breadcrumbNode([
+            { name: 'Umrah Packages', path: '/packages/' },
+            { name: def.name, path: tierHref(def.tier) },
+          ]),
+        ]}
+      />
+
       <section className="border-b border-border khatam-field">
         <div className="max-container padding-container flex flex-col gap-4 py-14">
           <p className="eyebrow">{def.tier}-star</p>

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { faqs } from '@/data/faqs';
+import { JsonLd } from '@/components/seo/JsonLd';
 
 export const metadata: Metadata = {
   alternates: { canonical: '/faq/' },
@@ -10,7 +11,6 @@ export const metadata: Metadata = {
 
 export default function FaqPage() {
   const jsonLd = {
-    '@context': 'https://schema.org',
     '@type': 'FAQPage',
     mainEntity: faqs.map((f) => ({
       '@type': 'Question',
@@ -21,7 +21,7 @@ export default function FaqPage() {
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <JsonLd nodes={[jsonLd]} />
       <section className="max-container padding-container flex flex-col gap-8 py-16">
         {/* No action beside this heading, and the answers below are a centred
             reading column — so the header is centred to match rather than sitting

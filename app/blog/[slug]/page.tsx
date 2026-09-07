@@ -3,7 +3,8 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { Clock, CalendarDays } from 'lucide-react';
 import { articles, getArticle, relatedArticles, readingMinutes } from '@/data/blog';
-import { site } from '@/data/site';
+import { JsonLd } from '@/components/seo/JsonLd';
+import { ORGANISATION_ID, absoluteUrl, breadcrumbNode, shareImages } from '@/lib/seo';
 import { Blocks } from '@/components/blog/Blocks';
 import { Reveal } from '@/components/ui/Reveal';
 import { Button } from '@/components/ui/Button';
@@ -30,6 +31,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       type: 'article',
       publishedTime: article.published,
       modifiedTime: article.updated ?? article.published,
+      // Declaring openGraph here replaces the layout's, image included — see
+      // shareImages() in lib/seo.ts.
+      images: shareImages(),
     },
   };
 }
@@ -49,24 +53,39 @@ export default async function ArticlePage({ params }: Props) {
   const minutes = readingMinutes(article);
   const related = relatedArticles(article);
 
+  const url = absoluteUrl(`/blog/${article.slug}/`);
+
   const jsonLd = {
-    '@context': 'https://schema.org',
     '@type': 'Article',
+    '@id': url,
     headline: article.title,
     description: article.description,
     datePublished: article.published,
     dateModified: article.updated ?? article.published,
-    author: { '@type': 'Organization', name: site.name },
-    publisher: { '@type': 'Organization', name: site.name },
-    mainEntityOfPage: `${site.url}/blog/${article.slug}/`,
+    /**
+     * Author and publisher both point at the organisation described in the root
+     * layout rather than restating its name. Restating it was the bug: two
+     * inline `Organization` nodes with a name and nothing else do not resolve to
+     * the same entity as the TravelAgency the rest of the site describes, so the
+     * articles were attributed to a company Google had no other record of.
+     */
+    author: { '@id': ORGANISATION_ID },
+    publisher: { '@id': ORGANISATION_ID },
+    /** Must be a node, not a bare string — a bare URL fails Google's validator. */
+    mainEntityOfPage: { '@type': 'WebPage', '@id': url },
+    inLanguage: 'en-GB',
   };
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        // Authored in this repo, not user input.
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      <JsonLd
+        nodes={[
+          jsonLd,
+          breadcrumbNode([
+            { name: 'Guides', path: '/blog/' },
+            { name: article.title, path: `/blog/${article.slug}/` },
+          ]),
+        ]}
       />
 
       <section className="border-b border-border khatam-field">
