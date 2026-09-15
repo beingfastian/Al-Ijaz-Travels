@@ -50,8 +50,8 @@ export const site = {
       TODO(client): replace with the real UK WhatsApp Business number in E.164
       without the + (see PLAN-UK.md D8) BEFORE launch. Both fields below.
     */
-    whatsapp: '923189047157',
-    phone: '+92 318 904 7157',
+    whatsapp: '447397608654',
+    phone: '+447397608654',
     // TODO(client): real inbox.
     email: 'info@example.invalid',
     /*
