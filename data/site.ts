@@ -65,7 +65,7 @@ export const site = {
       Road". The Companies Act and the E-Commerce Regulations both require a
       full, accurate registered address on the site.
     */
-    address: '13 Station Road, South Norwood, London',
+    address: 'Office 1793, 85 Dunstall Hill Wolverhampton, WV60SR, UK',
   },
 
   /**
