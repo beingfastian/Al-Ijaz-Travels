@@ -53,7 +53,7 @@ export const site = {
     whatsapp: '447397608654',
     phone: '+447397608654',
     // TODO(client): real inbox.
-    email: 'info@example.invalid',
+    email: 'info@alijaztravel.co.uk',
     /*
       Supplied by the client 20 Aug 2026 as: "13th Station Road, Southeast London,
       near Norwood Junction". Written below in a postal format.
